@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D213CF78-4487-4757-B4BC-F359FF88A9A9}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>..\..\make_ndk.exe ..\..\..\..\..\andriod.dev\android-ndk-r8e</NMakeBuildCommandLine>
+    <NMakeOutput>build_jni.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>__ANDROID__</NMakePreprocessorDefinitions>
+    <NMakeCleanCommandLine>..\..\make_ndk.exe ..\..\..\..\..\andriod.dev\android-ndk-r8e clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>..\..\make_ndk.exe ..\..\..\..\..\andriod.dev\android-ndk-r8e</NMakeReBuildCommandLine>
+    <IncludePath>D:\ArtSq\andriod.dev\android-ndk-r8e\sources\cxx-stl\gnu-libstdc++\4.6\include;D:\ArtSq\andriod.dev\android-ndk-r8e\platforms\android-9\arch-arm\usr\include</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>..\make_ndk.exe ..\..\..\andriod.dev\android-ndk-r8b\</NMakeBuildCommandLine>
+    <NMakeOutput>build_jni.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <BuildLog>
+      <Path>
+      </Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="Android.mk" />
+    <None Include="Application.mk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\shared_api\inet\inet.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\inet\tinyhttpd.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\inet\tinyhttpd_websocket.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\os\file_dir.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\os\file_zip.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\os\kernel.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\os\multi_thread.cpp" />
+    <ClCompile Include="..\..\..\..\shared_api\rt\xml_xhtml.cpp" />
+    <ClCompile Include="..\..\..\..\shared_library\lib_inc.c" />
+    <ClCompile Include="..\..\..\shared_tests\entrypoint.cpp" />
+    <ClCompile Include="..\..\..\shared_tests\test_api.cpp" />
+    <ClCompile Include="..\..\..\shared_tests\test_botan.cpp" />
+    <ClCompile Include="..\..\..\shared_tests\test_http.cpp" />
+    <ClCompile Include="test.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\shared_api\inet\inet.h" />
+    <ClInclude Include="..\..\..\..\shared_api\inet\tinyhttpd.h" />
+    <ClInclude Include="..\..\..\..\shared_api\inet\tinyhttpd_websocket.h" />
+    <ClInclude Include="..\..\..\..\shared_api\os\file_dir.h" />
+    <ClInclude Include="..\..\..\..\shared_api\os\file_zip.h" />
+    <ClInclude Include="..\..\..\..\shared_api\os\kernel.h" />
+    <ClInclude Include="..\..\..\..\shared_api\os\multi_thread.h" />
+    <ClInclude Include="..\..\..\..\shared_api\os\predefines.h" />
+    <ClInclude Include="..\..\..\..\shared_api\rt\buffer_type.h" />
+    <ClInclude Include="..\..\..\..\shared_api\rt\runtime_base.h" />
+    <ClInclude Include="..\..\..\..\shared_api\rt\string_type.h" />
+    <ClInclude Include="..\..\..\..\shared_api\rt\type_traits.h" />
+    <ClInclude Include="..\..\..\..\shared_api\rt\xml_xhtml.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

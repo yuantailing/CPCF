@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="main">
+      <UniqueIdentifier>{8c05f934-a2be-493f-a6e7-921f166df064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPF">
+      <UniqueIdentifier>{ddb837fc-c1fc-46e2-bafc-b20d0f86219b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPF\gl">
+      <UniqueIdentifier>{db1b1f06-b05a-4a68-bc1f-ae2ad4babb2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPF\libs">
+      <UniqueIdentifier>{9ef0c40a-a4cc-49ff-9990-f82b3b74f8f6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="wnd_app.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tests\render_core.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_object.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_shader.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_texture.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_animator.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_basic.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\gl\gl_gdi.cpp">
+      <Filter>CPF\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\os\user_inputs.cpp">
+      <Filter>CPF\libs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\essentials.cpp">
+      <Filter>CPF\libs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\ext\lib_inc.c">
+      <Filter>CPF\libs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\ext\ipp\ipp_core.cpp">
+      <Filter>CPF\libs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="wnd_app.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tests\render_core.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_gdi.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_math.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_object.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_pal.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_shader.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_texture.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\glext_inc.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\wglext_inc.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_animator.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\gl\gl_basic.h">
+      <Filter>CPF\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\os\user_inputs.h">
+      <Filter>CPF\libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\essentials.h">
+      <Filter>CPF\libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\ext\ipp\ipp_core.h">
+      <Filter>CPF\libs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\ext\ipp\ipp_image.h">
+      <Filter>CPF\libs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\core\gl\objc_gl_wrap.mm">
+      <Filter>CPF\gl</Filter>
+    </None>
+  </ItemGroup>
+</Project>
