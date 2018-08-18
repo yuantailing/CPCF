@@ -59,13 +59,13 @@ namespace rt
 
 #if defined(PLATFORM_WIN)
 	// count leading zeros
-	INLFUNC size_t __lzcnt(WORD x){ return (size_t)__lzcnt16(x); }
-	INLFUNC size_t __lzcnt(DWORD x){ return (size_t)__lzcnt(x); }
-	INLFUNC size_t __lzcnt(ULONGLONG x){ return (size_t)__lzcnt64(x); }
+	INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__lzcnt16(x); }
+	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt(x); }
+	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
 	// count 1s
-	INLFUNC size_t __popcnt(WORD x){ return (size_t)__popcnt16(x); }
-	INLFUNC size_t __popcnt(DWORD x){ return (size_t)__popcnt(x); }
-	INLFUNC size_t __popcnt(ULONGLONG x){ return (size_t)__popcnt64(x); }
+	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__popcnt16(x); }
+	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__popcnt(x); }
+	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__popcnt64(x); }
 #else
 #pragma message ("Advanced Bits Operations are not defined")
 #endif
