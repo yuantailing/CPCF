@@ -1,5 +1,3 @@
-/libs/win/*.lib
-
 *.out
 *.blg
 *.aux
