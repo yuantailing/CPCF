@@ -42,7 +42,7 @@
 
 ///////////////////////////////////////////////////
 //Helper macro 
-#define IPPVERIFY(x) VERIFY(0 == (x))	// ippStsNoErr == 0
+#define IPPVERIFY(x) { auto ret = (x); if(ippStsNoErr==x){}else{ _LOG_ERROR(#x " returns "<<ret); ASSERT(0); }}
 #define IPPI_INTER_DEFAULT IPPI_INTER_LINEAR
 
 namespace ipp

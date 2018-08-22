@@ -539,7 +539,7 @@ public:
 };
 
 template<class t_Ostream, typename t_Ele>
-t_Ostream& operator<<(t_Ostream& Ostream, const _details::_LOG_FULLDATA<rt::Buffer<t_Ele>> & vec)
+t_Ostream& operator<<(t_Ostream& Ostream, const _details::_LOG_FULLDATA<rt::Buffer_Ref<t_Ele>> & vec)
 {	Ostream<<'{';
 	if(rt::TypeTraits<typename rt::TypeTraits<t_Ele>::t_Element>::Typeid == rt::_typeid_8s)
 	{
@@ -564,7 +564,7 @@ t_Ostream& operator<<(t_Ostream& Ostream, const _details::_LOG_FULLDATA<rt::Buff
 }
 
 template<class t_Ostream, typename t_Ele>
-t_Ostream& operator<<(t_Ostream& Ostream, const rt::Buffer<t_Ele> & vec)
+t_Ostream& operator<<(t_Ostream& Ostream, const rt::Buffer_Ref<t_Ele> & vec)
 {
 	if(rt::TypeTraits<typename rt::TypeTraits<t_Ele>::t_Element>::Typeid == rt::_typeid_8s)
 	{
