@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../os/predefines.h"
+#include "../../../os/kernel.h"
 
 #pragma warning(disable:4101)
 
@@ -49,3 +49,26 @@
 #else
 #define _LOG_EXPCEPTION(x)	_LOG(x)
 #endif
+
+namespace rt
+{
+namespace tos
+{
+
+struct StdPodVec: public Base16
+{
+	template<typename T>
+	StdPodVec(const T& x)
+		:Base16(x.data(), x.size()*sizeof(x[0]))
+	{}
+};
+
+struct BigInt: public StdPodVec
+{
+	BigInt(const Botan::BigInt& x)
+		:StdPodVec(x.get_word_vector())
+	{}
+};
+
+
+}} // namespace sec

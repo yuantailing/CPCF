@@ -30,8 +30,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////
 
+#include "./inc/datablock.h"
+#include "./inc/big_int.h"
 #include "./inc/hash.h"
 #include "./inc/cipher.h"
+#include "./inc/ecc.h"
 #include "./inc/botan_inc.h"
 
 
