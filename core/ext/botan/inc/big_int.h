@@ -39,12 +39,12 @@ namespace sec
 class BigInt: public Botan::BigInt
 {
 public:
-	template<int _LEN, bool is_sec>
-	BigInt(const DataBlock<_LEN, is_sec>& key_in)
+	template<typename T>
+	BigInt(const T& bin)
 	{	
-		DataBlock<_LEN, is_sec> key;
-		rt::SwitchByteOrderTo(key_in, (DataBlock<_LEN>&)key);
-		new (this) Botan::BigInt((const Botan::byte*)&key, _LEN);
+		T key;
+		rt::SwitchByteOrderTo(bin, key);
+		new (this) Botan::BigInt((const Botan::byte*)&key, sizeof(T));
 	}
 };
 

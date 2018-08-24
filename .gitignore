@@ -19,3 +19,17 @@ testcases/proj.win/.vs/
 testcases/proj.win/x64/
 /testcases/proj.win/*.txt
 /testcases/proj.win/*.jpg
+
+testcases/proj\.linux/\.codelite/shared_test\.session
+
+testcases/proj\.linux/\.codelite/shared_test\.tags
+
+testcases/proj\.linux/Debug/
+
+testcases/proj\.linux/\.codelite/
+
+testcases/proj\.linux/Makefile
+
+testcases/proj\.linux/shared_test\.mk
+
+testcases/proj\.linux/shared_test\.txt

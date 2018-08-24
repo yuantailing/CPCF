@@ -81,28 +81,31 @@ struct ECC;
 template<int CRYTOMETHOD>
 class Keypair: public DataBlock<ECC<CRYTOMETHOD>::KeySize*2, true>
 {
+	typedef DataBlock<ECC<CRYTOMETHOD>::KeySize*2, true> _SC;
 public:
 	static const int KeySize = ECC<CRYTOMETHOD>::KeySize;
 	Keypair() = default;
-	Keypair(const DataBlock<KeySize*2>& x){ From(x); }
-	Keypair(const rt::String_Ref& str){ FromBase32(str); }
-	const DataBlock<KeySize, false>& PK() const { return *(DataBlock<KeySize, false>*)&Bytes[KeySize]; }
-	const DataBlock<KeySize, true>& SK() const { return *(DataBlock<KeySize, true>*)&Bytes[0]; }
+	Keypair(const DataBlock<KeySize*2>& x){ _SC::From(x); }
+	Keypair(const rt::String_Ref& str){ _SC::FromBase32(str); }
+	const DataBlock<KeySize, false>& PK() const { return *(DataBlock<KeySize, false>*)&_SC::Bytes[KeySize]; }
+	const DataBlock<KeySize, true>& SK() const { return *(DataBlock<KeySize, true>*)&_SC::Bytes[0]; }
 	bool  Generate(Botan::RandomNumberGenerator* pRNG = NULL)
 	{	try{
-			typename ECC<CRYTOMETHOD>::PrivateKey sk(*(pRNG?pRNG:&Botan::System_RNG()), Botan::EC_Group(ECC<CRYTOMETHOD>::ECGroupName()));
-			memcpy(Bytes, sk.private_value().get_word_vector().data(), KeySize);
-			memcpy(Bytes + KeySize, sk.public_point().get_affine_x().get_word_vector().data(), KeySize);
+			rt::ObjectPlaceHolder<Botan::System_RNG>	SysRNG;
+			if(pRNG == NULL){ pRNG = SysRNG; }
+			typename ECC<CRYTOMETHOD>::PrivateKey sk(*pRNG, Botan::EC_Group(ECC<CRYTOMETHOD>::ECGroupName()));
+			memcpy(_SC::Bytes, sk.private_value().get_word_vector().data(), KeySize);
+			memcpy(_SC::Bytes + KeySize, sk.public_point().get_affine_x().get_word_vector().data(), KeySize);
 			return true;
 		}catch(...){ return false; }
 	}
-	bool  SetPrivateKey(const DataBlock<KeySize>& sk)
+	bool  SetPrivateKey(const DataBlock<KeySize>& k)
 	{	
 		try{
 			static Botan::AutoSeeded_RNG rng;
-			typename ECC<CRYTOMETHOD>::PrivateKey sk(rng, Botan::EC_Group(ECC<CRYTOMETHOD>::ECGroupName()), sec::BigInt(sk));
-			memcpy(Bytes, sk.private_value().get_word_vector().data(), KeySize);
-			memcpy(Bytes + KeySize, sk.public_point().get_affine_x().get_word_vector().data(), KeySize);
+			typename ECC<CRYTOMETHOD>::PrivateKey sk(rng, Botan::EC_Group(ECC<CRYTOMETHOD>::ECGroupName()), sec::BigInt(k));
+			memcpy(_SC::Bytes, sk.private_value().get_word_vector().data(), KeySize);
+			memcpy(_SC::Bytes + KeySize, sk.public_point().get_affine_x().get_word_vector().data(), KeySize);
 			return true;
 		}catch(...){ return false; }
 	}
@@ -137,26 +140,26 @@ class Signer
 	Botan::RandomNumberGenerator*	_pRNG;
 	bool							_bExternalRNG;
 	void							_ClearState()
-	{	if(_SK_init)_S._SK.~(typename ECC<CRYTOMETHOD>::PrivateKey)();
-		if(_Signer_init)_S._Signer.~PK_Signer();
+	{	if(_S._SK_init)_S._SK.~PrivateKey();
+		if(_S._Signer_init)_S._Signer.~PK_Signer();
 	}
 public:
 	Signer(Botan::RandomNumberGenerator* rng = NULL)
-	{	if(rng){ pRNG = rng; _bExternalRNG = true; }
+	{	if(rng){ _pRNG = rng; _bExternalRNG = true; }
 		else{ rng = new Botan::System_RNG(); _bExternalRNG = false; }
 		_S._SK_init = false;
 		_S._Signer_init = false;
 	}
 	~Signer(){ _ClearState(); if(!_bExternalRNG)_SafeDel(_pRNG); }
-	bool SetPrivateKey(const DataBlock<KeySize>& k)
+	bool SetPrivateKey(const DataBlock<KeySize>& sk)
 	{	_ClearState();
 		try{
 			_S._SK_init = true;
-			new (&_S._SK) typename ECC<CRYTOMETHOD>::PrivateKey(rng, Botan::EC_Group(Cryptography<CRYTOMETHOD>::ECGroupName()), sec::BigInt(sk));
+			new (&_S._SK) typename ECC<CRYTOMETHOD>::PrivateKey(_pRNG, Botan::EC_Group(ECC<CRYTOMETHOD>::ECGroupName()), sec::BigInt(sk));
 		}catch(...){ return false; }
 		try{
 			_S._Signer_init = true;
-			new (&_Signer) Botan::PK_Signer(_S._SK, *_pRNG, rt::SS("EMSA1(SHA-") + SignatureSize*8 + ')');
+			new (&_S._Signer) Botan::PK_Signer(_S._SK, *_pRNG, rt::SS("EMSA1(SHA-") + SignatureSize*8 + ')');
 		}catch(...){ return false; }
 		return true;
 	}
@@ -165,7 +168,7 @@ public:
 		try{
 			auto sig = _S._Signer.sign_message(data, size, *_pRNG);
 			ASSERT(sig.size() == SignatureSize);
-			out = *(Signature*)sig.data();
+			signature_out = *(DataBlock<SignatureSize, false>*)sig.data();
 		}catch(...){ ASSERT(0); }
 	}
 };
@@ -173,7 +176,7 @@ public:
 template<int CRYTOMETHOD, int SIG_TYPE = EMSA1_SHA_256>
 class SignatureVerifier
 {
-	static const int KeySize = Cryptography<CRYTOMETHOD>::KeySize;
+	static const int KeySize = ECC<CRYTOMETHOD>::KeySize;
 	static const int SignatureSize = SIG_TYPE&0xfff;
 
 	struct _State
@@ -185,8 +188,8 @@ class SignatureVerifier
 	};
 	_State	_S;
 	void							_ClearState()
-	{	if(_SK_init)_S._SK.~(typename ECC<CRYTOMETHOD>::PrivateKey)();
-		if(_Verifier_init)_S._Verifier.~PK_Verifier();
+	{	if(_S._SK_init)_S._SK.~PrivateKey();
+		if(_S._Verifier_init)_S._Verifier.~PK_Verifier();
 	}
 public:
 	SignatureVerifier()

@@ -277,9 +277,18 @@ namespace _details
 		fputs(color[type&rt::LOGTYPE_LEVEL_MASK], stdout);
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
-			fputs(mb, stdout);
-			_last_is_updating = false;
+			if(!_details::_LogPrompt.IsEmpty())putchar('\r');
+			
+			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
+				fputs(mb, stdout);
+			
 			puts("\033[0m");
+			
+			if(!_details::_LogPrompt.IsEmpty())
+				fputs(_details::_LogPrompt, stdout);
+				
+			fflush(stdout);
+			_last_is_updating = false;
 		}
 		else
 		{	

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "../../essentials.h"
-#include "../../shared_api/rt/json.h"
+#include "../../core/rt/json.h"
 
 
 int main(int argc, char **argv)

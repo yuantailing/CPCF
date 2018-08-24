@@ -39,7 +39,10 @@
 #include <sstream>
 #include <time.h>
 #include <math.h>
+
+#if defined(PLATFORM_WIN)
 #include <intrin.h>
+#endif
 
 #include "../os/predefines.h"
 
@@ -49,6 +52,7 @@
 
 #if defined(PLATFORM_LINUX)
 #include <cstring>
+#include <x86intrin.h>
 #endif
 
 
@@ -57,17 +61,30 @@
 namespace rt
 {
 
-#if defined(PLATFORM_WIN)
-	// count leading zeros
+// count leading zeros	
+#if defined(PLATFORM_WIN) || defined(PLATFORM_LINUX)
 	INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__lzcnt16(x); }
+	#if defined(PLATFORM_WIN)	
 	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt(x); }
+	#else
+	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt32(x); }
+	#endif	
 	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
-	// count 1s
+#else
+#pragma message ("Advanced Bits Operations lzcnt is not defined")
+#endif	
+
+// count 1s
+#if defined(PLATFORM_WIN)
 	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__popcnt16(x); }
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__popcnt(x); }
 	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__popcnt64(x); }
+#elif defined(PLATFORM_LINUX)
+	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)NonzeroBits((DWORD)x); }
+	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__builtin_popcount(x); }
+	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__builtin_popcountll(x); }
 #else
-#pragma message ("Advanced Bits Operations are not defined")
+#pragma message ("Advanced Bits Operations popcnt is not defined")
 #endif
 
 }
@@ -881,6 +898,7 @@ FORCEINL T* _CastToNonconst(const T * p)
 {
 	return (T*)((size_t)p);
 }
+
 } // namespace rt
 
 
@@ -1116,6 +1134,25 @@ public:
 	INLFUNC void	Empty(){ _p=NULL; }
 	INLFUNC void	SafeDel(){ _SafeDel(_p); }
 	INLFUNC void	SafeRelease(){ _SafeRelease(_p); }
+};
+
+
+template<typename T>
+class ObjectPlaceHolder	// object place holder
+{
+	BYTE	_Place[sizeof(T)];
+	bool	_Init;
+public:
+	ObjectPlaceHolder(){ _Init = false; }
+	~ObjectPlaceHolder(){ Term(); }
+	void Term(){ if(_Init){ _Init = false; ((T*)_Place)->~T(); } }
+	void Init(){ ASSERT(_Init); new (_Place) T; _Init = true; }
+	template<typename... Params>
+	void Init(Params... args){ ASSERT(_Init); new (_Place) T(std::forward<Params>(args)...); _Init = true; }
+	operator T& (){ if(!_Init)Init(); return *(T*)_Place; }
+	operator const T& () const { ASSERT(_Init); return *(const T*)_Place; }
+	operator T* (){ if(!_Init)Init(); return (T*)_Place; }
+	operator const T* () const { ASSERT(_Init); return (const T*)_Place; }
 };
 
 

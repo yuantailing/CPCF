@@ -85,28 +85,28 @@
 ///////////////////////////////////////////////////////
 // Basic data types
 #ifndef PLATFORM_WIN
-typedef void*               LPVOID;
-typedef const void*         LPCVOID;
-typedef unsigned char		BYTE;
-typedef char				CHAR;
-typedef short               SHORT;
-typedef unsigned short		WORD;
-typedef unsigned int		DWORD;
-typedef unsigned int		UINT;
-typedef int                 INT;
-typedef __int64_t			LONGLONG;
-typedef __uint64_t          ULONGLONG;
-typedef LPVOID				HANDLE;
-typedef BYTE*               LPBYTE;
-typedef char*               LPSTR;
-typedef const char*         LPCSTR;
-typedef WORD*               LPWORD;
-typedef DWORD*              LPDWORD;
-typedef size_t              SIZE_T;
-typedef ssize_t             SSIZE_T;
-typedef __int64_t			__time64_t;
-typedef __int64_t			__int64;
-typedef __uint64_t			__uint64;
+typedef void*               	LPVOID;
+typedef const void*         	LPCVOID;
+typedef unsigned char			BYTE;
+typedef char					CHAR;
+typedef signed short            SHORT;
+typedef unsigned short			WORD;
+typedef unsigned int			DWORD;
+typedef unsigned int			UINT;
+typedef signed int             	INT;
+typedef signed long long int	LONGLONG;
+typedef unsigned long long int 	ULONGLONG;
+typedef LPVOID					HANDLE;
+typedef BYTE*               	LPBYTE;
+typedef char*               	LPSTR;
+typedef const char*         	LPCSTR;
+typedef WORD*               	LPWORD;
+typedef DWORD*              	LPDWORD;
+typedef size_t              	SIZE_T;
+typedef ssize_t             	SSIZE_T;
+typedef __int64_t				__time64_t;
+typedef __int64_t				__int64;
+typedef __uint64_t				__uint64;
 
 #ifndef PLATFORM_WIN
     #define __FUNCTION__   __func__ 
