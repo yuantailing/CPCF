@@ -7,45 +7,50 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		930D8F0D16C4E69500261897 /* ipp_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 930D8F0916C4E69500261897 /* ipp_core.cpp */; };
-		930D8F1F16C4F22300261897 /* libippac_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1016C4F22300261897 /* libippac_l.a */; };
-		930D8F2016C4F22300261897 /* libippcc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1116C4F22300261897 /* libippcc_l.a */; };
-		930D8F2116C4F22300261897 /* libippch_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1216C4F22300261897 /* libippch_l.a */; };
-		930D8F2216C4F22300261897 /* libippcore_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1316C4F22300261897 /* libippcore_l.a */; };
-		930D8F2316C4F22300261897 /* libippcv_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1416C4F22300261897 /* libippcv_l.a */; };
-		930D8F2416C4F22300261897 /* libippdc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1516C4F22300261897 /* libippdc_l.a */; };
-		930D8F2516C4F22300261897 /* libippdi_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1616C4F22300261897 /* libippdi_l.a */; };
-		930D8F2616C4F22300261897 /* libippi_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1716C4F22300261897 /* libippi_l.a */; };
-		930D8F2716C4F22300261897 /* libippj_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1816C4F22300261897 /* libippj_l.a */; };
-		930D8F2816C4F22300261897 /* libippm_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1916C4F22300261897 /* libippm_l.a */; };
-		930D8F2916C4F22300261897 /* libippr_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1A16C4F22300261897 /* libippr_l.a */; };
-		930D8F2A16C4F22300261897 /* libipps_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1B16C4F22300261897 /* libipps_l.a */; };
-		930D8F2B16C4F22300261897 /* libippsc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1C16C4F22300261897 /* libippsc_l.a */; };
-		930D8F2C16C4F22300261897 /* libippvc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1D16C4F22300261897 /* libippvc_l.a */; };
-		930D8F2D16C4F22300261897 /* libippvm_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 930D8F1E16C4F22300261897 /* libippvm_l.a */; };
-		930D8F3016C4FDAD00261897 /* test_ipp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 930D8F2F16C4FDAD00261897 /* test_ipp.cpp */; };
 		9339FFC4175C8D6E005A3FA2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9339FFC3175C8D6E005A3FA2 /* AppKit.framework */; };
-		933EB4F516E71B410043FCEE /* lib_inc.c in Sources */ = {isa = PBXBuildFile; fileRef = 933EB4F416E71B410043FCEE /* lib_inc.c */; };
-		933EB4F816E71C2C0043FCEE /* libippcp_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 933EB4F716E71C2C0043FCEE /* libippcp_l.a */; };
-		933EB4FB16E71CDD0043FCEE /* file_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 933EB4F916E71C960043FCEE /* file_zip.cpp */; };
-		93B61EE51A03651C0071FAA0 /* high_level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93B61EE31A03651C0071FAA0 /* high_level.cpp */; };
-		93C38EA0179D1B470035AAD4 /* http_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C38E9E179D1B470035AAD4 /* http_client.cpp */; };
 		93C4A233169FEC7A00D3C820 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A232169FEC7A00D3C820 /* main.cpp */; };
 		93C4A235169FEC7A00D3C820 /* tester.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93C4A234169FEC7A00D3C820 /* tester.1 */; };
-		93C4A249169FED7200D3C820 /* inet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A243169FED7200D3C820 /* inet.cpp */; };
-		93C4A24A169FED7200D3C820 /* tinyhttpd_websocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A245169FED7200D3C820 /* tinyhttpd_websocket.cpp */; };
-		93C4A24B169FED7200D3C820 /* tinyhttpd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A247169FED7200D3C820 /* tinyhttpd.cpp */; };
-		93C4A254169FED8D00D3C820 /* file_dir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A24C169FED8D00D3C820 /* file_dir.cpp */; };
-		93C4A255169FED8D00D3C820 /* kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A24E169FED8D00D3C820 /* kernel.cpp */; };
-		93C4A256169FED8D00D3C820 /* multi_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A250169FED8D00D3C820 /* multi_thread.cpp */; };
-		93C4A257169FED8D00D3C820 /* objc_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A252169FED8D00D3C820 /* objc_wrap.mm */; };
-		93C4A25E169FED9E00D3C820 /* xml_xhtml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A25C169FED9E00D3C820 /* xml_xhtml.cpp */; };
-		93C4A263169FEDC900D3C820 /* entrypoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A25F169FEDC900D3C820 /* entrypoint.cpp */; };
-		93C4A264169FEDC900D3C820 /* test_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A260169FEDC900D3C820 /* test_api.cpp */; };
-		93C4A265169FEDC900D3C820 /* test_botan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A261169FEDC900D3C820 /* test_botan.cpp */; };
-		93C4A266169FEDC900D3C820 /* test_http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A262169FEDC900D3C820 /* test_http.cpp */; };
-		93C4A26A169FF42900D3C820 /* botan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93C4A268169FF42900D3C820 /* botan.cpp */; };
 		93C4A270169FF68100D3C820 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93C4A26F169FF68100D3C820 /* IOKit.framework */; };
+		941D3E372130734F00F97118 /* test_botan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E2F2130734D00F97118 /* test_botan.cpp */; };
+		941D3E382130734F00F97118 /* test_http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E302130734D00F97118 /* test_http.cpp */; };
+		941D3E3A2130734F00F97118 /* test_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E332130734E00F97118 /* test_api.cpp */; };
+		941D3E3B2130734F00F97118 /* test_ipp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E342130734E00F97118 /* test_ipp.cpp */; };
+		941D3E3C2130734F00F97118 /* test_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E352130734E00F97118 /* test_library.cpp */; };
+		941D3E3D2130734F00F97118 /* entrypoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E362130734E00F97118 /* entrypoint.cpp */; };
+		941D3E3F2130735D00F97118 /* lib_inc.c in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E3E2130735D00F97118 /* lib_inc.c */; };
+		941D3E482130737100F97118 /* inet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E422130737100F97118 /* inet.cpp */; };
+		941D3E492130737100F97118 /* http_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E442130737100F97118 /* http_client.cpp */; };
+		941D3E4A2130737100F97118 /* tinyhttpd_fileserv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E462130737100F97118 /* tinyhttpd_fileserv.cpp */; };
+		941D3E4B2130737100F97118 /* tinyhttpd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E472130737100F97118 /* tinyhttpd.cpp */; };
+		941D3E5E2130738800F97118 /* file_zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E4E2130738700F97118 /* file_zip.cpp */; };
+		941D3E602130738800F97118 /* precompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E512130738700F97118 /* precompiler.cpp */; };
+		941D3E612130738800F97118 /* kernel_log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E532130738700F97118 /* kernel_log.cpp */; };
+		941D3E622130738800F97118 /* high_level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E542130738700F97118 /* high_level.cpp */; };
+		941D3E632130738800F97118 /* file_dir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E562130738800F97118 /* file_dir.cpp */; };
+		941D3E642130738800F97118 /* multi_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E582130738800F97118 /* multi_thread.cpp */; };
+		941D3E652130738800F97118 /* kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E5B2130738800F97118 /* kernel.cpp */; };
+		941D3E662130738800F97118 /* objc_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E5D2130738800F97118 /* objc_wrap.mm */; };
+		941D3E78213073A100F97118 /* libippr_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E67213073A000F97118 /* libippr_l.a */; };
+		941D3E79213073A100F97118 /* libippcc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E68213073A000F97118 /* libippcc_l.a */; };
+		941D3E7A213073A100F97118 /* libippm_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E69213073A000F97118 /* libippm_l.a */; };
+		941D3E7B213073A100F97118 /* libippdc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6A213073A100F97118 /* libippdc_l.a */; };
+		941D3E7C213073A100F97118 /* libippsc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6B213073A100F97118 /* libippsc_l.a */; };
+		941D3E7D213073A100F97118 /* libippvc_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6C213073A100F97118 /* libippvc_l.a */; };
+		941D3E7E213073A100F97118 /* libippj_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6D213073A100F97118 /* libippj_l.a */; };
+		941D3E7F213073A100F97118 /* libippch_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6E213073A100F97118 /* libippch_l.a */; };
+		941D3E80213073A100F97118 /* libippcore_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E6F213073A100F97118 /* libippcore_l.a */; };
+		941D3E81213073A100F97118 /* libippdi_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E70213073A100F97118 /* libippdi_l.a */; };
+		941D3E82213073A100F97118 /* libippgen_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E71213073A100F97118 /* libippgen_l.a */; };
+		941D3E83213073A100F97118 /* libippvm_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E72213073A100F97118 /* libippvm_l.a */; };
+		941D3E84213073A100F97118 /* libipps_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E73213073A100F97118 /* libipps_l.a */; };
+		941D3E85213073A100F97118 /* libippcp_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E74213073A100F97118 /* libippcp_l.a */; };
+		941D3E86213073A100F97118 /* libippi_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E75213073A100F97118 /* libippi_l.a */; };
+		941D3E87213073A100F97118 /* libippac_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E76213073A100F97118 /* libippac_l.a */; };
+		941D3E88213073A100F97118 /* libippcv_l.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 941D3E77213073A100F97118 /* libippcv_l.a */; };
+		941D3E8D213073BD00F97118 /* ipp_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E89213073BD00F97118 /* ipp_core.cpp */; };
+		941D3E97213073CD00F97118 /* xml_xhtml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E94213073CD00F97118 /* xml_xhtml.cpp */; };
+		941D3E9A213073E000F97118 /* botan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E98213073E000F97118 /* botan.cpp */; };
+		941D3E9D2130779000F97118 /* exprtk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E9B2130779000F97118 /* exprtk.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,66 +67,77 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		930D8F0816C4E69500261897 /* ipp_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_config.h; path = ../../../shared_library/ipp/ipp_config.h; sourceTree = "<group>"; };
-		930D8F0916C4E69500261897 /* ipp_core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ipp_core.cpp; path = ../../../shared_library/ipp/ipp_core.cpp; sourceTree = "<group>"; };
-		930D8F0A16C4E69500261897 /* ipp_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_core.h; path = ../../../shared_library/ipp/ipp_core.h; sourceTree = "<group>"; };
-		930D8F0B16C4E69500261897 /* ipp_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_image.h; path = ../../../shared_library/ipp/ipp_image.h; sourceTree = "<group>"; };
-		930D8F1016C4F22300261897 /* libippac_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippac_l.a; path = ../../../shared_library/libs/mac/libippac_l.a; sourceTree = "<group>"; };
-		930D8F1116C4F22300261897 /* libippcc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcc_l.a; path = ../../../shared_library/libs/mac/libippcc_l.a; sourceTree = "<group>"; };
-		930D8F1216C4F22300261897 /* libippch_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippch_l.a; path = ../../../shared_library/libs/mac/libippch_l.a; sourceTree = "<group>"; };
-		930D8F1316C4F22300261897 /* libippcore_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcore_l.a; path = ../../../shared_library/libs/mac/libippcore_l.a; sourceTree = "<group>"; };
-		930D8F1416C4F22300261897 /* libippcv_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcv_l.a; path = ../../../shared_library/libs/mac/libippcv_l.a; sourceTree = "<group>"; };
-		930D8F1516C4F22300261897 /* libippdc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippdc_l.a; path = ../../../shared_library/libs/mac/libippdc_l.a; sourceTree = "<group>"; };
-		930D8F1616C4F22300261897 /* libippdi_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippdi_l.a; path = ../../../shared_library/libs/mac/libippdi_l.a; sourceTree = "<group>"; };
-		930D8F1716C4F22300261897 /* libippi_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippi_l.a; path = ../../../shared_library/libs/mac/libippi_l.a; sourceTree = "<group>"; };
-		930D8F1816C4F22300261897 /* libippj_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippj_l.a; path = ../../../shared_library/libs/mac/libippj_l.a; sourceTree = "<group>"; };
-		930D8F1916C4F22300261897 /* libippm_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippm_l.a; path = ../../../shared_library/libs/mac/libippm_l.a; sourceTree = "<group>"; };
-		930D8F1A16C4F22300261897 /* libippr_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippr_l.a; path = ../../../shared_library/libs/mac/libippr_l.a; sourceTree = "<group>"; };
-		930D8F1B16C4F22300261897 /* libipps_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libipps_l.a; path = ../../../shared_library/libs/mac/libipps_l.a; sourceTree = "<group>"; };
-		930D8F1C16C4F22300261897 /* libippsc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippsc_l.a; path = ../../../shared_library/libs/mac/libippsc_l.a; sourceTree = "<group>"; };
-		930D8F1D16C4F22300261897 /* libippvc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippvc_l.a; path = ../../../shared_library/libs/mac/libippvc_l.a; sourceTree = "<group>"; };
-		930D8F1E16C4F22300261897 /* libippvm_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippvm_l.a; path = ../../../shared_library/libs/mac/libippvm_l.a; sourceTree = "<group>"; };
-		930D8F2F16C4FDAD00261897 /* test_ipp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_ipp.cpp; path = ../../shared_tests/test_ipp.cpp; sourceTree = "<group>"; };
 		9339FFC3175C8D6E005A3FA2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		933EB4F416E71B410043FCEE /* lib_inc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lib_inc.c; path = ../../../shared_library/lib_inc.c; sourceTree = "<group>"; };
-		933EB4F716E71C2C0043FCEE /* libippcp_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcp_l.a; path = ../../../shared_library/libs/mac/libippcp_l.a; sourceTree = "<group>"; };
-		933EB4F916E71C960043FCEE /* file_zip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = file_zip.cpp; path = ../../../shared_api/os/file_zip.cpp; sourceTree = "<group>"; };
-		933EB4FA16E71C960043FCEE /* file_zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = file_zip.h; path = ../../../shared_api/os/file_zip.h; sourceTree = "<group>"; };
-		934D804617406A9C0023478D /* small_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = small_math.h; path = ../../../shared_api/rt/small_math.h; sourceTree = "<group>"; };
-		93B61EE31A03651C0071FAA0 /* high_level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = high_level.cpp; path = ../../../shared_api/os/high_level.cpp; sourceTree = "<group>"; };
-		93B61EE41A03651C0071FAA0 /* high_level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = high_level.h; path = ../../../shared_api/os/high_level.h; sourceTree = "<group>"; };
-		93C38E9E179D1B470035AAD4 /* http_client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = http_client.cpp; path = ../../../shared_api/inet/http_client.cpp; sourceTree = "<group>"; };
-		93C38E9F179D1B470035AAD4 /* http_client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http_client.h; path = ../../../shared_api/inet/http_client.h; sourceTree = "<group>"; };
 		93C4A22E169FEC7A00D3C820 /* tester */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tester; sourceTree = BUILT_PRODUCTS_DIR; };
 		93C4A232169FEC7A00D3C820 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		93C4A234169FEC7A00D3C820 /* tester.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tester.1; sourceTree = "<group>"; };
-		93C4A243169FED7200D3C820 /* inet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inet.cpp; path = ../../../shared_api/inet/inet.cpp; sourceTree = "<group>"; };
-		93C4A244169FED7200D3C820 /* inet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inet.h; path = ../../../shared_api/inet/inet.h; sourceTree = "<group>"; };
-		93C4A245169FED7200D3C820 /* tinyhttpd_websocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyhttpd_websocket.cpp; path = ../../../shared_api/inet/tinyhttpd_websocket.cpp; sourceTree = "<group>"; };
-		93C4A246169FED7200D3C820 /* tinyhttpd_websocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyhttpd_websocket.h; path = ../../../shared_api/inet/tinyhttpd_websocket.h; sourceTree = "<group>"; };
-		93C4A247169FED7200D3C820 /* tinyhttpd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyhttpd.cpp; path = ../../../shared_api/inet/tinyhttpd.cpp; sourceTree = "<group>"; };
-		93C4A248169FED7200D3C820 /* tinyhttpd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyhttpd.h; path = ../../../shared_api/inet/tinyhttpd.h; sourceTree = "<group>"; };
-		93C4A24C169FED8D00D3C820 /* file_dir.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_dir.cpp; path = ../../../shared_api/os/file_dir.cpp; sourceTree = "<group>"; };
-		93C4A24D169FED8D00D3C820 /* file_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_dir.h; path = ../../../shared_api/os/file_dir.h; sourceTree = "<group>"; };
-		93C4A24E169FED8D00D3C820 /* kernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kernel.cpp; path = ../../../shared_api/os/kernel.cpp; sourceTree = "<group>"; };
-		93C4A24F169FED8D00D3C820 /* kernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kernel.h; path = ../../../shared_api/os/kernel.h; sourceTree = "<group>"; };
-		93C4A250169FED8D00D3C820 /* multi_thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = multi_thread.cpp; path = ../../../shared_api/os/multi_thread.cpp; sourceTree = "<group>"; };
-		93C4A251169FED8D00D3C820 /* multi_thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread.h; path = ../../../shared_api/os/multi_thread.h; sourceTree = "<group>"; };
-		93C4A252169FED8D00D3C820 /* objc_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = objc_wrap.mm; path = ../../../shared_api/os/objc_wrap.mm; sourceTree = "<group>"; };
-		93C4A253169FED8D00D3C820 /* predefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = predefines.h; path = ../../../shared_api/os/predefines.h; sourceTree = "<group>"; };
-		93C4A258169FED9E00D3C820 /* buffer_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = buffer_type.h; path = ../../../shared_api/rt/buffer_type.h; sourceTree = "<group>"; };
-		93C4A259169FED9E00D3C820 /* runtime_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = runtime_base.h; path = ../../../shared_api/rt/runtime_base.h; sourceTree = "<group>"; };
-		93C4A25A169FED9E00D3C820 /* string_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_type.h; path = ../../../shared_api/rt/string_type.h; sourceTree = "<group>"; };
-		93C4A25B169FED9E00D3C820 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = type_traits.h; path = ../../../shared_api/rt/type_traits.h; sourceTree = "<group>"; };
-		93C4A25C169FED9E00D3C820 /* xml_xhtml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_xhtml.cpp; path = ../../../shared_api/rt/xml_xhtml.cpp; sourceTree = "<group>"; };
-		93C4A25D169FED9E00D3C820 /* xml_xhtml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_xhtml.h; path = ../../../shared_api/rt/xml_xhtml.h; sourceTree = "<group>"; };
-		93C4A25F169FEDC900D3C820 /* entrypoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = entrypoint.cpp; path = ../../shared_tests/entrypoint.cpp; sourceTree = "<group>"; };
-		93C4A260169FEDC900D3C820 /* test_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_api.cpp; path = ../../shared_tests/test_api.cpp; sourceTree = "<group>"; };
-		93C4A261169FEDC900D3C820 /* test_botan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_botan.cpp; path = ../../shared_tests/test_botan.cpp; sourceTree = "<group>"; };
-		93C4A262169FEDC900D3C820 /* test_http.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_http.cpp; path = ../../shared_tests/test_http.cpp; sourceTree = "<group>"; };
-		93C4A268169FF42900D3C820 /* botan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = botan.cpp; path = ../../../shared_library/botan/botan.cpp; sourceTree = "<group>"; };
-		93C4A269169FF42900D3C820 /* botan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = botan.h; path = ../../../shared_library/botan/botan.h; sourceTree = "<group>"; };
 		93C4A26F169FF68100D3C820 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		941D3E2F2130734D00F97118 /* test_botan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_botan.cpp; path = ../../tests/test_botan.cpp; sourceTree = "<group>"; };
+		941D3E302130734D00F97118 /* test_http.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_http.cpp; path = ../../tests/test_http.cpp; sourceTree = "<group>"; };
+		941D3E312130734E00F97118 /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = test.h; path = ../../tests/test.h; sourceTree = "<group>"; };
+		941D3E332130734E00F97118 /* test_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_api.cpp; path = ../../tests/test_api.cpp; sourceTree = "<group>"; };
+		941D3E342130734E00F97118 /* test_ipp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_ipp.cpp; path = ../../tests/test_ipp.cpp; sourceTree = "<group>"; };
+		941D3E352130734E00F97118 /* test_library.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_library.cpp; path = ../../tests/test_library.cpp; sourceTree = "<group>"; };
+		941D3E362130734E00F97118 /* entrypoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = entrypoint.cpp; path = ../../tests/entrypoint.cpp; sourceTree = "<group>"; };
+		941D3E3E2130735D00F97118 /* lib_inc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lib_inc.c; path = ../../../core/ext/lib_inc.c; sourceTree = "<group>"; };
+		941D3E402130737100F97118 /* tinyhttpd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyhttpd.h; path = ../../../core/inet/tinyhttpd.h; sourceTree = "<group>"; };
+		941D3E412130737100F97118 /* tinyhttpd_fileserv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyhttpd_fileserv.h; path = ../../../core/inet/tinyhttpd_fileserv.h; sourceTree = "<group>"; };
+		941D3E422130737100F97118 /* inet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = inet.cpp; path = ../../../core/inet/inet.cpp; sourceTree = "<group>"; };
+		941D3E432130737100F97118 /* http_client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http_client.h; path = ../../../core/inet/http_client.h; sourceTree = "<group>"; };
+		941D3E442130737100F97118 /* http_client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = http_client.cpp; path = ../../../core/inet/http_client.cpp; sourceTree = "<group>"; };
+		941D3E452130737100F97118 /* inet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inet.h; path = ../../../core/inet/inet.h; sourceTree = "<group>"; };
+		941D3E462130737100F97118 /* tinyhttpd_fileserv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyhttpd_fileserv.cpp; path = ../../../core/inet/tinyhttpd_fileserv.cpp; sourceTree = "<group>"; };
+		941D3E472130737100F97118 /* tinyhttpd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyhttpd.cpp; path = ../../../core/inet/tinyhttpd.cpp; sourceTree = "<group>"; };
+		941D3E4C2130738700F97118 /* kernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kernel.h; path = ../../../core/os/kernel.h; sourceTree = "<group>"; };
+		941D3E4D2130738700F97118 /* multi_thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread.h; path = ../../../core/os/multi_thread.h; sourceTree = "<group>"; };
+		941D3E4E2130738700F97118 /* file_zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_zip.cpp; path = ../../../core/os/file_zip.cpp; sourceTree = "<group>"; };
+		941D3E4F2130738700F97118 /* file_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_dir.h; path = ../../../core/os/file_dir.h; sourceTree = "<group>"; };
+		941D3E512130738700F97118 /* precompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = precompiler.cpp; path = ../../../core/os/precompiler.cpp; sourceTree = "<group>"; };
+		941D3E522130738700F97118 /* predefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = predefines.h; path = ../../../core/os/predefines.h; sourceTree = "<group>"; };
+		941D3E532130738700F97118 /* kernel_log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kernel_log.cpp; path = ../../../core/os/kernel_log.cpp; sourceTree = "<group>"; };
+		941D3E542130738700F97118 /* high_level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = high_level.cpp; path = ../../../core/os/high_level.cpp; sourceTree = "<group>"; };
+		941D3E562130738800F97118 /* file_dir.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_dir.cpp; path = ../../../core/os/file_dir.cpp; sourceTree = "<group>"; };
+		941D3E572130738800F97118 /* precompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = precompiler.h; path = ../../../core/os/precompiler.h; sourceTree = "<group>"; };
+		941D3E582130738800F97118 /* multi_thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = multi_thread.cpp; path = ../../../core/os/multi_thread.cpp; sourceTree = "<group>"; };
+		941D3E592130738800F97118 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../../../core/os/platform.h; sourceTree = "<group>"; };
+		941D3E5A2130738800F97118 /* high_level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = high_level.h; path = ../../../core/os/high_level.h; sourceTree = "<group>"; };
+		941D3E5B2130738800F97118 /* kernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kernel.cpp; path = ../../../core/os/kernel.cpp; sourceTree = "<group>"; };
+		941D3E5C2130738800F97118 /* file_zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = file_zip.h; path = ../../../core/os/file_zip.h; sourceTree = "<group>"; };
+		941D3E5D2130738800F97118 /* objc_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = objc_wrap.mm; path = ../../../core/os/objc_wrap.mm; sourceTree = "<group>"; };
+		941D3E67213073A000F97118 /* libippr_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippr_l.a; path = ../../../libs/mac/libippr_l.a; sourceTree = "<group>"; };
+		941D3E68213073A000F97118 /* libippcc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcc_l.a; path = ../../../libs/mac/libippcc_l.a; sourceTree = "<group>"; };
+		941D3E69213073A000F97118 /* libippm_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippm_l.a; path = ../../../libs/mac/libippm_l.a; sourceTree = "<group>"; };
+		941D3E6A213073A100F97118 /* libippdc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippdc_l.a; path = ../../../libs/mac/libippdc_l.a; sourceTree = "<group>"; };
+		941D3E6B213073A100F97118 /* libippsc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippsc_l.a; path = ../../../libs/mac/libippsc_l.a; sourceTree = "<group>"; };
+		941D3E6C213073A100F97118 /* libippvc_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippvc_l.a; path = ../../../libs/mac/libippvc_l.a; sourceTree = "<group>"; };
+		941D3E6D213073A100F97118 /* libippj_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippj_l.a; path = ../../../libs/mac/libippj_l.a; sourceTree = "<group>"; };
+		941D3E6E213073A100F97118 /* libippch_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippch_l.a; path = ../../../libs/mac/libippch_l.a; sourceTree = "<group>"; };
+		941D3E6F213073A100F97118 /* libippcore_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcore_l.a; path = ../../../libs/mac/libippcore_l.a; sourceTree = "<group>"; };
+		941D3E70213073A100F97118 /* libippdi_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippdi_l.a; path = ../../../libs/mac/libippdi_l.a; sourceTree = "<group>"; };
+		941D3E71213073A100F97118 /* libippgen_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippgen_l.a; path = ../../../libs/mac/libippgen_l.a; sourceTree = "<group>"; };
+		941D3E72213073A100F97118 /* libippvm_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippvm_l.a; path = ../../../libs/mac/libippvm_l.a; sourceTree = "<group>"; };
+		941D3E73213073A100F97118 /* libipps_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libipps_l.a; path = ../../../libs/mac/libipps_l.a; sourceTree = "<group>"; };
+		941D3E74213073A100F97118 /* libippcp_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcp_l.a; path = ../../../libs/mac/libippcp_l.a; sourceTree = "<group>"; };
+		941D3E75213073A100F97118 /* libippi_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippi_l.a; path = ../../../libs/mac/libippi_l.a; sourceTree = "<group>"; };
+		941D3E76213073A100F97118 /* libippac_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippac_l.a; path = ../../../libs/mac/libippac_l.a; sourceTree = "<group>"; };
+		941D3E77213073A100F97118 /* libippcv_l.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libippcv_l.a; path = ../../../libs/mac/libippcv_l.a; sourceTree = "<group>"; };
+		941D3E89213073BD00F97118 /* ipp_core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ipp_core.cpp; path = ../../../core/ext/ipp/ipp_core.cpp; sourceTree = "<group>"; };
+		941D3E8A213073BD00F97118 /* ipp_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_image.h; path = ../../../core/ext/ipp/ipp_image.h; sourceTree = "<group>"; };
+		941D3E8B213073BD00F97118 /* ipp_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_core.h; path = ../../../core/ext/ipp/ipp_core.h; sourceTree = "<group>"; };
+		941D3E8C213073BD00F97118 /* ipp_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipp_config.h; path = ../../../core/ext/ipp/ipp_config.h; sourceTree = "<group>"; };
+		941D3E8E213073CD00F97118 /* runtime_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = runtime_base.h; path = ../../../core/rt/runtime_base.h; sourceTree = "<group>"; };
+		941D3E8F213073CD00F97118 /* string_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_type.h; path = ../../../core/rt/string_type.h; sourceTree = "<group>"; };
+		941D3E90213073CD00F97118 /* type_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = type_traits.h; path = ../../../core/rt/type_traits.h; sourceTree = "<group>"; };
+		941D3E91213073CD00F97118 /* small_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = small_math.h; path = ../../../core/rt/small_math.h; sourceTree = "<group>"; };
+		941D3E92213073CD00F97118 /* xml_xhtml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_xhtml.h; path = ../../../core/rt/xml_xhtml.h; sourceTree = "<group>"; };
+		941D3E93213073CD00F97118 /* string_type_op.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_type_op.h; path = ../../../core/rt/string_type_op.h; sourceTree = "<group>"; };
+		941D3E94213073CD00F97118 /* xml_xhtml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_xhtml.cpp; path = ../../../core/rt/xml_xhtml.cpp; sourceTree = "<group>"; };
+		941D3E95213073CD00F97118 /* buffer_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = buffer_type.h; path = ../../../core/rt/buffer_type.h; sourceTree = "<group>"; };
+		941D3E96213073CD00F97118 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = ../../../core/rt/json.h; sourceTree = "<group>"; };
+		941D3E98213073E000F97118 /* botan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = botan.cpp; path = ../../../core/ext/botan/botan.cpp; sourceTree = "<group>"; };
+		941D3E99213073E000F97118 /* botan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = botan.h; path = ../../../core/ext/botan/botan.h; sourceTree = "<group>"; };
+		941D3E9B2130779000F97118 /* exprtk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exprtk.cpp; path = ../../../core/ext/exprtk/exprtk.cpp; sourceTree = "<group>"; };
+		941D3E9C2130779000F97118 /* exprtk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exprtk.h; path = ../../../core/ext/exprtk/exprtk.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,24 +145,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				941D3E7A213073A100F97118 /* libippm_l.a in Frameworks */,
+				941D3E7F213073A100F97118 /* libippch_l.a in Frameworks */,
+				941D3E7B213073A100F97118 /* libippdc_l.a in Frameworks */,
+				941D3E80213073A100F97118 /* libippcore_l.a in Frameworks */,
+				941D3E79213073A100F97118 /* libippcc_l.a in Frameworks */,
 				9339FFC4175C8D6E005A3FA2 /* AppKit.framework in Frameworks */,
-				930D8F1F16C4F22300261897 /* libippac_l.a in Frameworks */,
-				930D8F2016C4F22300261897 /* libippcc_l.a in Frameworks */,
-				930D8F2116C4F22300261897 /* libippch_l.a in Frameworks */,
-				930D8F2216C4F22300261897 /* libippcore_l.a in Frameworks */,
-				930D8F2316C4F22300261897 /* libippcv_l.a in Frameworks */,
-				930D8F2416C4F22300261897 /* libippdc_l.a in Frameworks */,
-				930D8F2516C4F22300261897 /* libippdi_l.a in Frameworks */,
-				930D8F2616C4F22300261897 /* libippi_l.a in Frameworks */,
-				930D8F2716C4F22300261897 /* libippj_l.a in Frameworks */,
-				930D8F2816C4F22300261897 /* libippm_l.a in Frameworks */,
-				930D8F2916C4F22300261897 /* libippr_l.a in Frameworks */,
-				930D8F2A16C4F22300261897 /* libipps_l.a in Frameworks */,
-				930D8F2B16C4F22300261897 /* libippsc_l.a in Frameworks */,
-				930D8F2C16C4F22300261897 /* libippvc_l.a in Frameworks */,
-				930D8F2D16C4F22300261897 /* libippvm_l.a in Frameworks */,
 				93C4A270169FF68100D3C820 /* IOKit.framework in Frameworks */,
-				933EB4F816E71C2C0043FCEE /* libippcp_l.a in Frameworks */,
+				941D3E81213073A100F97118 /* libippdi_l.a in Frameworks */,
+				941D3E88213073A100F97118 /* libippcv_l.a in Frameworks */,
+				941D3E7E213073A100F97118 /* libippj_l.a in Frameworks */,
+				941D3E85213073A100F97118 /* libippcp_l.a in Frameworks */,
+				941D3E86213073A100F97118 /* libippi_l.a in Frameworks */,
+				941D3E78213073A100F97118 /* libippr_l.a in Frameworks */,
+				941D3E7C213073A100F97118 /* libippsc_l.a in Frameworks */,
+				941D3E83213073A100F97118 /* libippvm_l.a in Frameworks */,
+				941D3E7D213073A100F97118 /* libippvc_l.a in Frameworks */,
+				941D3E82213073A100F97118 /* libippgen_l.a in Frameworks */,
+				941D3E87213073A100F97118 /* libippac_l.a in Frameworks */,
+				941D3E84213073A100F97118 /* libipps_l.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,11 +173,11 @@
 		930D8F0616C4E63C00261897 /* ipp */ = {
 			isa = PBXGroup;
 			children = (
+				941D3E8C213073BD00F97118 /* ipp_config.h */,
+				941D3E89213073BD00F97118 /* ipp_core.cpp */,
+				941D3E8B213073BD00F97118 /* ipp_core.h */,
+				941D3E8A213073BD00F97118 /* ipp_image.h */,
 				930D8F2E16C4F25300261897 /* .a */,
-				930D8F0816C4E69500261897 /* ipp_config.h */,
-				930D8F0916C4E69500261897 /* ipp_core.cpp */,
-				930D8F0A16C4E69500261897 /* ipp_core.h */,
-				930D8F0B16C4E69500261897 /* ipp_image.h */,
 			);
 			name = ipp;
 			sourceTree = "<group>";
@@ -168,22 +185,23 @@
 		930D8F2E16C4F25300261897 /* .a */ = {
 			isa = PBXGroup;
 			children = (
-				933EB4F716E71C2C0043FCEE /* libippcp_l.a */,
-				930D8F1016C4F22300261897 /* libippac_l.a */,
-				930D8F1116C4F22300261897 /* libippcc_l.a */,
-				930D8F1216C4F22300261897 /* libippch_l.a */,
-				930D8F1316C4F22300261897 /* libippcore_l.a */,
-				930D8F1416C4F22300261897 /* libippcv_l.a */,
-				930D8F1516C4F22300261897 /* libippdc_l.a */,
-				930D8F1616C4F22300261897 /* libippdi_l.a */,
-				930D8F1716C4F22300261897 /* libippi_l.a */,
-				930D8F1816C4F22300261897 /* libippj_l.a */,
-				930D8F1916C4F22300261897 /* libippm_l.a */,
-				930D8F1A16C4F22300261897 /* libippr_l.a */,
-				930D8F1B16C4F22300261897 /* libipps_l.a */,
-				930D8F1C16C4F22300261897 /* libippsc_l.a */,
-				930D8F1D16C4F22300261897 /* libippvc_l.a */,
-				930D8F1E16C4F22300261897 /* libippvm_l.a */,
+				941D3E76213073A100F97118 /* libippac_l.a */,
+				941D3E68213073A000F97118 /* libippcc_l.a */,
+				941D3E6E213073A100F97118 /* libippch_l.a */,
+				941D3E6F213073A100F97118 /* libippcore_l.a */,
+				941D3E74213073A100F97118 /* libippcp_l.a */,
+				941D3E77213073A100F97118 /* libippcv_l.a */,
+				941D3E6A213073A100F97118 /* libippdc_l.a */,
+				941D3E70213073A100F97118 /* libippdi_l.a */,
+				941D3E71213073A100F97118 /* libippgen_l.a */,
+				941D3E75213073A100F97118 /* libippi_l.a */,
+				941D3E6D213073A100F97118 /* libippj_l.a */,
+				941D3E69213073A000F97118 /* libippm_l.a */,
+				941D3E67213073A000F97118 /* libippr_l.a */,
+				941D3E73213073A100F97118 /* libipps_l.a */,
+				941D3E6B213073A100F97118 /* libippsc_l.a */,
+				941D3E6C213073A100F97118 /* libippvc_l.a */,
+				941D3E72213073A100F97118 /* libippvm_l.a */,
 			);
 			name = .a;
 			sourceTree = "<group>";
@@ -209,12 +227,14 @@
 		93C4A231169FEC7A00D3C820 /* tester */ = {
 			isa = PBXGroup;
 			children = (
-				933EB4F416E71B410043FCEE /* lib_inc.c */,
-				930D8F2F16C4FDAD00261897 /* test_ipp.cpp */,
-				93C4A25F169FEDC900D3C820 /* entrypoint.cpp */,
-				93C4A260169FEDC900D3C820 /* test_api.cpp */,
-				93C4A261169FEDC900D3C820 /* test_botan.cpp */,
-				93C4A262169FEDC900D3C820 /* test_http.cpp */,
+				941D3E3E2130735D00F97118 /* lib_inc.c */,
+				941D3E362130734E00F97118 /* entrypoint.cpp */,
+				941D3E332130734E00F97118 /* test_api.cpp */,
+				941D3E2F2130734D00F97118 /* test_botan.cpp */,
+				941D3E302130734D00F97118 /* test_http.cpp */,
+				941D3E342130734E00F97118 /* test_ipp.cpp */,
+				941D3E352130734E00F97118 /* test_library.cpp */,
+				941D3E312130734E00F97118 /* test.h */,
 				93C4A242169FED0400D3C820 /* inet */,
 				93C4A241169FECE300D3C820 /* os */,
 				930D8F0616C4E63C00261897 /* ipp */,
@@ -229,13 +249,15 @@
 		93C4A23F169FECD800D3C820 /* rt */ = {
 			isa = PBXGroup;
 			children = (
-				934D804617406A9C0023478D /* small_math.h */,
-				93C4A258169FED9E00D3C820 /* buffer_type.h */,
-				93C4A259169FED9E00D3C820 /* runtime_base.h */,
-				93C4A25A169FED9E00D3C820 /* string_type.h */,
-				93C4A25B169FED9E00D3C820 /* type_traits.h */,
-				93C4A25C169FED9E00D3C820 /* xml_xhtml.cpp */,
-				93C4A25D169FED9E00D3C820 /* xml_xhtml.h */,
+				941D3E95213073CD00F97118 /* buffer_type.h */,
+				941D3E96213073CD00F97118 /* json.h */,
+				941D3E8E213073CD00F97118 /* runtime_base.h */,
+				941D3E91213073CD00F97118 /* small_math.h */,
+				941D3E93213073CD00F97118 /* string_type_op.h */,
+				941D3E8F213073CD00F97118 /* string_type.h */,
+				941D3E90213073CD00F97118 /* type_traits.h */,
+				941D3E94213073CD00F97118 /* xml_xhtml.cpp */,
+				941D3E92213073CD00F97118 /* xml_xhtml.h */,
 			);
 			name = rt;
 			sourceTree = "<group>";
@@ -243,18 +265,24 @@
 		93C4A241169FECE300D3C820 /* os */ = {
 			isa = PBXGroup;
 			children = (
-				93B61EE31A03651C0071FAA0 /* high_level.cpp */,
-				93B61EE41A03651C0071FAA0 /* high_level.h */,
-				933EB4F916E71C960043FCEE /* file_zip.cpp */,
-				933EB4FA16E71C960043FCEE /* file_zip.h */,
-				93C4A24C169FED8D00D3C820 /* file_dir.cpp */,
-				93C4A24D169FED8D00D3C820 /* file_dir.h */,
-				93C4A24E169FED8D00D3C820 /* kernel.cpp */,
-				93C4A24F169FED8D00D3C820 /* kernel.h */,
-				93C4A250169FED8D00D3C820 /* multi_thread.cpp */,
-				93C4A251169FED8D00D3C820 /* multi_thread.h */,
-				93C4A252169FED8D00D3C820 /* objc_wrap.mm */,
-				93C4A253169FED8D00D3C820 /* predefines.h */,
+				941D3E9B2130779000F97118 /* exprtk.cpp */,
+				941D3E9C2130779000F97118 /* exprtk.h */,
+				941D3E562130738800F97118 /* file_dir.cpp */,
+				941D3E4F2130738700F97118 /* file_dir.h */,
+				941D3E4E2130738700F97118 /* file_zip.cpp */,
+				941D3E5C2130738800F97118 /* file_zip.h */,
+				941D3E542130738700F97118 /* high_level.cpp */,
+				941D3E5A2130738800F97118 /* high_level.h */,
+				941D3E532130738700F97118 /* kernel_log.cpp */,
+				941D3E5B2130738800F97118 /* kernel.cpp */,
+				941D3E4C2130738700F97118 /* kernel.h */,
+				941D3E582130738800F97118 /* multi_thread.cpp */,
+				941D3E4D2130738700F97118 /* multi_thread.h */,
+				941D3E5D2130738800F97118 /* objc_wrap.mm */,
+				941D3E592130738800F97118 /* platform.h */,
+				941D3E512130738700F97118 /* precompiler.cpp */,
+				941D3E572130738800F97118 /* precompiler.h */,
+				941D3E522130738700F97118 /* predefines.h */,
 			);
 			name = os;
 			sourceTree = "<group>";
@@ -262,14 +290,14 @@
 		93C4A242169FED0400D3C820 /* inet */ = {
 			isa = PBXGroup;
 			children = (
-				93C38E9E179D1B470035AAD4 /* http_client.cpp */,
-				93C38E9F179D1B470035AAD4 /* http_client.h */,
-				93C4A243169FED7200D3C820 /* inet.cpp */,
-				93C4A244169FED7200D3C820 /* inet.h */,
-				93C4A245169FED7200D3C820 /* tinyhttpd_websocket.cpp */,
-				93C4A246169FED7200D3C820 /* tinyhttpd_websocket.h */,
-				93C4A247169FED7200D3C820 /* tinyhttpd.cpp */,
-				93C4A248169FED7200D3C820 /* tinyhttpd.h */,
+				941D3E442130737100F97118 /* http_client.cpp */,
+				941D3E432130737100F97118 /* http_client.h */,
+				941D3E422130737100F97118 /* inet.cpp */,
+				941D3E452130737100F97118 /* inet.h */,
+				941D3E462130737100F97118 /* tinyhttpd_fileserv.cpp */,
+				941D3E412130737100F97118 /* tinyhttpd_fileserv.h */,
+				941D3E472130737100F97118 /* tinyhttpd.cpp */,
+				941D3E402130737100F97118 /* tinyhttpd.h */,
 			);
 			name = inet;
 			sourceTree = "<group>";
@@ -277,8 +305,8 @@
 		93C4A267169FF40D00D3C820 /* botan */ = {
 			isa = PBXGroup;
 			children = (
-				93C4A268169FF42900D3C820 /* botan.cpp */,
-				93C4A269169FF42900D3C820 /* botan.h */,
+				941D3E98213073E000F97118 /* botan.cpp */,
+				941D3E99213073E000F97118 /* botan.h */,
 			);
 			name = botan;
 			sourceTree = "<group>";
@@ -334,25 +362,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				93C4A233169FEC7A00D3C820 /* main.cpp in Sources */,
-				93C4A249169FED7200D3C820 /* inet.cpp in Sources */,
-				93C4A24A169FED7200D3C820 /* tinyhttpd_websocket.cpp in Sources */,
-				93C4A24B169FED7200D3C820 /* tinyhttpd.cpp in Sources */,
-				93C4A254169FED8D00D3C820 /* file_dir.cpp in Sources */,
-				93C4A255169FED8D00D3C820 /* kernel.cpp in Sources */,
-				93C4A256169FED8D00D3C820 /* multi_thread.cpp in Sources */,
-				93C4A257169FED8D00D3C820 /* objc_wrap.mm in Sources */,
-				93C4A25E169FED9E00D3C820 /* xml_xhtml.cpp in Sources */,
-				93C4A263169FEDC900D3C820 /* entrypoint.cpp in Sources */,
-				93C4A264169FEDC900D3C820 /* test_api.cpp in Sources */,
-				93C4A265169FEDC900D3C820 /* test_botan.cpp in Sources */,
-				93C4A266169FEDC900D3C820 /* test_http.cpp in Sources */,
-				93C4A26A169FF42900D3C820 /* botan.cpp in Sources */,
-				930D8F0D16C4E69500261897 /* ipp_core.cpp in Sources */,
-				930D8F3016C4FDAD00261897 /* test_ipp.cpp in Sources */,
-				933EB4F516E71B410043FCEE /* lib_inc.c in Sources */,
-				933EB4FB16E71CDD0043FCEE /* file_zip.cpp in Sources */,
-				93C38EA0179D1B470035AAD4 /* http_client.cpp in Sources */,
-				93B61EE51A03651C0071FAA0 /* high_level.cpp in Sources */,
+				941D3E602130738800F97118 /* precompiler.cpp in Sources */,
+				941D3E3F2130735D00F97118 /* lib_inc.c in Sources */,
+				941D3E652130738800F97118 /* kernel.cpp in Sources */,
+				941D3E372130734F00F97118 /* test_botan.cpp in Sources */,
+				941D3E9A213073E000F97118 /* botan.cpp in Sources */,
+				941D3E612130738800F97118 /* kernel_log.cpp in Sources */,
+				941D3E3C2130734F00F97118 /* test_library.cpp in Sources */,
+				941D3E632130738800F97118 /* file_dir.cpp in Sources */,
+				941D3E3D2130734F00F97118 /* entrypoint.cpp in Sources */,
+				941D3E97213073CD00F97118 /* xml_xhtml.cpp in Sources */,
+				941D3E3B2130734F00F97118 /* test_ipp.cpp in Sources */,
+				941D3E382130734F00F97118 /* test_http.cpp in Sources */,
+				941D3E4A2130737100F97118 /* tinyhttpd_fileserv.cpp in Sources */,
+				941D3E622130738800F97118 /* high_level.cpp in Sources */,
+				941D3E8D213073BD00F97118 /* ipp_core.cpp in Sources */,
+				941D3E482130737100F97118 /* inet.cpp in Sources */,
+				941D3E9D2130779000F97118 /* exprtk.cpp in Sources */,
+				941D3E492130737100F97118 /* http_client.cpp in Sources */,
+				941D3E5E2130738800F97118 /* file_zip.cpp in Sources */,
+				941D3E4B2130737100F97118 /* tinyhttpd.cpp in Sources */,
+				941D3E642130738800F97118 /* multi_thread.cpp in Sources */,
+				941D3E3A2130734F00F97118 /* test_api.cpp in Sources */,
+				941D3E662130738800F97118 /* objc_wrap.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +408,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -416,7 +448,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -434,12 +466,12 @@
 		93C4A239169FEC7A00D3C820 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../shared_library/libs/mac\"",
+					"\"$(SRCROOT)/../../libs/mac\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -448,12 +480,12 @@
 		93C4A23A169FEC7A00D3C820 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../shared_library/libs/mac\"",
+					"\"$(SRCROOT)/../../libs/mac\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -33,3 +33,13 @@ testcases/proj\.linux/Makefile
 testcases/proj\.linux/shared_test\.mk
 
 testcases/proj\.linux/shared_test\.txt
+
+\.DS_Store
+
+testcases/gl_testcases/proj\.mac/gltest\.xcodeproj/project\.xcworkspace/xcuserdata/
+
+testcases/gl_testcases/proj\.mac/gltest\.xcodeproj/xcuserdata/
+
+testcases/proj\.mac/tester\.xcodeproj/project\.xcworkspace/xcuserdata/
+
+testcases/proj\.mac/tester\.xcodeproj/xcuserdata/

@@ -333,7 +333,7 @@ void gdiFont::CopyGlyphs(os::LPCU16CHAR text, UINT len, ipp::Image_1c8u& img, in
 	ASSERT(m_BPP == 8);
 	ASSERT(len <= 1024);
 	UINT total = 0;
-	int* block_ids = (int*)_alloca(sizeof(int)*len);
+	int* block_ids = (int*)alloca(sizeof(int)*len);
 	int avail = 0;
 
 	for(UINT c=0;c<len;c++)
@@ -753,8 +753,8 @@ void gdiCanvas::DrawText(const rt::String_Ref& text, short x_in, short y, const 
 	int vertex_count_max = 6*(1 + len);
 
 	int bytesize = (sizeof(t_Pos) + sizeof(rt::Vec2f))*vertex_count_max;
-	t_Pos* pos = (t_Pos*)_alloca(sizeof(t_Pos)*vertex_count_max);
-	rt::Vec2f* tex = (rt::Vec2f*)_alloca(sizeof(rt::Vec2f)*vertex_count_max);
+	t_Pos* pos = (t_Pos*)alloca(sizeof(t_Pos)*vertex_count_max);
+	rt::Vec2f* tex = (rt::Vec2f*)alloca(sizeof(rt::Vec2f)*vertex_count_max);
 
 	y -= (dp_text_valignment - TEXT_ALIGNMENT_LEFT)*_FontHeight/2 + _pFont->_font_vspace;
 	int texwidth = _pFont->GetGlyphMapWidth();
@@ -872,12 +872,14 @@ void gdiCanvasLayout::OnUserInputEvent(const os::UserInputEvent& x)
 
 void gdiCanvasLayout::ApplyTo(ShaderProgramBase& shader, LPCSTR layout_name, bool as_double_type)
 {
+#if !defined(PLATFORM_MAC)
 	if(as_double_type)
 	{
 		Vec4d v(_Offset.x, _Offset.y, _Scale.y, _Scale.y);
 		shader.SetUniform(layout_name, v);
 	}
 	else
+#endif
 	{
 		Vec4f v((float)_Offset.x, (float)_Offset.y, (float)_Scale.y, (float)_Scale.y);
 		shader.SetUniform(layout_name, v);

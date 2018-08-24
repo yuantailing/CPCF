@@ -19,7 +19,7 @@
 		NSOpenGLPFAColorSize, 32,
 		NSOpenGLPFAAlphaSize, 8,
 		NSOpenGLPFADepthSize, 16,
-        (NSOpenGLPixelFormatAttribute)nil
+        (NSOpenGLPixelFormatAttribute)0
     };
     NSOpenGLPixelFormat* pixfmt = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attributes] autorelease];
 	

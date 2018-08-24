@@ -44,10 +44,10 @@ void test_botan_hash()
 void test_botan_cipher()
 {
 	DEF_TEST_SECTION
-
-#ifdef PLATFORM_INTEL_IPP_SUPPORT
-    LPCSTR text = "1234567890ABCDEFfedcba0987654321";
-
+    
+    #ifdef PLATFORM_INTEL_IPP_SUPPORT
+    
+/*
 	{
 		sec::BigNum a("0xf234567890abcdef1e");
 		sec::BigNum b("-0x50000000000010a17f");
@@ -68,6 +68,8 @@ void test_botan_cipher()
 			//0x74acc29cE7470010f7676d01F395756DAC982e60
 			//0x8cc5889e56694ef0ebb502f12bdf9f609fd03e3f9da2a9367de9823abeeb5a7c
 	}
+*/
+    LPCSTR text = "1234567890ABCDEFfedcba0987654321";
     
 	{	sec::Cipher<sec::CIPHER_AES128>	cipher;
 		cipher.SetKey("password!", 9);

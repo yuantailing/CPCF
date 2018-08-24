@@ -2,12 +2,12 @@
 
 
 #if defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
-extern "C" void _objc_view_get_size(LPVOID pView, int* w, int *h);
+extern void _objc_view_get_size(LPVOID pView, int* w, int *h);
 #endif
 
 #if defined(PLATFORM_MAC)
-extern "C" void _objc_view_accept_mousemove(LPVOID pView, bool set);
-extern "C" bool _objc_pumpevents();
+extern void _objc_view_accept_mousemove(LPVOID pView, bool set);
+extern bool _objc_pumpevents();
 #endif
 
 namespace os

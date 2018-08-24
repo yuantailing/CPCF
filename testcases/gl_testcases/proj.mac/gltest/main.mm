@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "AppDelegate.h"
-#include "../../../../shared_api/os/user_inputs.h"
+#include "../../../../core/os/user_inputs.h"
 
 int main(int argc, char *argv[])
 {

@@ -1152,7 +1152,7 @@ UINT os::FileList::_Populate(const rt::String_Ref& dir, LPCSTR sf, DWORD flag)
 
 #if defined(PLATFORM_WIN)
 	__UTF16*	suffix_w;
-	suffix_w = (__UTF16*)_alloca(sizeof(__UTF16)*num_suffix);
+	suffix_w = (__UTF16*)alloca(sizeof(__UTF16)*num_suffix);
 	for(int i=0;i<num_suffix;i++)
 	{	new (&suffix_w[i]) __UTF16(suffix[i]);
 	}
@@ -1284,7 +1284,7 @@ UINT os::FileList::PopulateDropList(HDROP hDropInfo, LPCSTR sf, DWORD flag)
 		int	num_suffix = rt::String_Ref(suffix_filter).Split(suffix, 64, '|');
 
 		__UTF16*	suffix_w;
-		suffix_w = (__UTF16*)_alloca(sizeof(__UTF16)*num_suffix);
+		suffix_w = (__UTF16*)alloca(sizeof(__UTF16)*num_suffix);
 		for(int i=0;i<num_suffix;i++)
 		{	new (&suffix_w[i]) __UTF16(suffix[i]);
 		}

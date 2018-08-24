@@ -51,8 +51,8 @@ int	FileZip::FindFileRecursive(LPCSTR string, int start)
 	int len = (int)strlen(string);
 	for(int i=start; i<(int)m_FileEntries.GetSize(); i++)
 	{
-		FileEntry& en = *(FileEntry*)m_FileEntries[i];
-		if((&en) && en.FileNameLength>=len && memcmp(string, &en.FileName[en.FileNameLength-len],len)==0)
+		FileEntry* en = (FileEntry*)m_FileEntries[i];
+		if(en && en->FileNameLength>=len && memcmp(string, &en->FileName[en->FileNameLength-len],len)==0)
 			return i;
 	}
 	return -1;
@@ -805,7 +805,7 @@ FileZip::stream_readonly* FileZip::ExtractFile(UINT idx)
 	)
 	{	// decompress
 		DWORD begin = e->OffsetToLocalFileHeader+LFH.FileNameLength+LFH.ExtraFieldLength+sizeof(LocalFileHeader)-1;
-		DWORD end = begin + e->Size;
+		//DWORD end = begin + e->Size;
 
 		if(LFH.Compression)
 		{
@@ -912,7 +912,7 @@ bool FileZip::Save()
 			_pZipFile->Write(m_ZipComment,m_ZipComment.GetLength()) != m_ZipComment.GetLength()
 		)return false;
 
-		ULONGLONG len = _pZipFile->Seek(0,rt::_File::Seek_Current);
+		//ULONGLONG len = _pZipFile->Seek(0,rt::_File::Seek_Current);
 		//if(!_pZipFile->SetLength(len))return false;
 
 		m_CentralDirectoryModified = false;
@@ -1359,7 +1359,7 @@ SIZE_T File7z::GetFileCount() const
 rt::String_Ref File7z::GetFilename(UINT idx) const
 {
 	rt::Buffer_Ref<os::U16CHAR> b = _GetFilename(idx);
-	((File7z*)this)->_utf8Name.Convert(b.Begin(), b.GetSize());
+	((File7z*)this)->_utf8Name.Convert(b.Begin(), (int)b.GetSize());
 	return _utf8Name;
 }
 
@@ -1435,11 +1435,10 @@ bool File7z::ExtractFile(UINT idx, LPVOID pData)	// pData pointing memory with s
 
 	UInt64 startOffset = SzArEx_GetFolderStreamPos(&_State.db, folderIndex, 0);
 	
-	SRes res;
 	if(offset == 0)
 	{	// direct extract to pData
 		Byte *outBuffer = (Byte *)pData;
-		auto res = SzFolder_Decode(folder,
+		SzFolder_Decode(folder,
 			 _State.db.db.PackSizes + _State.db.FolderStartPackStreamIndex[folderIndex],
 			  &_State.lookStream.s, startOffset,
 			  outBuffer, unpackSize, &_State.allocTempImp
@@ -1452,7 +1451,7 @@ bool File7z::ExtractFile(UINT idx, LPVOID pData)	// pData pointing memory with s
 		_FolderDecoded.SetSize(unpackSize);
 
 		Byte *outBuffer = (Byte *)_FolderDecoded.Begin();
-		auto res = SzFolder_Decode(folder,
+		SzFolder_Decode(folder,
 			 _State.db.db.PackSizes + _State.db.FolderStartPackStreamIndex[folderIndex],
 			  &_State.lookStream.s, startOffset,
 			  outBuffer, unpackSize, &_State.allocTempImp

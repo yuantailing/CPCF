@@ -1379,7 +1379,7 @@ void testing_file()
 	{	os::FileBuffer<BYTE>	file("D:/ArtSq/Coin-FE/Dev/proj/unit_test/captcha_bg.jpg");
 		os::File out;
 		out.Open("data_define.hpp", os::File::Normal_WriteText);
-		out.Write(rt::String_Ref("static const BYTE _Data[") + file.GetSize() + "] = {\n");
+		out.Write(rt::SS("static const BYTE _Data[") + file.GetSize() + "] = {\n");
 		LPCBYTE p = file;
 		UINT sz = (UINT)file.GetSize();
 		while(sz)

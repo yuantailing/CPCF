@@ -33,7 +33,7 @@ void _translate_code(const rt::String_Ref& code, std::string& out)
 
 	// = -> :=
 	// ! -> not
-	{	SIZE_T i = 0;
+	{
 		rt::CharacterSet	op_set("/-=+!<>:%");
 		for(UINT i=0;i<temp.GetLength();i++)
 		{

@@ -25,7 +25,7 @@ void _objc_view_get_size(LPVOID pNSView, int* w, int *h)
 	*h = (int)(((__bridge NSView*)pNSView).bounds.size.height + 0.5f);
 }
 
-void _objc_view_accept_mousemove(LPVOID pNSView, BOOL set)
+void _objc_view_accept_mousemove(LPVOID pNSView, bool set)
 {	[[(__bridge NSView*)pNSView window] setAcceptsMouseMovedEvents: set];
 }
 
@@ -86,7 +86,7 @@ UINT _objc_preference_load_string(LPCSTR key, LPSTR val_out, UINT val_size)
 UINT _objc_get_screens_dim(rt::Vec2i* p, UINT co)
 {
     NSArray *screenArray = [NSScreen screens];
-    UINT screenCount = [screenArray count];
+    UINT screenCount = (UINT)[screenArray count];
     UINT index = 0;
     for (; index < screenCount && index < co; index++)
     {

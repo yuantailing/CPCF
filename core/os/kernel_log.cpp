@@ -258,6 +258,7 @@ namespace _details
 #elif defined(PLATFORM_LINUX) || defined (PLATFORM_MAC)
 #include <sys/ioctl.h>
 #include <stdio.h>
+#include <unistd.h>
 
 namespace os
 {
@@ -280,9 +281,9 @@ namespace _details
 			if(!_details::_LogPrompt.IsEmpty())putchar('\r');
 			
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
-				fputs(mb, stdout);
+				puts(mb);
 			
-			puts("\033[0m");
+			fputs("\033[0m", stdout);
 			
 			if(!_details::_LogPrompt.IsEmpty())
 				fputs(_details::_LogPrompt, stdout);

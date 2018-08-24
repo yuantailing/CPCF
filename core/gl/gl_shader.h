@@ -153,54 +153,54 @@ public:
 	INLFUNC void SetUniform(LPCSTR Name, float x,float y){ UFLO; glUniform2f(loc,x,y); }
 	INLFUNC void SetUniform(LPCSTR Name, float x,float y,float z){ UFLO; glUniform3f(loc,x,y,z); }
 	INLFUNC void SetUniform(LPCSTR Name, float x,float y,float z,float w){ UFLO; glUniform4f(loc,x,y,z,w); }
-	INLFUNC void SetUniform(LPCSTR Name, double x){ UFLO; glUniform1d(loc,x); }
-	INLFUNC void SetUniform(LPCSTR Name, double x,double y){ UFLO; glUniform2d(loc,x,y); }
-	INLFUNC void SetUniform(LPCSTR Name, double x,double y,double z){ UFLO; glUniform3d(loc,x,y,z); }
-	INLFUNC void SetUniform(LPCSTR Name, double x,double y,double z,double w){ UFLO; glUniform4d(loc,x,y,z,w); }
+    INLFUNC void SetUniformArray1(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform1fv(loc,count,p); }
+    INLFUNC void SetUniformArray2(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform2fv(loc,count,p); }
+    INLFUNC void SetUniformArray3(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform3fv(loc,count,p); }
+    INLFUNC void SetUniformArray4(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform4fv(loc,count,p); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec2f& v){ UFLO; glUniform2f(loc,v.x,v.y); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec3f& v){ UFLO; glUniform3f(loc,v.x,v.y,v.z); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec4f& v){ UFLO; glUniform4f(loc,v.x,v.y,v.z,v.w); }
+    INLFUNC void SetUniformArray2(LPCSTR Name, const rt::Vec2f* p, int count){ UFLO; ASSERT(p); glUniform2fv(loc,count,p[0]); }
+    INLFUNC void SetUniformArray3(LPCSTR Name, const rt::Vec3f* p, int count){ UFLO; ASSERT(p); glUniform3fv(loc,count,p[0]); }
+    INLFUNC void SetUniformArray4(LPCSTR Name, const rt::Vec4f* p, int count){ UFLO; ASSERT(p); glUniform4fv(loc,count,p[0]); }
+    INLFUNC void SetUniformMatrix2x2(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix2fv(loc,1,transpose,mat); }
+    INLFUNC void SetUniformMatrix3x3(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix3fv(loc,1,transpose,mat); }
+    INLFUNC void SetUniformMatrix4x4(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix4fv(loc,1,transpose,mat); }
+    
 	INLFUNC void SetUniform(LPCSTR Name, int x){ UFLO; glUniform1i(loc,x); }
 	INLFUNC void SetUniform(LPCSTR Name, int x,int y){ UFLO; glUniform2i(loc,x,y); }
 	INLFUNC void SetUniform(LPCSTR Name, int x,int y,int z){ UFLO; glUniform3i(loc,x,y,z); }
 	INLFUNC void SetUniform(LPCSTR Name, int x,int y,int z,int w){ UFLO; glUniform4i(loc,x,y,z,w); }
-
-	INLFUNC void SetUniformArray1(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform1fv(loc,count,p); }
-	INLFUNC void SetUniformArray2(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform2fv(loc,count,p); }
-	INLFUNC void SetUniformArray3(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform3fv(loc,count,p); }
-	INLFUNC void SetUniformArray4(LPCSTR Name, const float* p, int count){ UFLO; ASSERT(p); glUniform4fv(loc,count,p); }
+    INLFUNC void SetUniformArray1(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform1iv(loc,count,p); }
+    INLFUNC void SetUniformArray2(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform2iv(loc,count,p); }
+    INLFUNC void SetUniformArray3(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform3iv(loc,count,p); }
+    INLFUNC void SetUniformArray4(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform4iv(loc,count,p); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec2i& v){ UFLO; glUniform2i(loc,v.x,v.y); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec3i& v){ UFLO; glUniform3i(loc,v.x,v.y,v.z); }
+    INLFUNC void SetUniform(LPCSTR Name, const rt::Vec4i& v){ UFLO; glUniform4i(loc,v.x,v.y,v.z,v.w); }
+    INLFUNC void SetUniformArray2(LPCSTR Name, const rt::Vec2i* p, int count){ UFLO; ASSERT(p); glUniform2iv(loc,count,p[0]); }
+    INLFUNC void SetUniformArray3(LPCSTR Name, const rt::Vec3i* p, int count){ UFLO; ASSERT(p); glUniform3iv(loc,count,p[0]); }
+    INLFUNC void SetUniformArray4(LPCSTR Name, const rt::Vec4i* p, int count){ UFLO; ASSERT(p); glUniform4iv(loc,count,p[0]); }
+    
+    /*
+    INLFUNC void SetUniform(LPCSTR Name, double x){ UFLO; glUniform1d(loc,x); }
+    INLFUNC void SetUniform(LPCSTR Name, double x,double y){ UFLO; glUniform2d(loc,x,y); }
+    INLFUNC void SetUniform(LPCSTR Name, double x,double y,double z){ UFLO; glUniform3d(loc,x,y,z); }
+    INLFUNC void SetUniform(LPCSTR Name, double x,double y,double z,double w){ UFLO; glUniform4d(loc,x,y,z,w); }
 	INLFUNC void SetUniformArray1(LPCSTR Name, const double* p, int count){ UFLO; ASSERT(p); glUniform1dv(loc,count,p); }
 	INLFUNC void SetUniformArray2(LPCSTR Name, const double* p, int count){ UFLO; ASSERT(p); glUniform2dv(loc,count,p); }
 	INLFUNC void SetUniformArray3(LPCSTR Name, const double* p, int count){ UFLO; ASSERT(p); glUniform3dv(loc,count,p); }
 	INLFUNC void SetUniformArray4(LPCSTR Name, const double* p, int count){ UFLO; ASSERT(p); glUniform4dv(loc,count,p); }
-	INLFUNC void SetUniformArray1(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform1iv(loc,count,p); }
-	INLFUNC void SetUniformArray2(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform2iv(loc,count,p); }
-	INLFUNC void SetUniformArray3(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform3iv(loc,count,p); }
-	INLFUNC void SetUniformArray4(LPCSTR Name, const int* p, int count){ UFLO; ASSERT(p); glUniform4iv(loc,count,p); }
-
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec2f& v){ UFLO; glUniform2f(loc,v.x,v.y); }
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec3f& v){ UFLO; glUniform3f(loc,v.x,v.y,v.z); }
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec4f& v){ UFLO; glUniform4f(loc,v.x,v.y,v.z,v.w); }
 	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec2d& v){ UFLO; glUniform2d(loc,v.x,v.y); }
 	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec3d& v){ UFLO; glUniform3d(loc,v.x,v.y,v.z); }
 	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec4d& v){ UFLO; glUniform4d(loc,v.x,v.y,v.z,v.w); }
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec2i& v){ UFLO; glUniform2i(loc,v.x,v.y); }
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec3i& v){ UFLO; glUniform3i(loc,v.x,v.y,v.z); }
-	INLFUNC void SetUniform(LPCSTR Name, const rt::Vec4i& v){ UFLO; glUniform4i(loc,v.x,v.y,v.z,v.w); }
-
-	INLFUNC void SetUniformArray2(LPCSTR Name, const rt::Vec2f* p, int count){ UFLO; ASSERT(p); glUniform2fv(loc,count,p[0]); }
-	INLFUNC void SetUniformArray3(LPCSTR Name, const rt::Vec3f* p, int count){ UFLO; ASSERT(p); glUniform3fv(loc,count,p[0]); }
-	INLFUNC void SetUniformArray4(LPCSTR Name, const rt::Vec4f* p, int count){ UFLO; ASSERT(p); glUniform4fv(loc,count,p[0]); }
 	INLFUNC void SetUniformArray2(LPCSTR Name, const rt::Vec2d* p, int count){ UFLO; ASSERT(p); glUniform2dv(loc,count,p[0]); }
 	INLFUNC void SetUniformArray3(LPCSTR Name, const rt::Vec3d* p, int count){ UFLO; ASSERT(p); glUniform3dv(loc,count,p[0]); }
 	INLFUNC void SetUniformArray4(LPCSTR Name, const rt::Vec4d* p, int count){ UFLO; ASSERT(p); glUniform4dv(loc,count,p[0]); }
-	INLFUNC void SetUniformArray2(LPCSTR Name, const rt::Vec2i* p, int count){ UFLO; ASSERT(p); glUniform2iv(loc,count,p[0]); }
-	INLFUNC void SetUniformArray3(LPCSTR Name, const rt::Vec3i* p, int count){ UFLO; ASSERT(p); glUniform3iv(loc,count,p[0]); }
-	INLFUNC void SetUniformArray4(LPCSTR Name, const rt::Vec4i* p, int count){ UFLO; ASSERT(p); glUniform4iv(loc,count,p[0]); }
-
-	INLFUNC void SetUniformMatrix2x2(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix2fv(loc,1,transpose,mat); }
-	INLFUNC void SetUniformMatrix3x3(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix3fv(loc,1,transpose,mat); }
-	INLFUNC void SetUniformMatrix4x4(LPCSTR Name,const float* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix4fv(loc,1,transpose,mat); }
 	INLFUNC void SetUniformMatrix2x2(LPCSTR Name,const double* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix2dv(loc,1,transpose,mat); }
 	INLFUNC void SetUniformMatrix3x3(LPCSTR Name,const double* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix3dv(loc,1,transpose,mat); }
 	INLFUNC void SetUniformMatrix4x4(LPCSTR Name,const double* mat,bool transpose = false){ UFLO; ASSERT(mat); glUniformMatrix4dv(loc,1,transpose,mat); }
+    */
 #undef UFLO
 
 	INLFUNC void SetVertexAttributePointer(LPCSTR attrib_name, LPCVOID pData, UINT channel, DWORD type, int stride = 0)

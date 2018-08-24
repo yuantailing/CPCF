@@ -288,7 +288,7 @@ GLhandle ShaderProgramBase::GetCurrentProgram()
 {
 	GLint ret;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &ret);
-	return (GLhandle)ret;
+	return (GLhandle)(SSIZE_T)ret;
 }
 
 
@@ -671,7 +671,7 @@ void ShaderProgram::BuildWithSourceCodes(LPCSTR vsh, LPCSTR gsh, LPCSTR fsh)
 	if(gsh && !_gsh.IsCreated())_gsh.Create(gl::ShaderCode::GeometryShader);
 	if(vsh && !_vsh.IsCreated())_vsh.Create(gl::ShaderCode::VertexShader);
 
-	bool err_occ = false;
+	//bool err_occ = false;
 
 	if(fsh)
 	{
@@ -695,10 +695,15 @@ void ShaderProgram::BuildWithSourceCodes(LPCSTR vsh, LPCSTR gsh, LPCSTR fsh)
 		if(_gsh.IsCompiled())
 		{
 			AddShader(_gsh); 
-
+#if defined(PLATFORM_MAC)
+            glProgramParameteriEXT(*(GLuint*)&_Handle,GL_GEOMETRY_INPUT_TYPE_EXT,_gsh._GeometryShaderInMode);
+            glProgramParameteriEXT(*(GLuint*)&_Handle,GL_GEOMETRY_OUTPUT_TYPE_EXT,_gsh._GeometryShaderOutMode);
+            glProgramParameteriEXT(*(GLuint*)&_Handle,GL_GEOMETRY_VERTICES_OUT_EXT,_gsh._GeometryShaderOutVerticesMax);
+#else
 			glProgramParameteriEXT(_Handle,GL_GEOMETRY_INPUT_TYPE_EXT,_gsh._GeometryShaderInMode);
 			glProgramParameteriEXT(_Handle,GL_GEOMETRY_OUTPUT_TYPE_EXT,_gsh._GeometryShaderOutMode);
 			glProgramParameteriEXT(_Handle,GL_GEOMETRY_VERTICES_OUT_EXT,_gsh._GeometryShaderOutVerticesMax);
+#endif
 			_LogGLError;
 		}
 		else

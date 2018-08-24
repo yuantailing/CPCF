@@ -70,6 +70,10 @@ namespace rt
 	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt32(x); }
 	#endif	
 	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
+#elif defined(PLATFORM_MAC)
+    INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__builtin_clz((DWORD)x); }
+    INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__builtin_clz(x); }
+    INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__builtin_clzll(x); }
 #else
 #pragma message ("Advanced Bits Operations lzcnt is not defined")
 #endif	
@@ -79,8 +83,8 @@ namespace rt
 	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__popcnt16(x); }
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__popcnt(x); }
 	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__popcnt64(x); }
-#elif defined(PLATFORM_LINUX)
-	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)NonzeroBits((DWORD)x); }
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__builtin_popcount((DWORD)x); }
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__builtin_popcount(x); }
 	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__builtin_popcountll(x); }
 #else

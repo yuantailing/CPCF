@@ -9,10 +9,10 @@ extern "C"
 #endif
 void TestMain()
 {
- //   test_ipp_imageproc();
-	////testing_multithread();
-	////testing_plog();
-	test_mkl_linequ();
+   test_ipp_imageproc();
+	//testing_multithread();
+	//testing_plog();
+	//test_mkl_linequ();
 	return;
 
 	rt::String dir;

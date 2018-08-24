@@ -74,7 +74,7 @@ bool HttpSession::Request_Post(LPCSTR pURL, const HttpSession::DataBuf* pBufs, U
 	
 	STACK_STRING_END;
 
-	if( SendRequest(pURL, HTTP_VERB_POST, header.Begin(), header.GetLength()))
+	if( SendRequest(pURL, HTTP_VERB_POST, header.Begin(), (UINT)header.GetLength()))
 	{
 		for(UINT i=0;i<BufCount;i++)
 		{
@@ -104,14 +104,14 @@ bool HttpSession::Request_PostFile(LPCSTR pURL, LPCBYTE data, UINT sz, LPCSTR lo
 	STACK_STRING_END;
 
 	bufs[0].Data = head.Begin();
-	bufs[0].Length = head.GetLength();
+	bufs[0].Length = (UINT)head.GetLength();
 
 	bufs[1].Data = data;
 	bufs[1].Length = sz;
 
 	static const rt::SS tail("\r\n----WebFormBoundary--\r\n");
 	bufs[2].Data = tail.Begin();
-	bufs[2].Length = tail.GetLength();
+	bufs[2].Length = (UINT)tail.GetLength();
 
 	return Request_Post(pURL, bufs, 3, "multipart/form-data; boundary=----WebFormBoundary", "utf-8", keep_alive);
 }
@@ -356,7 +356,7 @@ bool HttpSession::RequestProxyTunnel()
 	//  CONNECT server.example.com:80 HTTP/1.1
 	//  Host: server.example.com:80
 	char buf[1024];
-	int len = 
+	int len = (int)
 	(	rt::SS("CONNECT ") + m_ServerName + 
 		rt::SS(" HTTP/1.1\r\nHost: ") +	m_ServerName + rt::SS("\r\n") + 
 		rt::SS(	"Proxy-Connection: Keep-Alive\r\n"
@@ -658,7 +658,7 @@ bool HttpSession::_RecvUpTo(UINT size_byte)
 		m_LastResponseStage = HTTPCLIENT_EVENT_CONTENT_RECEIVING;
 		if(!m_ResponseHeader.m_ChunkedTransfer)
 			if(!ProbeDataCB())return false;
-		if(m_pEventCallback && !m_pEventCallback((LPVOID)(_RecvBuffer_Used - _ResponseStart),HTTPCLIENT_EVENT_CONTENT_RECEIVING,m_pEventCallbackCookie))
+		if(m_pEventCallback && !m_pEventCallback((LPVOID)(SIZE_T)(_RecvBuffer_Used - _ResponseStart),HTTPCLIENT_EVENT_CONTENT_RECEIVING,m_pEventCallbackCookie))
 			return false;
 	}
 
@@ -711,7 +711,7 @@ bool HttpSession::_RecvUntilClose()
 
 		m_LastResponseStage = HTTPCLIENT_EVENT_CONTENT_RECEIVING;
 		if(!ProbeDataCB())return false;
-		if(m_pEventCallback && !m_pEventCallback((LPVOID)(_RecvBuffer_Used - _ResponseStart),HTTPCLIENT_EVENT_CONTENT_RECEIVING,m_pEventCallbackCookie))
+		if(m_pEventCallback && !m_pEventCallback((LPVOID)(SIZE_T)(_RecvBuffer_Used - _ResponseStart),HTTPCLIENT_EVENT_CONTENT_RECEIVING,m_pEventCallbackCookie))
 			break;
 	}
 
@@ -988,7 +988,7 @@ bool HttpSession::WaitResponse()
 	if(GetResponseLength())ProbeDataCB(true);
 
 	m_LastResponseStage = HTTPCLIENT_EVENT_DONE;
-	if(m_pEventCallback)m_pEventCallback((LPVOID)GetResponseLength(),HTTPCLIENT_EVENT_DONE,m_pEventCallbackCookie);
+	if(m_pEventCallback)m_pEventCallback((LPVOID)(SIZE_T)GetResponseLength(),HTTPCLIENT_EVENT_DONE,m_pEventCallbackCookie);
 	if(!m_Keepalive)CloseSocket();
 
 	m_Timing_Transmission = _Timing.TimeLapse() - m_Timing_Wait - m_Timing_Connection - m_Timing_DNS;
@@ -1210,8 +1210,8 @@ void inet::HttpDownloader::_WorkingThread()
 		header = _Cookie + _AddtionalHeader;
 
 RETRY_DIFFERENT_CONFIG:
-		sopen = start?	_Http.Request_GetPartial(_URL_Resolved, start, -1, header.Begin(), header.GetLength()):
-						_Http.Request_Get(_URL_Resolved, header.Begin(), header.GetLength());
+		sopen = start?	_Http.Request_GetPartial(_URL_Resolved, start, -1, header.Begin(), (UINT)header.GetLength()):
+						_Http.Request_Get(_URL_Resolved, header.Begin(), (UINT)header.GetLength());
 
 		_bExpectPartialData = start!=0;
 		_DownloadedSize = start;
