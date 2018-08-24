@@ -1142,7 +1142,7 @@ public:
 
 
 template<typename T>
-class ObjectPlaceHolder	// object place holder
+class ObjectPlaceHolder
 {
 	BYTE	_Place[sizeof(T)];
 	bool	_Init;
@@ -1150,7 +1150,7 @@ public:
 	ObjectPlaceHolder(){ _Init = false; }
 	~ObjectPlaceHolder(){ Term(); }
 	void Term(){ if(_Init){ _Init = false; ((T*)_Place)->~T(); } }
-	void Init(){ ASSERT(_Init); new (_Place) T; _Init = true; }
+	void Init(){ ASSERT(!_Init); new (_Place) T; _Init = true; }
 	template<typename... Params>
 	void Init(Params... args){ ASSERT(_Init); new (_Place) T(std::forward<Params>(args)...); _Init = true; }
 	operator T& (){ if(!_Init)Init(); return *(T*)_Place; }
