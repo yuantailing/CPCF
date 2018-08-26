@@ -1159,23 +1159,23 @@ public:
 	~ObjectPlaceHolder(){ Term(); }
 	void Term(){ if(_bInit){ _bInit = false; ((T*)_Place)->~T(); } }
 
-	void Init(){ ASSERT(!_bInit); new (_Place) T; _bInit = true; }
-	void Reinit(){ Term(); new (_Place) T; _bInit = true; }
+	ObjectPlaceHolder<T>&	Init(){ ASSERT(!_bInit); new (_Place) T; _bInit = true; return *this; }
+	ObjectPlaceHolder<T>&	Reinit(){ Term(); new (_Place) T; _bInit = true; return *this; }
 
-	void Init(const ObjectPlaceHolder<T>& x){ ASSERT(!_bInit); _Copy(x); }
-	void Reinit(const ObjectPlaceHolder<T>& x){ Term(); _Copy(x); }
+	ObjectPlaceHolder<T>&	Init(const ObjectPlaceHolder<T>& x){ ASSERT(!_bInit); _Copy(x); return *this; }
+	ObjectPlaceHolder<T>&	Reinit(const ObjectPlaceHolder<T>& x){ Term(); _Copy(x); return *this; }
 
 	template<typename... Params>
-	void Init(Params... args){ ASSERT(!_bInit); new (_Place) T(std::forward<Params>(args)...); _bInit = true; }
+	ObjectPlaceHolder<T>&	Init(Params&&... args){ ASSERT(!_bInit); new (_Place) T(std::forward<Params>(args)...); _bInit = true; return *this; }
 	template<typename... Params>
-	void Reinit(Params... args){ Term(); new (_Place) T(std::forward<Params>(args)...); _bInit = true; }
+	ObjectPlaceHolder<T>&	Reinit(Params&&... args){ Term(); new (_Place) T(std::forward<Params>(args)...); _bInit = true; return *this; }
 
 	T&			Object(){ return *(T*)_Place; }
 	const T&	Object() const { return *(const T*)_Place; }
 
-	operator T& (){ if(!_bInit)Init(); return *(T*)_Place; }
+	operator T& (){ ASSERT(_bInit); return *(T*)_Place; }
 	operator const T& () const { ASSERT(_bInit); return *(const T*)_Place; }
-	operator T* (){ if(!_bInit)Init(); return (T*)_Place; }
+	operator T* (){ ASSERT(_bInit); return (T*)_Place; }
 	operator const T* () const { ASSERT(_bInit); return (const T*)_Place; }
 
 	T* operator ->(){ ASSERT(_bInit); return (T*)_Place; }

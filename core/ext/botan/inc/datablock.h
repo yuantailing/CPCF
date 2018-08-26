@@ -189,6 +189,7 @@ public:
 	BYTE& operator [](T i){ return GetBytes()[i]; }
 	INLFUNC UINT	GetLength() const { return _LEN; }
 	INLFUNC void	CopyTo(LPVOID buf) const { *((DataBlock*)buf) = *this; }
+	INLFUNC void	SwitchByteOrder(){ rt::SwitchByteOrder(*this); }
 	INLFUNC bool	FromBase16(const rt::String_Ref& str){ return os::Base16DecodeLength(str.GetLength()) == _LEN && os::Base16Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
 	INLFUNC bool	FromBase32(const rt::String_Ref& str){ return os::Base32DecodeLength(str.GetLength()) == _LEN && os::Base32Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
 	INLFUNC void	ToBase32(rt::String& str) const	{ str.SetLength(os::Base32EncodeLength(_LEN)); os::Base32EncodeLowercase(str, GetBytes(), _LEN); }
