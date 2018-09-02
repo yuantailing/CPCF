@@ -1901,6 +1901,19 @@ rt::String_Ref os::CommandLine::GetOption(const rt::String_Ref& option_name, con
 	return def_val;
 }
 
+void os::CommandLine::SecureClear()
+{
+	for(UINT i=0; i<_Arguments.GetSize(); i++)
+		_Arguments[i].SecureEmpty();
+	_Arguments.SetSize();
+
+	for(UINT i=0; i<_Options.GetSize(); i++)
+	{	_Options[i].Value.SecureEmpty();
+		_Options[i].Name.SecureEmpty();
+	}
+	_Options.SetSize();
+}
+
 void os::CommandLine::LoadEnvironmentVariablesAsOptions()
 {
 #if defined(PLATFORM_WIN)

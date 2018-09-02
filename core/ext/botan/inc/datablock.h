@@ -191,6 +191,7 @@ public:
 	INLFUNC void	CopyTo(LPVOID buf) const { *((DataBlock*)buf) = *this; }
 	INLFUNC void	SwitchByteOrder(){ rt::SwitchByteOrder(*this); }
 	INLFUNC bool	FromBase16(const rt::String_Ref& str){ return os::Base16DecodeLength(str.GetLength()) == _LEN && os::Base16Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
+	INLFUNC bool	FromBase64(const rt::String_Ref& str){ SIZE_T len; return os::Base64DecodeLength(str.Begin(), str.GetLength()) == _LEN && os::Base64Decode(GetBytes(), &len, str.Begin(), str.GetLength()) && len == _LEN; }
 	INLFUNC bool	FromBase32(const rt::String_Ref& str){ return os::Base32DecodeLength(str.GetLength()) == _LEN && os::Base32Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
 	INLFUNC void	ToBase32(rt::String& str) const	{ str.SetLength(os::Base32EncodeLength(_LEN)); os::Base32EncodeLowercase(str, GetBytes(), _LEN); }
 	INLFUNC DataBlock&	Random(UINT seed){ rt::Randomizer(seed).Randomize(GetBytes(), _LEN); return *this; }
