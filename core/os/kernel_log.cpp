@@ -283,7 +283,8 @@ namespace _details
 		fputs(color[type&rt::LOGTYPE_LEVEL_MASK], stdout);
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
-			if(!_details::_LogPrompt.IsEmpty())putchar('\r');
+			if(!_details::_LogPrompt.IsEmpty())
+                fputs("\r                                                                \r", stdout);
 			
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
 				puts(mb);
