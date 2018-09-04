@@ -208,7 +208,7 @@ public:
 	bool SetPrivateKey(const typename Keypair<CRYTOMETHOD>::PrivateKey& sk)
 	{	if(_SC::SetPrivateKey(sk))
 		{	try{
-				_Signer.Reinit(_SK, *_pRNG, _details::EmsaName());
+				_Signer.Reinit(_SC::_SK, *_SC::_pRNG, _details::EmsaName());
 			}catch(...){ return false; }
 			return true;
 		}else return false;
@@ -216,7 +216,7 @@ public:
 	void Sign(const rt::String_Ref& d, Signature& signature_out){ Sign(d.Begin(), d.GetLength(), signature_out); }
 	void Sign(LPCVOID data, UINT size, Signature& signature_out)
 	{	try{
-			auto sig = _Signer->sign_message((const Botan::byte*)data, size, *_pRNG);
+			auto sig = _Signer->sign_message((const Botan::byte*)data, size, *_SC::_pRNG);
 			ASSERT(sig.size() == SignatureSize);
 			signature_out = *(Signature*)sig.data();
 		}catch(...){ ASSERT(0); }
@@ -280,7 +280,7 @@ public:
 	SignatureVerifier(const typename Keypair<CRYTOMETHOD>::PublicKey& pk){ VERIFY(SetPublicKey(pk)); }
 
 	bool SetPublicKey(const typename Keypair<CRYTOMETHOD>::PublicKey& pk)
-	{	if(_SC::SetPublicKey(pk))return _Verifier.Reinit(_PK, _details::EmsaName());
+	{	if(_SC::SetPublicKey(pk))return _Verifier.Reinit(_SC::_PK, _details::EmsaName());
 		return false;
 	}
 	bool Verify(const rt::String_Ref& d, const Signature& signa){ return Verify(d.Begin(), d.GetLength(), signa); }
@@ -308,7 +308,7 @@ public:
 	}
 	Encrypter(Botan::RandomNumberGenerator* rng = NULL){ _details::_RNG_Base::_RngCtor(rng); }
 	bool SetPublicKey(const typename Keypair<CRYTOMETHOD>::PublicKey& pk)
-	{	if(_SC::SetPublicKey(pk))return _Encrypter.Reinit(_PK, *_pRNG, _details::Eme1Name());
+	{	if(_SC::SetPublicKey(pk))return _Encrypter.Reinit(_SC::_PK, *_SC::_pRNG, _details::Eme1Name());
 		return false;
 	}
 	bool Encrypt(LPCVOID p, UINT sz)
@@ -333,7 +333,7 @@ public:
 	Decrypter(const typename Keypair<CRYTOMETHOD>::PrivateKey& pk, Botan::RandomNumberGenerator* rng = NULL){ _SC::_RngCtor(rng); VERIFY(SetPrivateKey(pk)); }
 
 	bool SetPrivateKey(const typename Keypair<CRYTOMETHOD>::PrivateKey& pk)
-	{	if(_SC::SetPrivateKey(pk))return _Decrypter.Reinit(_SK, *_pRNG, _details::EmsaName());
+	{	if(_SC::SetPrivateKey(pk))return _Decrypter.Reinit(_SC::_SK, *_SC::_pRNG, _details::EmsaName());
 		return false;
 	}
 	bool Decrypt(LPCVOID p, UINT sz)
