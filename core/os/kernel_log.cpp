@@ -21,7 +21,7 @@ static rt::String		_LogPrompt;
 void SetLogConsolePrompt(LPCSTR prompt)
 {
 #ifndef PLATFORM_DISABLE_LOG
-	_details::_LogPrompt = prompt;
+	_details::_LogPrompt = rt::String_Ref(prompt).SubStr(0, 64);
 #endif
 }
 
@@ -188,16 +188,21 @@ namespace _details
 		os::LPU16CHAR utf16 = (os::LPU16CHAR)alloca(2*len);
 		int len_utf16 = (int)os::UTF8Decode(log, len, utf16);
 		char* mb = (char*)alloca(3*len_utf16 + 1);
-		mb[WideCharToMultiByte(CP_THREAD_ACP, 0, utf16, len_utf16, mb, 3*len_utf16, NULL, NULL)] = 0;
+		int mb_len = WideCharToMultiByte(CP_THREAD_ACP, 0, utf16, len_utf16, mb, 3*len_utf16, NULL, NULL);
+		mb[mb_len] = 0;
 
 		thread_local bool _last_updating = false;
+		static const char clear_len[] = "\r                                                                               \r";
 
 		if(_last_updating)
-			fputs("\r                                                                               \r", stdout);
+			fputs(clear_len, stdout);
 
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
-			if(!_details::_LogPrompt.IsEmpty())putchar('\r');
+			if(!_details::_LogPrompt.IsEmpty())
+			{	putchar('\r');
+				fputs(&clear_len[sizeof(clear_len) - 3 - _details::_LogPrompt.GetLength()], stdout);
+			}
 
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
 				puts(mb);

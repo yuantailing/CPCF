@@ -1794,7 +1794,7 @@ void os::CommandLine::Parse(int argc, char* argv[])	// for _tmain
 			UINT co = seg.Split(f,2,":=");
 			opt.Name = f[0];
 			if(co>1)
-				opt.Value = rt::String_Ref(f[1].Begin(), seg.End());
+				opt.Value = rt::String_Ref(f[1].Begin(), seg.End()).RemoveCharacters('"');
 		}
 		else
 		{	// is text
