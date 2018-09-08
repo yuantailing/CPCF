@@ -40,11 +40,11 @@
 #include <time.h>
 #include <math.h>
 
+#include "../os/predefines.h"
+
 #if defined(PLATFORM_WIN)
 #include <intrin.h>
 #endif
-
-#include "../os/predefines.h"
 
 #if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
 #include <cmath>
