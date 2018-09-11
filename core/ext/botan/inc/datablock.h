@@ -99,6 +99,7 @@ public:
 	static const UINT LEN = _LEN;
 
     INLFUNC DataBlockRef(){ Bytes = NULL; }
+	INLFUNC DataBlockRef(decltype(NULL) x){ if(x==0){ Bytes = NULL; }else if(x==-1){ Bytes = (LPBYTE)-1; }else{ ASSERT(0); } }
 	INLFUNC DataBlockRef(const DataBlockRef& x){ Bytes = (LPBYTE)x.Bytes; }
 	INLFUNC ~DataBlockRef(){}
 
@@ -121,12 +122,12 @@ public:
 
 public:
 	INLFUNC bool	operator == (const DataBlockRef<_LEN>& x) const 
-					{	if((x._IsSymbolicVoid() && _IsSymbolicVoid()) || (x._IsSymbolicZero() && _IsSymbolicZero()))return true;
+					{	if(Bytes == x.Bytes)return true;
 						if(x._IsSymbolicVoid() || _IsSymbolicVoid() || x._IsSymbolicZero() || _IsSymbolicZero())return false;
 						return dwop::equ(GetDWords(), x.GetDWords()); 
 					}
 	INLFUNC bool	operator != (const DataBlockRef<_LEN>& x) const 
-					{	if((x._IsSymbolicVoid() && _IsSymbolicVoid()) || (x._IsSymbolicZero() && _IsSymbolicZero()))return false;
+					{	if(Bytes == x.Bytes)return false;
 						if(x._IsSymbolicVoid() || _IsSymbolicVoid() || x._IsSymbolicZero() || _IsSymbolicZero())return true;
 						return dwop::not_equ(GetDWords(), x.GetDWords());
 					}
