@@ -52,8 +52,7 @@ It is a C++ library provides primitives for building cross-platform native syste
 * `gl::Object` Geometry representation and surface properties
 * `gl::gdiCanvas` 2D graphics drawing interface (text, image, line, rectangle and polygon)
 * `gl::gdiFont` Bitmap font representation for `gl::gdiCanvas`
-* `gl::ArcBall<>` Interactive scene/object rotation
-* 
+* `gl::ArcBall<>` Intuitive user interactive for scene/object rotation
 
 ### Dependency
 The library is completely self-contained. It embedded copies of other projects and credited below.
