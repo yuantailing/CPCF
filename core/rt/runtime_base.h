@@ -68,8 +68,10 @@ namespace rt
 	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt(x); }
 	#else
 	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt32(x); }
-	#endif	
+	#endif
+	#if defined(PLATFORM_64BIT)
 	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
+	#endif
 #elif defined(PLATFORM_MAC)
     INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__builtin_clz((DWORD)x); }
     INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__builtin_clz(x); }
@@ -82,7 +84,9 @@ namespace rt
 #if defined(PLATFORM_WIN)
 	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__popcnt16(x); }
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__popcnt(x); }
+	#if defined(PLATFORM_64BIT)
 	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__popcnt64(x); }
+	#endif
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__builtin_popcount((DWORD)x); }
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__builtin_popcount(x); }

@@ -1519,6 +1519,7 @@ struct StaticString: public ::rt::String_Ref
 	INLFUNC StaticString(const char Str[LEN])
 		: ::rt::String_Ref(Str, ((SIZE_T)LEN-1))
 	{}
+	INLFUNC StaticString(const char* p, SIZE_T len): ::rt::String_Ref(p, len){}
 	//INLFUNC StaticString(LPCSTR x)    // don't define those, which will always be hit
 	//INLFUNC StaticString(LPSTR x)
 	template<typename T>
