@@ -1,9 +1,15 @@
+#include "../../os/platform.h"
 
-#include "./rocksdb_conf.h"
-
+#if defined(PLATFORM_WIN)
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE
+#pragma warning(disable:4316)
 #pragma warning(disable:4800)
 #pragma warning(disable:4244)
 #pragma warning(disable:4996)
+#endif
+
+#include "./rocksdb_conf.h"
+
 
 #include "./src/db/auto_roll_logger.cc"
 #include "./src/db/builder.cc"
