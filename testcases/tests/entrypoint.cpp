@@ -9,7 +9,7 @@ extern "C"
 #endif
 void TestMain()
 {
-   test_ipp_imageproc();
+   image_to_text();
 	//testing_multithread();
 	//testing_plog();
 	//test_mkl_linequ();

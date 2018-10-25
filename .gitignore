@@ -43,3 +43,5 @@ testcases/gl_testcases/proj\.mac/gltest\.xcodeproj/xcuserdata/
 testcases/proj\.mac/tester\.xcodeproj/project\.xcworkspace/xcuserdata/
 
 testcases/proj\.mac/tester\.xcodeproj/xcuserdata/
+
+*.png

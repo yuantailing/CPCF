@@ -10,6 +10,7 @@
 #include "../../core/os/high_level.h"
 #include "../../core/inet/inet.h"
 #include "../../core/os/user_inputs.h"
+#include "../../core/ext/ipp/ipp_image.h"
 
 
 void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, int now_co, rt::String& result)
@@ -129,4 +130,30 @@ void exp_tracking_proc_ip()
         proc_log.Flush();
         ip_log.Flush();
     }
+}
+
+void image_to_text()
+{
+	ipp::Image_1c8u img;
+	rt::String b = os::__UTF8(L"öc");
+	rt::String w = os::__UTF8(L"¡¡");
+
+	rt::String out;
+
+	if(img.Load("qrcode.png"))
+	{
+		for(int y=0; y<img.GetHeight(); y++)
+		{
+			for(int x=0; x<img.GetWidth(); x++)
+			{
+				if(img(x,y).x > 100)
+					out += w;
+				else
+					out += b;
+			}
+			out += "\r";
+		}
+	}
+
+	os::File::SaveText("qrcode.txt", out, true);
 }

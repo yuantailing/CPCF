@@ -41,6 +41,9 @@ void test_ipp_major_color();
 void test_express_tk();
 void test_ipp_zip();
 
+void image_to_text();
+
+
 #if defined(PLATFORM_INTEL_IPP_SUPPORT)
 void test_ipp_Saliency(LPCSTR);
 void test_ipp_matting();
