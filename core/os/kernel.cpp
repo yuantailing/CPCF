@@ -70,22 +70,6 @@ extern bool _objc_get_device_uid(char id[64]);
 #include <dlfcn.h>
 #include <fstream>
 
-namespace os
-{
-namespace _details
-{
-bool _ReadFsStream(LPCSTR path, rt::String& out)  // for reading linux sys info like /proc/meminfo
-{
-	out.Empty();
-	std::string line;
-    std::ifstream file(path);
-    while(file >> line)
-		out += rt::String_Ref(line.c_str(), line.size());
-		
-	return !out.IsEmpty();
-}
-}} // namespace os::_details
-
 #endif
 
 
@@ -172,7 +156,7 @@ bool os::GetSystemMemoryInfo(ULONGLONG* free, ULONGLONG* total)
 	}
 #elif defined(PLATFORM_ANDROID) || defined(PLATFORM_LINUX)
 	rt::String meminfo;
-	if(_details::_ReadFsStream("/proc/meminfo", meminfo))
+	if(os::File::LoadText("/proc/meminfo", meminfo))
 	{
 		rt::String_Ref line;
 		while(meminfo.GetNextLine(line))
@@ -518,15 +502,11 @@ bool os::GetProcessorTimes(ULONGLONG* pbusy, ULONGLONG* ptotal)
 		return true;
 	}
 #elif defined(PLATFORM_ANDROID) || defined(PLATFORM_LINUX)
-	char buf[1024];
-	char len = 0;
-	FILE * f = fopen("/proc/stat","r");
-	if(	f &&
-		(len = fread(buf, 1,1024, f))
-	)
-	{	rt::String_Ref stat(buf, len);
+	rt::String sss;
+	if(os::File::LoadText("/proc/stat", sss))
+	{
 		rt::String_Ref line;
-		while(stat.GetNextLine(line))
+		while(sss.GetNextLine(line))
 		{	
 			if(line.StartsWith("cpu  "))
 			{
@@ -554,7 +534,6 @@ bool os::GetProcessorTimes(ULONGLONG* pbusy, ULONGLONG* ptotal)
 			}
 		}
 	}
-	if(f)fclose(f);
 #else
 	ASSERT_STATIC(0);
 #endif
@@ -583,6 +562,8 @@ UINT os::GetPowerState()		// precentage of battery remaining
 #elif defined(PLATFORM_ANDROID)
 	return 100; // not supported for Android
 #elif defined(PLATFORM_LINUX)
+	//  /sys/class/power_supply/BAT0...
+	//  /proc/acpi/battery/BAT1/state
 	return 100; // not supported for Android
 #else
 	#error TBD

@@ -516,6 +516,24 @@ bool os::File::LoadBinary(LPCSTR fn, rt::String& out, UINT expire_sec)
 
 bool os::File::LoadText(LPCSTR fn, rt::String& out, UINT expire_sec)
 {
+#if defined(PLATFORM_ANDRIOD) || defined(PLATFORM_LINUX)
+	rt::String_Ref filename(fn);
+	if(filename.StartsWith("/proc/") || filename.StartsWith("/sys/"))
+	{
+		out.Empty();
+		int fd = open(fn, O_RDONLY);
+		if(fd)
+		{			
+			char data[10240];
+			int r = read(fd, data, sizeof(data));
+			close(fd);
+			out = rt::String_Ref(data, r);
+			return true;
+		}
+		return false;
+	}
+#endif
+	
 	os::File file;
 	if(	file.Open(fn) &&
 		(os::Timestamp::Get()/1000 - file.GetTime_LastModify()) < expire_sec &&
@@ -1108,7 +1126,7 @@ ULONGLONG os::GetFreeDiskSpace(LPCSTR path_in, ULONGLONG* pTotal)
 		{	if(pTotal)*pTotal = tot.QuadPart;
 			return sz.QuadPart;
 		}
-#elif	defined(PLATFORM_MAC)
+#elif	defined(PLATFORM_MAC) || defined(PLATFORM_LINUX)
 		struct statfs64 s;
 		if(0 == statfs64(path, &s))
 		{	if(pTotal)return s.f_blocks * s.f_bsize;
@@ -2453,23 +2471,6 @@ bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
 #else
 void os::Process::Populate(rt::Buffer<Info>& list_out)
 {
-	struct _read
-	{
-		static bool str(LPCSTR path, rt::String& out)
-		{
-			int fd = open(path, O_RDONLY);
-			if(fd)
-			{
-				char data[1024];
-				int r = read(fd, data, sizeof(data));
-				close(fd);
-				out = rt::String_Ref(data, r);
-				return r;
-			}
-			return false;
-		}
-	};
-	
 	DIR* d = opendir("/proc");
 	struct dirent * de;
 	
@@ -2485,7 +2486,7 @@ void os::Process::Populate(rt::Buffer<Info>& list_out)
 	closedir(d);
 	
 	rt::String str;
-	_read::str("/proc/uptime", str);
+	os::File::LoadText("/proc/uptime", str);
 	
 	float uptime;
 	
@@ -2503,10 +2504,10 @@ void os::Process::Populate(rt::Buffer<Info>& list_out)
 		list_out[i].PID = pids[i];
 		
 		sprintf(path, "/proc/%d/cmdline", pids[i]);
-		_read::str(path, list_out[i].Name);
+		os::File::LoadText(path, list_out[i].Name);
 		
 		sprintf(path, "/proc/%d/stat", pids[i]);
-		if(_read::str(path, str) && 22 == str.Split(col, 22, ' '))
+		if(os::File::LoadText(path, str) && 22 == str.Split(col, 22, ' '))
 		{	int starttime;
 			col[21].ToNumber(starttime);
 			starttime = starttime*1000/un;

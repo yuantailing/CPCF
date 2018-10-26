@@ -11,19 +11,12 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		test_filelist();
-		//testing_multithread();
-		//testing_plog();
-		//test_mkl_linequ();
+		testing_sysinfo();
 		return;
 	}
 	else
 	{
-#if defined(PLATFORM_LINUX)		
-		LPCSTR logfile = "../../testcases.log";
-#else		
 		LPCSTR logfile = "../testcases.log";
-#endif		
 		os::SetLogFile(logfile, false);
 		os::SetLogPrefix(os::LogPrefix());
 
@@ -41,7 +34,7 @@ void TestMain()
 	#endif
 	*/
 		os::File::GetCurrentDirectory(dir);
-		_LOG(dir);
+		_LOGC(dir);
 
 		testing_rt();
 		testing_buffer();

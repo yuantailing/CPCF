@@ -49,3 +49,5 @@ testcases/proj\.mac/tester\.xcodeproj/xcuserdata/
 *.ckdp
 
 testcases/proj\.win/data_define\.hpp
+
+testcases/proj\.linux/data_define\.hpp
