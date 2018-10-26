@@ -264,9 +264,7 @@ Unescaped Matches: 1
 ,
 "bin": <7/ABCDEFG> 
 }
-ExprTk: 5.665s
 -9.8
-Native: 0.022s
 -9.8
  
 ==== testing_xml ====
@@ -286,16 +284,16 @@ mixed inner text: /*Some Inner Text*/ Another Node
   <item> [ key="no" ]
  
 ==== testing_file ====
-test_(40).txt
-test_(41).txt
-test_(42).txt
-test_(43).txt
-test_(44).txt
-test_(45).txt
-test_(46).txt
-test_(47).txt
-test_(48).txt
-test_(49).txt
+
+test_(1).txt
+test_(2).txt
+test_(3).txt
+test_(4).txt
+test_(5).txt
+test_(6).txt
+test_(7).txt
+test_(8).txt
+test_(9).txt
 File Content: Testing String wrote to file !!
 File Remove: 1
 File Remove: 0
@@ -359,15 +357,12 @@ End of File
 
  
 ==== testing_vm ====
-1G VM @ 0x00000000023D0000
-100M File Mapping @ 0x00000000423D0000
+1G VM: 1
+100M File Mapping: 1
 Write Head
 Write Tail
  
 ==== testing_timedate ====
-2018/10/26 11:31:12.853
-2018/10/26 11:31:12.863
-2018/10/26 11:31:12.873
 1980/03/02 12:21:33.321
 1980/03/02 12:21:33.000
 1980/03/02 12:21:00.000
@@ -379,11 +374,6 @@ Write Tail
 Day: 0 == 0
 Day: 2 == 2
 Timelapse: 5
-999060559 nano-sec
-2497844631 nano-sec
-1000 msec
-2500 msec
-2018/10/26 11:31:17.880
 2001/04/03 14:45:03.000
 2011/07/13 01:00:00.000
 FromInternetTimeFormat: 1994/11/15 12:45:26.000

@@ -1265,13 +1265,13 @@ void testing_timedate()
 
 	{	os::Timestamp	tm;
 		tm.LoadCurrentTime();
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
 		os::Sleep(10);
 		tm.LoadCurrentTime();
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
 		os::Sleep(10);
 		tm.LoadCurrentTime();
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
 
 		os::Timestamp	stm;
 		stm.SetDateTime("1980/3/2 12:21:33.321");	_LOG((stm.GetDateTime()));
@@ -1301,21 +1301,21 @@ void testing_timedate()
 	{	os::HighPerformanceCounter	hpc;
 		hpc.LoadCurrentCount();
 		os::Sleep(1000);
-		_LOG(hpc.TimeLapse() << " nano-sec");
+		_LOGC(hpc.TimeLapse() << " nano-sec");
 		os::Sleep(1500);
-		_LOG(hpc.TimeLapse() << " nano-sec");
+		_LOGC(hpc.TimeLapse() << " nano-sec");
 
 		hpc.SetOutputMillisecond();
 		hpc.LoadCurrentCount();
 		os::Sleep(1000);
-		_LOG(hpc.TimeLapse() << " msec");
+		_LOGC(hpc.TimeLapse() << " msec");
 		os::Sleep(1500);
-		_LOG(hpc.TimeLapse() << " msec");
+		_LOGC(hpc.TimeLapse() << " msec");
 	}
 
 	{	os::Timestamp tm;
 		tm.LoadCurrentTime();
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
 
 		tm.SetLocalDateTime(os::Timestamp::Fields("2001-4-3 13:45:3"));
 		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
@@ -1416,6 +1416,12 @@ void testing_file()
 			os::File(filename, os::File::Normal_Write).Write("123",3);
 			_LOG(fn);
 		}
+
+		os::File::Remove("test.txt");
+		os::FileList fl;
+		fl.Populate(".", ").txt");
+		for(UINT i=0; i<fl.GetCount(); i++)
+			os::File::Remove(fl.GetFilename(i).Begin() + 1);
 	}
 
 	LPCSTR fn = "testing_\xe4\xbd\xa0\xe5\xa5\xbd.txt";
@@ -1967,7 +1973,7 @@ void testing_vm()
 	DEF_TEST_SECTION;
 
 	LPVOID p = os::VMAlloc(1024*1024*1024);
-	_LOG("1G VM @ 0x"<<(LPVOID)p);
+	_LOG("1G VM: "<<!!p);
 
 	((LPBYTE)p)[1024*1024*1024 - 1] = 0;
 	os::VMFree(p, 1024*1024*1024);
@@ -1976,7 +1982,7 @@ void testing_vm()
 	
 	os::File::Remove("filemapping.data");
 	map.Open("filemapping.data", 100*1024*1024, false);
-	_LOG("100M File Mapping @ 0x"<<(LPVOID)map.GetBasePtr());
+	_LOG("100M File Mapping: "<<!!map.GetBasePtr());
 
 	_LOG("Write Head");
 	((LPBYTE)map.GetBasePtr())[0] = 0;

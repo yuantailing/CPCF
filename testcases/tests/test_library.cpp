@@ -28,7 +28,7 @@ void test_express_tk()
 		for(UINT i=0;i<100000;i++)
 			Expr.Compute();
 
-		_LOG("ExprTk: "<<rt::tos::TimeSpan<false>(tm.TimeLapse()));
+		_LOGC("ExprTk: "<<rt::tos::TimeSpan<false>(tm.TimeLapse()));
 		_LOG(x[0]);
 
 		for(UINT i=0;i<sizeofArray(x);i++)x[i] = 0.1f;
@@ -39,7 +39,7 @@ void test_express_tk()
 			{	x[i-1] = x[i] - 0.1;
 			}
 
-		_LOG("Native: "<<rt::tos::TimeSpan<false>(tm.TimeLapse()));
+		_LOGC("Native: "<<rt::tos::TimeSpan<false>(tm.TimeLapse()));
 		_LOG(x[0]);
 	}
 	else
