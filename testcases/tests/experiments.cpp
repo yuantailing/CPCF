@@ -9,8 +9,12 @@
 #include "../../core/os/file_zip.h"
 #include "../../core/os/high_level.h"
 #include "../../core/inet/inet.h"
-#include "../../core/os/user_inputs.h"
 #include "../../core/ext/ipp/ipp_image.h"
+
+#if defined(PLATFORM_WIN)
+#include "../../core/os/user_inputs.h"
+#endif
+
 
 
 void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, int now_co, rt::String& result)
@@ -58,6 +62,8 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 		}
 	}
 }
+
+#if defined(PLATFORM_WIN)
 
 rt::String all;
 
@@ -135,8 +141,8 @@ void exp_tracking_proc_ip()
 void image_to_text()
 {
 	ipp::Image_1c8u img;
-	rt::String b = os::__UTF8(L"öc");
-	rt::String w = os::__UTF8(L"¡¡");
+	rt::String b = os::__UTF8(L"Ã¶c");
+	rt::String w = os::__UTF8(L"Â¡Â¡");
 
 	rt::String out;
 
@@ -157,3 +163,5 @@ void image_to_text()
 
 	os::File::SaveText("qrcode.txt", out, true);
 }
+
+#endif

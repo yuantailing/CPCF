@@ -1,21 +1,15 @@
 #include <stdio.h>
 #include "../../essentials.h"
-#include "../../core/rt/json.h"
+#include "../tests/test.h"
 
+extern void TestMain();
 
 int main(int argc, char **argv)
 {
-	rt::String s = 
-	((
-		J(a) = 	JA(1,2,3,"hello",
-					JA('a',2.3,4.5f),
-					(
-						J(b) = JA('a',2.3),
-						J(c) = 3
-					)
-				)
-	));
+	os::CommandLine cmd;
+	cmd.Parse(argc, argv);
 	
-	_LOG(s);
+	TestMain();
+
 	return 0;
 }

@@ -1383,7 +1383,7 @@ void testing_file()
 	{	os::FileBuffer<BYTE>	file("D:/ArtSq/Coin-FE/Dev/proj/unit_test/captcha_bg.jpg");
 		os::File out;
 		out.Open("data_define.hpp", os::File::Normal_WriteText);
-		out.Write(rt::SS("static const BYTE _Data[") + file.GetSize() + "] = {\n");
+		out.Write(rt::SS("static const BYTE _Data[") + (ULONGLONG)file.GetSize() + "] = {\n");
 		LPCBYTE p = file;
 		UINT sz = (UINT)file.GetSize();
 		while(sz)
@@ -1968,9 +1968,14 @@ void testing_vm()
 	os::VMFree(p, 1024*1024*1024);
 
 	os::FileMapping map;
+	
+	os::File::Remove("filemapping.data");
 	map.Open("filemapping.data", 100*1024*1024, false);
 	_LOG("100M File Mapping @ 0x"<<(LPVOID)map.GetBasePtr());
 
+	_LOG("Write Head");
+	((LPBYTE)map.GetBasePtr())[0] = 0;
+	_LOG("Write Tail");
 	((LPBYTE)map.GetBasePtr())[100*1024*1024 - 1] = 0;
 	map.Close();
 

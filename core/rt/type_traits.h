@@ -386,6 +386,9 @@ __NumInt(unsigned int	 ,unsigned int	  ,__uint64		   ,signed int		,unsigned int	
 #if !defined(PLATFORM_LINUX)
 __NumInt(__int64		 ,__int64		  ,__int64		   ,__int64         ,__uint64           ,_typeid_64s	,LLONG_MIN	,LLONG_MAX	,SHRT_MAX		,8	)
 __NumInt(__uint64		 ,__uint64		  ,__uint64		   ,__int64			,__uint64           ,_typeid_64u	,0			,ULLONG_MAX	,SHRT_MAX		,7	)
+#else
+__NumInt(LONGLONG		 ,LONGLONG		  ,LONGLONG		   ,LONGLONG        ,ULONGLONG          ,_typeid_64s	,LLONG_MIN	,LLONG_MAX	,SHRT_MAX		,8	)
+__NumInt(ULONGLONG		 ,ULONGLONG		  ,ULONGLONG	   ,LONGLONG		,ULONGLONG          ,_typeid_64u	,0			,ULLONG_MAX	,SHRT_MAX		,7	)
 #endif
 #undef __NumInt
 

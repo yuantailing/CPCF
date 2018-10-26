@@ -826,7 +826,7 @@ protected:
 		BYTE	data[1];	// real size set is by SetLogEntrySize
 		_Chunk*	GetNext(){ return (_Chunk*)(data + size); }
 	};
-	static const SIZE_T _ChunkHeaderSize = ((SIZE_T)(&(((_Chunk*)0)->data)));
+	static const SIZE_T _ChunkHeaderSize = sizeof(UINT)*2;
 	struct _WriteBuf
 	{	LPBYTE			pBuf;
 		volatile int	Used;

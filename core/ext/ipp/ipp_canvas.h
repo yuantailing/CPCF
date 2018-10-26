@@ -433,10 +433,10 @@ public:
 	INLFUNC void Clear(const t_Val& c){ _SC::Set(c); }
 
 	// Drawing State
-	INLFUNC void SetPointSize(float sz){ _dsPointRadius = sz/2.0f - 0.5f; _dsPointAreaSinglePixel = 3.1415926f/4.0f*sz*sz; }
-	INLFUNC void GetPointSize(float sz) const { return _dsPointRadius*2.0f + 0.5f; }
-	INLFUNC void SetLineWidth(float sz){ _dsLineHalfWidth = sz/2.0f - 0.5f; }
-	INLFUNC void GetLineWidth(float sz) const { return _dsLineHalfWidth*2.0f + 0.5f; }
+	INLFUNC void  SetPointSize(float sz){ _dsPointRadius = sz/2.0f - 0.5f; _dsPointAreaSinglePixel = 3.1415926f/4.0f*sz*sz; }
+	INLFUNC float GetPointSize(float sz) const { return _dsPointRadius*2.0f + 0.5f; }
+	INLFUNC void  SetLineWidth(float sz){ _dsLineHalfWidth = sz/2.0f - 0.5f; }
+	INLFUNC float GetLineWidth(float sz) const { return _dsLineHalfWidth*2.0f + 0.5f; }
 
 	// Drawing Tools
 	template<int ch>

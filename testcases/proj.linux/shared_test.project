@@ -4,8 +4,43 @@
   <Dependencies/>
   <VirtualDirectory Name="main">
     <File Name="main.cpp"/>
-    <File Name="../../essentials.cpp"/>
-    <File Name="../../essentials.h"/>
+    <VirtualDirectory Name="tests">
+      <File Name="../tests/entrypoint.cpp"/>
+      <File Name="../tests/experiments.cpp"/>
+      <File Name="../tests/test.h"/>
+      <File Name="../tests/test_api.cpp"/>
+      <File Name="../tests/test_botan.cpp"/>
+      <File Name="../tests/test_http.cpp"/>
+      <File Name="../tests/test_ipp.cpp"/>
+      <File Name="../tests/test_library.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="CPCF">
+      <File Name="../../essentials.cpp"/>
+      <File Name="../../essentials.h"/>
+      <File Name="../../core/os/high_level.cpp"/>
+      <File Name="../../core/os/high_level.h"/>
+      <File Name="../../core/os/precompiler.cpp"/>
+      <File Name="../../core/os/precompiler.h"/>
+      <File Name="../../core/ext/botan/botan.cpp"/>
+      <File Name="../../core/ext/botan/botan.h"/>
+      <File Name="../../core/ext/lib_inc.c"/>
+      <File Name="../../core/rt/xml_xhtml.cpp"/>
+      <File Name="../../core/rt/xml_xhtml.h"/>
+      <File Name="../../core/inet/inet.cpp"/>
+      <File Name="../../core/inet/inet.h"/>
+      <File Name="../../core/ext/ipp/ipp_core.cpp"/>
+      <File Name="../../core/ext/ipp/ipp_core.h"/>
+      <File Name="../../core/inet/http_client.cpp"/>
+      <File Name="../../core/inet/http_client.h"/>
+      <File Name="../../core/inet/tinyhttpd.cpp"/>
+      <File Name="../../core/inet/tinyhttpd.h"/>
+      <File Name="../../core/inet/tinyhttpd_fileserv.cpp"/>
+      <File Name="../../core/inet/tinyhttpd_fileserv.h"/>
+      <File Name="../../core/ext/exprtk/exprtk.cpp"/>
+      <File Name="../../core/ext/exprtk/exprtk.h"/>
+      <File Name="../../core/os/file_zip.cpp"/>
+      <File Name="../../core/os/file_zip.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -13,7 +48,23 @@
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="-pthread;-ldl;-lX11;">
-        <LibraryPath Value="."/>
+        <LibraryPath Value="../../libs/linux"/>
+        <Library Value="libippj_l.a"/>
+        <Library Value="libippac_l.a"/>
+        <Library Value="libippcp_l.a"/>
+        <Library Value="libippi_l.a"/>
+        <Library Value="libippsc_l.a"/>
+        <Library Value="libippcc_l.a"/>
+        <Library Value="libippcv_l.a"/>
+        <Library Value="libipps_l.a"/>
+        <Library Value="libippch_l.a"/>
+        <Library Value="libippdc_l.a"/>
+        <Library Value="libippm_l.a"/>
+        <Library Value="libippvc_l.a"/>
+        <Library Value="libippcore_l.a"/>
+        <Library Value="libippdi_l.a"/>
+        <Library Value="libippr_l.a"/>
+        <Library Value="libippvm_l.a"/>
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
@@ -23,7 +74,7 @@
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="/verify" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>

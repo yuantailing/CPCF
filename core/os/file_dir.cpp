@@ -36,6 +36,7 @@ struct _stat:public stat{};
 #include <sys/time.h>
 #include <sys/statfs.h>
 #include <sys/mman.h>
+#include <fcntl.h>
 #endif
 
 #if defined(PLATFORM_IOS)
@@ -2261,11 +2262,24 @@ bool os::FileMapping::Open(LPCSTR filename, SIZE_T length, bool readonly, bool c
 	}
 
 	SIZE_T fsz = _File.GetLength();
-	if(length == 0)length = fsz;
-	if(length == 0)return false;
-
-	if(!_Readonly && fsz == 0)
-		_File.Write(&_Ptr, 1);
+	if(length > fsz)
+	{
+		if(readonly || !create_new)return false;
+		
+		_File.SeekToEnd();
+		
+		rt::Buffer<BYTE>	block;
+		VERIFY(block.SetSize(64*1024));
+		block.Zero();
+		for(SIZE_T i=fsz; i<length; i += block.GetSize())
+		{
+			UINT ws = (UINT)rt::min(block.GetSize(), length - i);
+			_File.Write(block, ws);
+		}
+		fsz = _File.GetLength();
+		if(length > fsz)return false;
+	}
+	length = fsz;
 
 	if((_Ptr = mmap(NULL, length, prot, MAP_SHARED, _File.GetFD(), 0)))
 	{	_Size = length;
@@ -2439,19 +2453,67 @@ bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
 #else
 void os::Process::Populate(rt::Buffer<Info>& list_out)
 {
-	ASSERT(0);
-
-	//d = opendir("/proc");
-
-	//while((de = readdir(d)) != 0){
-	//	if(isdigit(de->d_name[0])){
-	//		int pid = atoi(de->d_name);
-	//		if(!pidfilter || (pidfilter == pid)) {
-	//			ps_line(pid, 0, namefilter);
-	//			if(threads) ps_threads(pid, namefilter);
-	//		}
-	//	}
-	//}
+	struct _read
+	{
+		static bool str(LPCSTR path, rt::String& out)
+		{
+			int fd = open(path, O_RDONLY);
+			if(fd)
+			{
+				char data[1024];
+				int r = read(fd, data, sizeof(data));
+				close(fd);
+				out = rt::String_Ref(data, r);
+				return r;
+			}
+			return false;
+		}
+	};
+	
+	DIR* d = opendir("/proc");
+	struct dirent * de;
+	
+	rt::BufferEx<int>	pids;
+	
+	while((de = readdir(d)) != 0){
+		if(isdigit(de->d_name[0])){
+			int pid = atoi(de->d_name);
+			pids.push_back(pid);
+		}
+	}
+	
+	closedir(d);
+	
+	rt::String str;
+	_read::str("/proc/uptime", str);
+	
+	float uptime;
+	
+	rt::String_Ref col[22];
+	str.Split(col, 2, ' ');
+	col[0].ToNumber(uptime);
+	LONGLONG base = os::Timestamp::Get() - (LONGLONG)(uptime*1000 + 0.5f);
+	
+	int un = (int)sysconf(_SC_CLK_TCK);
+	
+	char path[100];
+	list_out.SetSize(pids.GetSize());
+	for(UINT i=0; i<pids.GetSize(); i++)
+	{
+		list_out[i].PID = pids[i];
+		
+		sprintf(path, "/proc/%d/cmdline", pids[i]);
+		_read::str(path, list_out[i].Name);
+		
+		sprintf(path, "/proc/%d/stat", pids[i]);
+		if(_read::str(path, str) && 22 == str.Split(col, 22, ' '))
+		{	int starttime;
+			col[21].ToNumber(starttime);
+			starttime = starttime*1000/un;
+			list_out[i].StartTime = base + starttime;
+		}
+		else list_out[i].StartTime = 0;
+	}
 }
 #endif
 

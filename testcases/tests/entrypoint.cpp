@@ -19,7 +19,15 @@ void TestMain()
 	}
 	else
 	{
-		os::SetLogFile("..\\testcases.log", false);
+#if defined(PLATFORM_LINUX)		
+		LPCSTR logfile = "../../testcases.log";
+#else		
+		LPCSTR logfile = "../testcases.log";
+#endif		
+		os::SetLogFile(logfile, false);
+		rt::String fn;
+		os::File::ResolveRelativePath(logfile, fn);
+		_LOG_CONSOLE("Log: "<<fn);
 
 		rt::String dir;
 	/*
