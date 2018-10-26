@@ -100,52 +100,39 @@ struct TickCount		// in msec, 10^-3
 #pragma pack()
 
 
-struct HighPerformanceCounter // in nanosecond 10^-9
+class HighPerformanceCounter // in nanosecond 10^-9 (default), time elapsed includes system sleep/standby/hibernation
 {
+	LONGLONG		_Div;
 #if defined(PLATFORM_WIN) || defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
-	static LONGLONG	_HighPreformanceCounter_nsec_multipler;
+	bool			_bMul;
+	LONGLONG		_Mul;
 #endif
-	static FORCEINL LONGLONG Get()
-	{
-#if defined(PLATFORM_WIN)
-		LONGLONG t;
-		VERIFY(QueryPerformanceCounter((LARGE_INTEGER*)&t));
-		return _HighPreformanceCounter_nsec_multipler*t/1000;
-#elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
-		return mach_absolute_time()*_HighPreformanceCounter_nsec_multipler;
-#else
-		timespec	ts;
-		clock_gettime(CLOCK_MONOTONIC,&ts);
-		return ((ULONGLONG)ts.tv_sec)*1000000000LL + ts.tv_nsec;
-#endif	
-	}
-	FORCEINL HighPerformanceCounter(){ _Count = Get(); }
-	FORCEINL LONGLONG	TimeLapse(LONGLONG later) const { return later - _Count; }
-	FORCEINL LONGLONG	TimeLapse() const{ return TimeLapse(Get()); }
-	FORCEINL LONGLONG	Restart(){ ULONGLONG later = Get(); later -= _Count; _Count += later; return later; }
-	FORCEINL void		Restart(LONGLONG unix_time_msec){ _Count = Get() - unix_time_msec*1000000ULL; }
-	FORCEINL void		LoadCurrentCount(){ _Count = Get(); }
-	FORCEINL operator	LONGLONG () const { return _Count; }
+public:
+	LONGLONG	Get() const
+				{
+				#if defined(PLATFORM_WIN)
+						LONGLONG t;
+						VERIFY(QueryPerformanceCounter((LARGE_INTEGER*)&t));
+						return _bMul?_Mul*t:t/_Div;
+				#elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
+						return _bMul?mach_absolute_time()*_Mul:mach_absolute_time()/_Div;
+				#else
+						timespec	ts;
+						clock_gettime(CLOCK_MONOTONIC,&ts);
+						return (((ULONGLONG)ts.tv_sec)*1000000000LL + ts.tv_nsec)/_Div;
+				#endif	
+				}
+	HighPerformanceCounter(){ SetOutputUnit(1); _Count = Get(); }
+	LONGLONG	TimeLapse(LONGLONG later) const { return later - _Count; }
+	LONGLONG	TimeLapse() const{ return TimeLapse(Get()); }
+	LONGLONG	Restart(){ ULONGLONG later = Get(); later -= _Count; _Count += later; return later; }
+	void		Restart(LONGLONG unix_time_msec){ _Count = Get() - unix_time_msec*1000000ULL; }
+	void		LoadCurrentCount(){ _Count = Get(); }
+	operator	LONGLONG () const { return _Count; }
+	void		SetOutputUnit(LONGLONG u); // in nanosecond 10^-9s
+	void		SetOutputMillisecond(){ SetOutputUnit(1000000LL); }
 protected:
 	LONGLONG	_Count;
-};
-
-class HighPerformanceCounterAngle
-{
-private:
-    HighPerformanceCounter& _M;
-    LONGLONG& _D;
-    bool _Done;
-public:
-    FORCEINL HighPerformanceCounterAngle(HighPerformanceCounter& m, LONGLONG& d)
-        : _M(m), _D(d), _Done(false){ _M.LoadCurrentCount(); }
-    FORCEINL void Stop()
-    {   if (!_Done)
-        {   _D += _M.TimeLapse();
-            _Done = true;
-        }
-    }
-    FORCEINL ~HighPerformanceCounterAngle(){ Stop(); }
 };
 
 } // namespace os

@@ -45,3 +45,7 @@ testcases/proj\.mac/tester\.xcodeproj/project\.xcworkspace/xcuserdata/
 testcases/proj\.mac/tester\.xcodeproj/xcuserdata/
 
 *.png
+
+*.ckdp
+
+testcases/proj\.win/data_define\.hpp

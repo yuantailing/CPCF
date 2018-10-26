@@ -89,8 +89,23 @@ bool _ReadFsStream(LPCSTR path, rt::String& out)  // for reading linux sys info 
 #endif
 
 
-
-
+void os::HighPerformanceCounter::SetOutputUnit(LONGLONG u)
+{
+#if defined(PLATFORM_WIN)
+	VERIFY(QueryPerformanceFrequency((LARGE_INTEGER*)&_Mul));
+	LONGLONG m = 1000000000LL/_Mul/u;
+	_bMul = m>0;
+	if(_bMul){ _Mul = m; }
+	else{ _Div = _Mul*u/1000000000LL; }
+#elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
+    LONGLONG m = 1000000LL*::os::TickCount::__mach_tick_unit.numer/::os::TickCount::__mach_tick_unit.denom/u;
+	_bMul = _Mul>0;
+	if(_bMul){ _Mul = m; }
+	else{ _Div = ::os::TickCount::__mach_tick_unit.denom*u/1000000LL/::os::TickCount::__mach_tick_unit.numer; }
+#else
+	_Div = u;
+#endif
+}
 
 LPCSTR os::GetBuildSpecificationString()
 {
@@ -716,7 +731,7 @@ int Timestamp::Fields::FromString(const rt::String_Ref& s, bool low_bound)
 
 bool Timestamp::Fields::FromInternetTimeFormat(const rt::String_Ref& s)
 {
-	if(	s.GetLength() == 24 &&
+	if(	s.GetLength() == 29 &&
 		*((DWORD*)&s[25]) == 0x544d4720 // " GMT"
 	)
 	{	LPCSTR b = s._p;
@@ -1503,16 +1518,9 @@ void os::Sleep(DWORD msec)
 #endif
 
 namespace os
-{
-    
-#if defined(PLATFORM_ANDROID)
-#elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
-LONGLONG HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler = 0;
+{  
+#if defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
 struct mach_timebase_info TickCount::__mach_tick_unit;
-
-#elif defined(PLATFORM_WIN)
-LONGLONG HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler = 0;
-
 #endif
 } // namespace
 
@@ -1627,16 +1635,9 @@ namespace _details
 	{
 		os_class_init()
 		{
-		#if defined(PLATFORM_ANDROID)
-		#elif defined(PLATFORM_WIN)
-			VERIFY(QueryPerformanceFrequency((LARGE_INTEGER*)&os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler));
-			os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler = 1000000000000LL/os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler;
-			ASSERT(os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler>0);
-		#elif defined(PLATFORM_IOS) || defined (PLATFORM_MAC)
+		#if defined(PLATFORM_IOS) || defined (PLATFORM_MAC)
             mach_timebase_info(&::os::TickCount::__mach_tick_unit);
             ::os::TickCount::__mach_tick_unit.denom *= 1000000;
-            ::os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler = 1000000LL*::os::TickCount::__mach_tick_unit.numer/::os::TickCount::__mach_tick_unit.denom;
-			ASSERT(os::HighPerformanceCounter::_HighPreformanceCounter_nsec_multipler>0);
 		#endif
 				
 		#if defined(PLATFORM_WIN)

@@ -244,10 +244,10 @@ void testing_multithread()
 		auto th = [&c, &ends]()
 		{	while(!ends)
 			{	int x = os::AtomicIncrement(&c);
-				_LOG("c = "<<x<<" TH="<<os::Thread::GetCurrentId());
+				_LOG_CONSOLE("c = "<<x<<" TH="<<os::Thread::GetCurrentId());
 				os::Sleep(100);
 			}
-			_LOG("Exit TH="<<os::Thread::GetCurrentId());
+			_LOG_CONSOLE("Exit TH="<<os::Thread::GetCurrentId());
 		};
 		a.Create(th);
 		b.Create(th);
@@ -257,13 +257,7 @@ void testing_multithread()
 		b.WaitForEnding();
 	}
 
-#if defined(PLATFORM_ANDROID) || defined (PLATFORM_IOS)
-static const int LOOPCOUNT = 500000;
-#elif defined (PLATFORM_MAC)
-static const int LOOPCOUNT = 100000;
-#else
-static const int LOOPCOUNT = 10000000;
-#endif
+	static const int LOOPCOUNT = 500000;
 
 	struct _call_atom
 	{	static DWORD _atom_inc(LPVOID pi)
@@ -374,8 +368,8 @@ static const int LOOPCOUNT = 10000000;
 		{	thread_inc[i].WaitForEnding();
 			thread_dec[i].WaitForEnding();
 		}
-		_LOG("Async Result: "<<counter);
-		_LOG("sync is required: "<<(counter!=456789));
+		_LOG_CONSOLE("Async Result: "<<counter);
+		_LOG_CONSOLE("sync is required: "<<(counter!=456789));
 
 		os::TickCount t;
 		t.LoadCurrentTick();
@@ -390,9 +384,9 @@ static const int LOOPCOUNT = 10000000;
 		ops_nosync = (5.0*LOOPCOUNT)/cost;
 	}
 
-	_LOG("// CriticalSection:  "<<ops_ccs<<" kop/s");//<<rt::tos::Number((float)LOOPCOUNT/cost)<<" kop/s");
-	_LOG("// ATOM           : "<<ops_atom<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
-	_LOG("// Nosync         : "<<ops_nosync<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
+	_LOG_CONSOLE("// CriticalSection:  "<<ops_ccs<<" kop/s");//<<rt::tos::Number((float)LOOPCOUNT/cost)<<" kop/s");
+	_LOG_CONSOLE("// ATOM           : "<<ops_atom<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
+	_LOG_CONSOLE("// Nosync         : "<<ops_nosync<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
 	
 
 	testing_multithread_event.Reset();
@@ -435,6 +429,8 @@ static const int LOOPCOUNT = 10000000;
 
 void test_BinarySearch()
 {
+	DEF_TEST_SECTION
+
 	typedef WORD TT;
 
 	rt::Buffer<TT>	a;
@@ -1305,9 +1301,16 @@ void testing_timedate()
 	{	os::HighPerformanceCounter	hpc;
 		hpc.LoadCurrentCount();
 		os::Sleep(1000);
-		_LOG(hpc.TimeLapse());
+		_LOG(hpc.TimeLapse() << " nano-sec");
 		os::Sleep(1500);
-		_LOG(hpc.TimeLapse());
+		_LOG(hpc.TimeLapse() << " nano-sec");
+
+		hpc.SetOutputMillisecond();
+		hpc.LoadCurrentCount();
+		os::Sleep(1000);
+		_LOG(hpc.TimeLapse() << " msec");
+		os::Sleep(1500);
+		_LOG(hpc.TimeLapse() << " msec");
 	}
 
 	{	os::Timestamp tm;
@@ -1324,6 +1327,7 @@ void testing_timedate()
 	{	os::Timestamp	tt;
 		os::Timestamp::Fields f;
 		f.FromInternetTimeFormat("Tue, 15 Nov 1994 12:45:26 GMT");
+		tt.SetDateTime(f);
 		_LOG("FromInternetTimeFormat: "<<rt::tos::TimestampFields<>(tt.GetDateTime()));
 
 		char ttt[30];
@@ -1791,35 +1795,35 @@ void testing_sysinfo()
 	os::GetHostName(host);
 	os::GetLogonUserName(user);
 
-	_LOG("Executable: "<<exe);
-	_LOG("User: "<<user<<'@'<<host);
+	_LOG_CONSOLE("Executable: "<<exe);
+	_LOG_CONSOLE("User: "<<user<<'@'<<host);
 
-	_LOG("#CPU: "<<os::GetNumberOfProcessors());
-	_LOG("#CPU (Physical): "<<os::GetNumberOfPhysicalProcessors());
+	_LOG_CONSOLE("#CPU: "<<os::GetNumberOfProcessors());
+	_LOG_CONSOLE("#CPU (Physical): "<<os::GetNumberOfPhysicalProcessors());
 	
 	rt::String os_name, os_version;
 	os::GetOSVersion(os_version, false);
 	os::GetOSVersion(os_name, true);
-	_LOG("OS: "<<os_name<<"  "<<os_version);
+	_LOG_CONSOLE("OS: "<<os_name<<"  "<<os_version);
 	
 	ULONGLONG busy[2], total[2];
 	{
 		os::GetProcessorTimes(busy, total);
 		os::Sleep(1000);
 		os::GetProcessorTimes(busy+1, total+1);
-		_LOG("INV: "<<(total[1] - total[0]));
+		_LOG_CONSOLE("INV: "<<(total[1] - total[0]));
 	}
-	_LOG("CPU USAGE: "<<100*(busy[1]-busy[0])/(total[1]-total[0])<<'%');
+	_LOG_CONSOLE("CPU USAGE: "<<100*(busy[1]-busy[0])/(total[1]-total[0])<<'%');
 	{	ULONGLONG free,total;
 		os::GetSystemMemoryInfo(&free, &total);
-		_LOG("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
+		_LOG_CONSOLE("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
 	}
-	_LOG("FREE DISK: "<<rt::tos::FileSize<>(os::GetFreeDiskSpace("./")));
-	_LOG("Power State: "<<os::GetPowerState());
+	_LOG_CONSOLE("FREE DISK: "<<rt::tos::FileSize<>(os::GetFreeDiskSpace("./")));
+	_LOG_CONSOLE("Power State: "<<os::GetPowerState());
 
 	rt::String uid;
 	os::GetDeviceUID(uid);
-	_LOG("DevUID: "<<uid);
+	_LOG_CONSOLE("DevUID: "<<uid);
 }
 
 

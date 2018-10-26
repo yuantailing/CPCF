@@ -142,9 +142,9 @@ void image_to_text()
 
 	if(img.Load("qrcode.png"))
 	{
-		for(int y=0; y<img.GetHeight(); y++)
+		for(UINT y=0; y<img.GetHeight(); y++)
 		{
-			for(int x=0; x<img.GetWidth(); x++)
+			for(UINT x=0; x<img.GetWidth(); x++)
 			{
 				if(img(x,y).x > 100)
 					out += w;
