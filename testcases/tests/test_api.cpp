@@ -244,10 +244,10 @@ void testing_multithread()
 		auto th = [&c, &ends]()
 		{	while(!ends)
 			{	int x = os::AtomicIncrement(&c);
-				_LOG_CONSOLE("c = "<<x<<" TH="<<os::Thread::GetCurrentId());
+				_LOGC("c = "<<x<<" TH="<<os::Thread::GetCurrentId());
 				os::Sleep(100);
 			}
-			_LOG_CONSOLE("Exit TH="<<os::Thread::GetCurrentId());
+			_LOGC("Exit TH="<<os::Thread::GetCurrentId());
 		};
 		a.Create(th);
 		b.Create(th);
@@ -368,8 +368,8 @@ void testing_multithread()
 		{	thread_inc[i].WaitForEnding();
 			thread_dec[i].WaitForEnding();
 		}
-		_LOG_CONSOLE("Async Result: "<<counter);
-		_LOG_CONSOLE("sync is required: "<<(counter!=456789));
+		_LOGC("Async Result: "<<counter);
+		_LOGC("sync is required: "<<(counter!=456789));
 
 		os::TickCount t;
 		t.LoadCurrentTick();
@@ -384,9 +384,9 @@ void testing_multithread()
 		ops_nosync = (5.0*LOOPCOUNT)/cost;
 	}
 
-	_LOG_CONSOLE("// CriticalSection:  "<<ops_ccs<<" kop/s");//<<rt::tos::Number((float)LOOPCOUNT/cost)<<" kop/s");
-	_LOG_CONSOLE("// ATOM           : "<<ops_atom<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
-	_LOG_CONSOLE("// Nosync         : "<<ops_nosync<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
+	_LOGC("// CriticalSection:  "<<ops_ccs<<" kop/s");//<<rt::tos::Number((float)LOOPCOUNT/cost)<<" kop/s");
+	_LOGC("// ATOM           : "<<ops_atom<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
+	_LOGC("// Nosync         : "<<ops_nosync<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
 	
 
 	testing_multithread_event.Reset();
@@ -1795,35 +1795,35 @@ void testing_sysinfo()
 	os::GetHostName(host);
 	os::GetLogonUserName(user);
 
-	_LOG_CONSOLE("Executable: "<<exe);
-	_LOG_CONSOLE("User: "<<user<<'@'<<host);
+	_LOGC("Executable: "<<exe);
+	_LOGC("User: "<<user<<'@'<<host);
 
-	_LOG_CONSOLE("#CPU: "<<os::GetNumberOfProcessors());
-	_LOG_CONSOLE("#CPU (Physical): "<<os::GetNumberOfPhysicalProcessors());
+	_LOGC("#CPU: "<<os::GetNumberOfProcessors());
+	_LOGC("#CPU (Physical): "<<os::GetNumberOfPhysicalProcessors());
 	
 	rt::String os_name, os_version;
 	os::GetOSVersion(os_version, false);
 	os::GetOSVersion(os_name, true);
-	_LOG_CONSOLE("OS: "<<os_name<<"  "<<os_version);
+	_LOGC("OS: "<<os_name<<"  "<<os_version);
 	
 	ULONGLONG busy[2], total[2];
 	{
 		os::GetProcessorTimes(busy, total);
 		os::Sleep(1000);
 		os::GetProcessorTimes(busy+1, total+1);
-		_LOG_CONSOLE("INV: "<<(total[1] - total[0]));
+		_LOGC("INV: "<<(total[1] - total[0]));
 	}
-	_LOG_CONSOLE("CPU USAGE: "<<100*(busy[1]-busy[0])/(total[1]-total[0])<<'%');
+	_LOGC("CPU USAGE: "<<100*(busy[1]-busy[0])/(total[1]-total[0])<<'%');
 	{	ULONGLONG free,total;
 		os::GetSystemMemoryInfo(&free, &total);
-		_LOG_CONSOLE("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
+		_LOGC("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
 	}
-	_LOG_CONSOLE("FREE DISK: "<<rt::tos::FileSize<>(os::GetFreeDiskSpace("./")));
-	_LOG_CONSOLE("Power State: "<<os::GetPowerState());
+	_LOGC("FREE DISK: "<<rt::tos::FileSize<>(os::GetFreeDiskSpace("./")));
+	_LOGC("Power State: "<<os::GetPowerState());
 
 	rt::String uid;
 	os::GetDeviceUID(uid);
-	_LOG_CONSOLE("DevUID: "<<uid);
+	_LOGC("DevUID: "<<uid);
 }
 
 
@@ -1882,15 +1882,20 @@ void test_filelist()
 
 	rt::String fp;
 	os::FileList	fl;
-	fl.Populate("*.*");
+	fl.Populate("../tests", ".cpp");
 	for(UINT i=0;i<fl.GetCount();i++)
 	{
-		fl.GetFullpath(i, fp);
-		_LOG(fl.GetFilename(i)<<"\t"<<fp);
+		_LOG(fl.GetFilename(i));
 	}
     
     rt::Buffer<os::Process::Info>   list;
     os::Process::Populate(list);
+
+	_LOG("\nProcess Listed "<<!!list.GetSize());
+	for(UINT i=0;i<list.GetSize();i++)
+	{
+		_LOGC(list[i].Name.GetFilename()<<'('<<list[i].PID<<"), "<<rt::tos::TimestampFields<>(list[i].StartTime.GetLocalDateTime()));
+	}
 }
 
 void testing_sockettimed()

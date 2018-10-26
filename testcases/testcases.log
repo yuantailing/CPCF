@@ -1,166 +1,166 @@
-ï»¿[2018/10/25 21:22:02] D:\ArtSq\CPCF\testcases\proj.win
-[2018/10/25 21:22:02]  
-[2018/10/25 21:22:02] ==== testing_rt ====
-[2018/10/25 21:22:02] sizeof(rt::TypeTraits<MyType>::t_Val) = 8
-[2018/10/25 21:22:02] rt::TypeTraits<MyType>::IsPOD = 1
-[2018/10/25 21:22:02] sizeof(rt::TypeTraits<MyTypeTR>::t_Val) = 8
-[2018/10/25 21:22:02] rt::TypeTraits<MyTypeTR>::IsPOD = 0
-[2018/10/25 21:22:02] sizeof(BYTE)	=1
-[2018/10/25 21:22:02] sizeof(WORD)	=2
-[2018/10/25 21:22:02] sizeof(DWORD)	=4
-[2018/10/25 21:22:02] sizeof(UINT)	=4
-[2018/10/25 21:22:02] sizeof(QWORD)		=8
-[2018/10/25 21:22:02] sizeof(LONGLONG)	=8
-[2018/10/25 21:22:02] sizeof(ULONGLONG)	=8
-[2018/10/25 21:22:02] sizeof(QWORD)		=8
-[2018/10/25 21:22:02] rt::MaxPower2Within(2049): 2048
-[2018/10/25 21:22:02] rt::Swap: <a, b> = <2,1>
-[2018/10/25 21:22:02] rt::SwitchByteOrder(CEFABEBA00000000) = 00000000BABEFACE
-[2018/10/25 21:22:02] int is POD: 1
-[2018/10/25 21:22:02] int[24] is POD: 1
-[2018/10/25 21:22:02] rt::IsTypeSame<int,int>: 1
-[2018/10/25 21:22:02] rt::IsTypeSame<int,float>: 0
-[2018/10/25 21:22:02] rt::IsTypeSame<const int,int>: 0
-[2018/10/25 21:22:02] rt::Remove_QualiferAndRef<const int>: 1
-[2018/10/25 21:22:02] rt::TypeTraits<int[23]>::t_Element: 1
-[2018/10/25 21:22:02] rt::NumericTraits<double>::IsFloat: 1
-[2018/10/25 21:22:02] rt::NumericTraits<float>::IsUnsigned: 0
-[2018/10/25 21:22:02]  
-[2018/10/25 21:22:02] ==== testing_buffer ====
-[2018/10/25 21:22:02] Init: {0,0,123}
-[2018/10/25 21:22:02] Copy: {0,0,123}
-[2018/10/25 21:22:02] push: {12,0,0,123,456,789}
-[2018/10/25 21:22:02] erase: {12,123,456,789}
-[2018/10/25 21:22:02] insert: {12,100,100,100,123,456,789}
-[2018/10/25 21:22:02] insert: {12,200,100,100,100,123,456,789}
-[2018/10/25 21:22:02] sort: {12,100,100,100,123,200,456,789}
-[2018/10/25 21:22:02] hello
-[2018/10/25 21:22:02] is
-[2018/10/25 21:22:02] shit
-[2018/10/25 21:22:02] world
-[2018/10/25 21:22:02] Overflow
-[2018/10/25 21:22:02] 1234567890
-[2018/10/25 21:22:02] 123456789
-[2018/10/25 21:22:02] 12345678
-[2018/10/25 21:22:02] Strings: {"string0","string1","string2"}
-[2018/10/25 21:22:02] Strings copied: {"string0","string1","string2","string3"}
-[2018/10/25 21:22:02]  
-[2018/10/25 21:22:02] ==== testing_string_conv ====
-[2018/10/25 21:22:02] 12
-[2018/10/25 21:22:02] 12
-[2018/10/25 21:22:02] 123
-[2018/10/25 21:22:02] 123
-[2018/10/25 21:22:02] 123.45
-[2018/10/25 21:22:02] 123.4500
-[2018/10/25 21:22:02] 1.2300e+45
-[2018/10/25 21:22:02] 1.2300e+45
-[2018/10/25 21:22:02] inf
-[2018/10/25 21:22:02]  
-[2018/10/25 21:22:02] ==== testing_string ====
-[2018/10/25 21:22:02] 123ðŸ“¢å¥½çš„ 456
-[2018/10/25 21:22:02] 123å¥½çš„ 456
-[2018/10/25 21:22:02] int i=110; i/=2;
+ï»¿D:\ArtSq\CPCF\testcases\proj.win
+ 
+==== testing_rt ====
+sizeof(rt::TypeTraits<MyType>::t_Val) = 8
+rt::TypeTraits<MyType>::IsPOD = 1
+sizeof(rt::TypeTraits<MyTypeTR>::t_Val) = 8
+rt::TypeTraits<MyTypeTR>::IsPOD = 0
+sizeof(BYTE)	=1
+sizeof(WORD)	=2
+sizeof(DWORD)	=4
+sizeof(UINT)	=4
+sizeof(QWORD)		=8
+sizeof(LONGLONG)	=8
+sizeof(ULONGLONG)	=8
+sizeof(QWORD)		=8
+rt::MaxPower2Within(2049): 2048
+rt::Swap: <a, b> = <2,1>
+rt::SwitchByteOrder(CEFABEBA00000000) = 00000000BABEFACE
+int is POD: 1
+int[24] is POD: 1
+rt::IsTypeSame<int,int>: 1
+rt::IsTypeSame<int,float>: 0
+rt::IsTypeSame<const int,int>: 0
+rt::Remove_QualiferAndRef<const int>: 1
+rt::TypeTraits<int[23]>::t_Element: 1
+rt::NumericTraits<double>::IsFloat: 1
+rt::NumericTraits<float>::IsUnsigned: 0
+ 
+==== testing_buffer ====
+Init: {0,0,123}
+Copy: {0,0,123}
+push: {12,0,0,123,456,789}
+erase: {12,123,456,789}
+insert: {12,100,100,100,123,456,789}
+insert: {12,200,100,100,100,123,456,789}
+sort: {12,100,100,100,123,200,456,789}
+hello
+is
+shit
+world
+Overflow
+1234567890
+123456789
+12345678
+Strings: {"string0","string1","string2"}
+Strings copied: {"string0","string1","string2","string3"}
+ 
+==== testing_string_conv ====
+12
+12
+123
+123
+123.45
+123.4500
+1.2300e+45
+1.2300e+45
+inf
+ 
+==== testing_string ====
+123ðŸ“¢å¥½çš„ 456
+123å¥½çš„ 456
+int i=110; i/=2;
 _LOG("/*some comment*/");
 i += 32;
 i++; 
 _LOG("//some conmment");
 i+=222;
-[2018/10/25 21:22:02] --\'\"--\\\\*\\9
-[2018/10/25 21:22:02] --\'\"--\\\\*\\9
-[2018/10/25 21:22:02] --'"--\\*\9
-[2018/10/25 21:22:02] --'"--\\*\9
-[2018/10/25 21:22:02] <div class=\"tabBody3 tabContent\"><ul><li><a id=\"viewItemsMeasurements\" title=\"View this items measurements\" href=\"/am/pssizechart.nap?productID=511413\">View this item\'s measurements</a><br></li></ul><span><ul><li> Fits true to size, take your normal size</li><li> Cut for a loose fit</li><li> Mid-weight, slightly stretchy fabric</li><li>Model is 177cm/ 5\'10\" and is wearing a FR size 36 </li></ul></span></div>
-[2018/10/25 21:22:02] /123/456/89/
-[2018/10/25 21:22:02] /123/456/89
-[2018/10/25 21:22:02] P:ftp , H:www.xxx.com , PATH:/124/rty.jpg
-[2018/10/25 21:22:02] P: , H: , PATH:124/rty.jpg
-[2018/10/25 21:22:02] P: , H: , PATH:rty.jpg
-[2018/10/25 21:22:02] P: , H: , PATH:/124/rty.jpg
-[2018/10/25 21:22:02] P:http , H:www.google.com , PATH:/
-[2018/10/25 21:22:02] !?123456~
-[2018/10/25 21:22:02] [-!?****123456~-]
-[2018/10/25 21:22:02] [
-[2018/10/25 21:22:02] c
-[2018/10/25 21:22:02] a
-[2018/10/25 21:22:02] trim_comments
-[2018/10/25 21:22:02] TrimCodeComments
-[2018/10/25 21:22:02] code
-[2018/10/25 21:22:02] 80
-[2018/10/25 21:22:02] c->a
-[2018/10/25 21:22:02] TrimCodeComments(code);80
-[2018/10/25 21:22:02] c	->
-[2018/10/25 21:22:02] a	*
-[2018/10/25 21:22:02] trim_comments	.
-[2018/10/25 21:22:02] TrimCodeComments	(
-[2018/10/25 21:22:02] code	);
-[2018/10/25 21:22:02] 80	
-[2018/10/25 21:22:02] GetNextLine(line, true)
-[2018/10/25 21:22:02] "1"
-[2018/10/25 21:22:02] "2"
-[2018/10/25 21:22:02] GetNextLine(line, false)
-[2018/10/25 21:22:02] "1"
-[2018/10/25 21:22:02] ""
-[2018/10/25 21:22:02] "2"
-[2018/10/25 21:22:02] ""
-[2018/10/25 21:22:02] ""
-[2018/10/25 21:22:02] ""
-[2018/10/25 21:22:02] abc
-[2018/10/25 21:22:02] bcd
-[2018/10/25 21:22:02] cde
-[2018/10/25 21:22:02] de
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] cde
-[2018/10/25 21:22:02] e
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] ab
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] de
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] abcde
-[2018/10/25 21:22:02] abcd
-[2018/10/25 21:22:02] abcd
-[2018/10/25 21:22:02] hello world
-[2018/10/25 21:22:02] a[2]: l
-[2018/10/25 21:22:02] ToNumber: 123456
-[2018/10/25 21:22:02] TrimLeft(2).ToNumber(num): 3456
-[2018/10/25 21:22:02] SubStrHead(4).ToNumber(num): 1234
-[2018/10/25 21:22:02] Split<>(','): 123,456,789 ,123$ddd 'yes "\'no',,,,
-[2018/10/25 21:22:02] Split<>(" ,"): 123,456,789,,123$ddd,yes "\'no,,
-[2018/10/25 21:22:02] Split<true>(" ,$"): 123,456,789,123,ddd,yes "\'no,,
-[2018/10/25 21:22:02] Split<>(...): 345,453;546,4543,444,ddd,,,
-[2018/10/25 21:22:02] hello world 1233 !!
-[2018/10/25 21:22:02] String Expression 1: hello world 1233 !! ..
-[2018/10/25 21:22:02] String Expression 2: worlld !!
-[2018/10/25 21:22:02] Replace: wor===d !!
-[2018/10/25 21:22:02] IsPrefixOf: 1
-[2018/10/25 21:22:02] BinaryCString: \x31\x32\x33\x34\x35\x36
-[2018/10/25 21:22:02] Binary: 313233343536
-[2018/10/25 21:22:02] map["123"]: 456
-[2018/10/25 21:22:02] Length of "123" + "\x0\x1\x3" is 6
-[2018/10/25 21:22:02] FileSize<false,false>: 40.54 kB
-[2018/10/25 21:22:02] FileSize<false,true>: 3.96 MB
-[2018/10/25 21:22:02] FileSize<false,false>: 38.66 gB
-[2018/10/25 21:22:02] FileSize<false,true>: 3775.63 TB
-[2018/10/25 21:22:02] TimeSpan<true>: 0.010 second
-[2018/10/25 21:22:02] TimeSpan<true>: 10 seconds
-[2018/10/25 21:22:02] TimeSpan<true>: 1d:3h:46m:40s
-[2018/10/25 21:22:02] TimeSpan<true>: 16d:7h:41m
-[2018/10/25 21:22:02] TimeSpan<false>: 16d:7h:41m:0s
-[2018/10/25 21:22:02] [{
+--\'\"--\\\\*\\9
+--\'\"--\\\\*\\9
+--'"--\\*\9
+--'"--\\*\9
+<div class=\"tabBody3 tabContent\"><ul><li><a id=\"viewItemsMeasurements\" title=\"View this items measurements\" href=\"/am/pssizechart.nap?productID=511413\">View this item\'s measurements</a><br></li></ul><span><ul><li> Fits true to size, take your normal size</li><li> Cut for a loose fit</li><li> Mid-weight, slightly stretchy fabric</li><li>Model is 177cm/ 5\'10\" and is wearing a FR size 36 </li></ul></span></div>
+/123/456/89/
+/123/456/89
+P:ftp , H:www.xxx.com , PATH:/124/rty.jpg
+P: , H: , PATH:124/rty.jpg
+P: , H: , PATH:rty.jpg
+P: , H: , PATH:/124/rty.jpg
+P:http , H:www.google.com , PATH:/
+!?123456~
+[-!?****123456~-]
+[
+c
+a
+trim_comments
+TrimCodeComments
+code
+80
+c->a
+TrimCodeComments(code);80
+c	->
+a	*
+trim_comments	.
+TrimCodeComments	(
+code	);
+80	
+GetNextLine(line, true)
+"1"
+"2"
+GetNextLine(line, false)
+"1"
+""
+"2"
+""
+""
+""
+abc
+bcd
+cde
+de
+abcde
+
+
+abcde
+cde
+e
+
+
+ab
+abcde
+abcde
+
+de
+abcde
+abcde
+abcd
+abcd
+hello world
+a[2]: l
+ToNumber: 123456
+TrimLeft(2).ToNumber(num): 3456
+SubStrHead(4).ToNumber(num): 1234
+Split<>(','): 123,456,789 ,123$ddd 'yes "\'no',,,,
+Split<>(" ,"): 123,456,789,,123$ddd,yes "\'no,,
+Split<true>(" ,$"): 123,456,789,123,ddd,yes "\'no,,
+Split<>(...): 345,453;546,4543,444,ddd,,,
+hello world 1233 !!
+String Expression 1: hello world 1233 !! ..
+String Expression 2: worlld !!
+Replace: wor===d !!
+IsPrefixOf: 1
+BinaryCString: \x31\x32\x33\x34\x35\x36
+Binary: 313233343536
+map["123"]: 456
+Length of "123" + "\x0\x1\x3" is 6
+FileSize<false,false>: 40.54 kB
+FileSize<false,true>: 3.96 MB
+FileSize<false,false>: 38.66 gB
+FileSize<false,true>: 3775.63 TB
+TimeSpan<true>: 0.010 second
+TimeSpan<true>: 10 seconds
+TimeSpan<true>: 1d:3h:46m:40s
+TimeSpan<true>: 16d:7h:41m
+TimeSpan<false>: 16d:7h:41m:0s
+[{
 "name":"jake",
 "age": 12 
 },{
 "name":"mary",
 "age": 7 
 },1,false,"haha","@"]
-[2018/10/25 21:22:02] Json Size: 522 = 522
-[2018/10/25 21:22:02] {
+Json Size: 522 = 522
+{
 "Key:Complex":"complex\" key",
 "name":"this is name",
 "sex":"a female",
@@ -175,7 +175,7 @@ i+=222;
 "weight":"123.50kg",
 "state": {
 "paid": false ,
-"lastshow":"2018/10/25"
+"lastshow":"2018/10/26"
 } ,
 "children": [{
 "name":"jake",
@@ -196,67 +196,67 @@ i+=222;
 "raw": null ,
 "empty": [0] 
 }
-[2018/10/25 21:22:02] complex\" key
-[2018/10/25 21:22:02] this is name
-[2018/10/25 21:22:02] 1234567890ABCDEFGHIJK
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 5235251
-[2018/10/25 21:22:02] hello
-[2018/10/25 21:22:02] 1.2000
-[2018/10/25 21:22:02] false
-[2018/10/25 21:22:02] c
-[2018/10/25 21:22:02] InArray
-[2018/10/25 21:22:02] 4.50
-[2018/10/25 21:22:02] Key:Complex [string] = complex\" key
-[2018/10/25 21:22:02] name [string] = this is name
-[2018/10/25 21:22:02] sex [string] = a female
-[2018/10/25 21:22:02] empty [null] = 
-[2018/10/25 21:22:02] alive [bool] = true
-[2018/10/25 21:22:02] age [number] = 20
-[2018/10/25 21:22:02] char [string] = C
-[2018/10/25 21:22:02] phone [object] = {
+complex\" key
+this is name
+1234567890ABCDEFGHIJK
+
+5235251
+hello
+1.2000
+false
+c
+InArray
+4.50
+Key:Complex [string] = complex\" key
+name [string] = this is name
+sex [string] = a female
+empty [null] = 
+alive [bool] = true
+age [number] = 20
+char [string] = C
+phone [object] = {
 "number": 5235251 ,
 "ext": 432 
 }
-[2018/10/25 21:22:02] weight [string] = 123.50kg
-[2018/10/25 21:22:02] state [object] = {
+weight [string] = 123.50kg
+state [object] = {
 "paid": false ,
-"lastshow":"2018/10/25"
+"lastshow":"2018/10/26"
 }
-[2018/10/25 21:22:02] children [array] = [{
+children [array] = [{
 "name":"jake",
 "age": 12 
 },{
 "name":"mary",
 "age": 7 
 },1,false,"haha","@"]
-[2018/10/25 21:22:02] numbers [array] = [1,2,"hello",{
+numbers [array] = [1,2,"hello",{
 "c": 1.2000 
 },[3,"c",false],<7/InArray>,4.50]
-[2018/10/25 21:22:02] other [array] = [{
+other [array] = [{
 "f0": 0 
 },{
 "f1": 1 
 }]
-[2018/10/25 21:22:02] bin [binary] = 1234567890ABCDEFGHIJK
-[2018/10/25 21:22:02] raw [null] = null
-[2018/10/25 21:22:02] empty [array] = [0]
-[2018/10/25 21:22:02] jake
-[2018/10/25 21:22:02] mary
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 
-[2018/10/25 21:22:02] 2
-[2018/10/25 21:22:02] 3
-[2018/10/25 21:22:02] 4
-[2018/10/25 21:22:02] { "a" : 1,
+bin [binary] = 1234567890ABCDEFGHIJK
+raw [null] = null
+empty [array] = [0]
+jake
+mary
+
+
+
+
+2
+3
+4
+{ "a" : 1,
   "b" : "Yes",
   "c" : 5,
   "d" : 8.9}
-[2018/10/25 21:22:02] Escaped String: \x00\t\\ABC\'\"123
-[2018/10/25 21:22:02] Unescaped Matches: 1
-[2018/10/25 21:22:02] {
+Escaped String: \x00\t\\ABC\'\"123
+Unescaped Matches: 1
+{
 "num": 100 
 ,
 "arr": [0,1,"12"] ,
@@ -264,66 +264,66 @@ i+=222;
 ,
 "bin": <7/ABCDEFG> 
 }
-[2018/10/25 21:22:12] ExprTk: 10s
-[2018/10/25 21:22:12] -9.8
-[2018/10/25 21:22:12] Native: 0.027s
-[2018/10/25 21:22:12] -9.8
-[2018/10/25 21:22:12]  
-[2018/10/25 21:22:12] ==== testing_xml ====
-[2018/10/25 21:22:12] abcd & fff-<- ! ??
-[2018/10/25 21:22:12] <?xml version="1.0" encoding="utf-8" ?>
+ExprTk: 5.665s
+-9.8
+Native: 0.022s
+-9.8
+ 
+==== testing_xml ====
+abcd & fff-<- ! ??
+<?xml version="1.0" encoding="utf-8" ?>
 <root name="testing" height="12.50">
     <item key="no">/*Some Inner Text*/</item>
     <item key="&lt;yes&gt;" height="12" />
     <item key="no">Another Node</item>
 </root>
-[2018/10/25 21:22:12] EnterXPath: /*Some Inner Text*/
-[2018/10/25 21:22:12] key = no
-[2018/10/25 21:22:12] mixed inner text: /*Some Inner Text*/ Another Node
-[2018/10/25 21:22:12] <root> [ name="testing" height="12.50" ]
-[2018/10/25 21:22:12]   <item> [ key="no" ]
-[2018/10/25 21:22:12]   <item> [ key="&lt;yes&gt;" height="12" ]
-[2018/10/25 21:22:12]   <item> [ key="no" ]
-[2018/10/25 21:22:12]  
-[2018/10/25 21:22:12] ==== testing_file ====
-[2018/10/25 21:22:12] test_(10).txt
-[2018/10/25 21:22:12] test_(11).txt
-[2018/10/25 21:22:12] test_(12).txt
-[2018/10/25 21:22:12] test_(13).txt
-[2018/10/25 21:22:12] test_(14).txt
-[2018/10/25 21:22:12] test_(15).txt
-[2018/10/25 21:22:12] test_(16).txt
-[2018/10/25 21:22:12] test_(17).txt
-[2018/10/25 21:22:12] test_(18).txt
-[2018/10/25 21:22:12] test_(19).txt
-[2018/10/25 21:22:12] File Content: Testing String wrote to file !!
-[2018/10/25 21:22:12] File Remove: 1
-[2018/10/25 21:22:12] File Remove: 0
-[2018/10/25 21:22:12] 2 => 123456
-[2018/10/25 21:22:12] 4097 => 12345678
-[2018/10/25 21:22:12] 4098 => 1234567
-[2018/10/25 21:22:12]  
-[2018/10/25 21:22:12] ==== test_Precompiler ====
-[2018/10/25 21:22:12] 
+EnterXPath: /*Some Inner Text*/
+key = no
+mixed inner text: /*Some Inner Text*/ Another Node
+<root> [ name="testing" height="12.50" ]
+  <item> [ key="no" ]
+  <item> [ key="&lt;yes&gt;" height="12" ]
+  <item> [ key="no" ]
+ 
+==== testing_file ====
+test_(40).txt
+test_(41).txt
+test_(42).txt
+test_(43).txt
+test_(44).txt
+test_(45).txt
+test_(46).txt
+test_(47).txt
+test_(48).txt
+test_(49).txt
+File Content: Testing String wrote to file !!
+File Remove: 1
+File Remove: 0
+2 => 123456
+4097 => 12345678
+4098 => 1234567
+ 
+==== test_Precompiler ====
+
 Precompiled:
-[2018/10/25 21:22:12] val is 1
+val is 1
 val is 1 for sure
 
-[2018/10/25 21:22:12] 
-Precompiled:
-[2018/10/25 21:22:12] val is 2
 
-[2018/10/25 21:22:12] 
 Precompiled:
-[2018/10/25 21:22:12] val is 3
+val is 2
 
-[2018/10/25 21:22:12] 
-Precompiled:
-[2018/10/25 21:22:12] val > 3
 
-[2018/10/25 21:22:12] 
 Precompiled:
-[2018/10/25 21:22:12] 
+val is 3
+
+
+Precompiled:
+val > 3
+
+
+Precompiled:
+
 1>2?1:2
 IT = "this is the value of IT"Values;
 MultiLine = Line1 Line2 Line3;
@@ -338,9 +338,9 @@ TT exists
 End of File
 
 
-[2018/10/25 21:22:12] 
+
 Precompiled:
-[2018/10/25 21:22:13] 
+
 1>2?1:2
 it = "this is the value of it" Values;
 multiLine = Line1 Line2 Line3;
@@ -357,207 +357,161 @@ it is correct
 End of File
 
 
-[2018/10/25 21:22:13]  
-[2018/10/25 21:22:13] ==== testing_vm ====
-[2018/10/25 21:22:13] 1G VM @ 0x0000000002630000
-[2018/10/25 21:22:13] 100M File Mapping @ 0x0000000042630000
-[2018/10/25 21:22:13]  
-[2018/10/25 21:22:13] ==== testing_timedate ====
-[2018/10/25 21:22:13] 2018/10/25 21:22:13.011
-[2018/10/25 21:22:13] 2018/10/25 21:22:13.022
-[2018/10/25 21:22:13] 2018/10/25 21:22:13.032
-[2018/10/25 21:22:13] 1980/03/02 12:21:33.321
-[2018/10/25 21:22:13] 1980/03/02 12:21:33.000
-[2018/10/25 21:22:13] 1980/03/02 12:21:00.000
-[2018/10/25 21:22:13] 1970/01/01 12:21:33.321
-[2018/10/25 21:22:13] 1970/01/01 12:21:33.000
-[2018/10/25 21:22:13] 1980/03/02 00:00:00.000
-[2018/10/25 21:22:13] 1970/01/01 12:21:00.000
-[2018/10/25 21:22:13] 1970/01/01 12:21:00.000
-[2018/10/25 21:22:13] Day: 0 == 0
-[2018/10/25 21:22:13] Day: 2 == 2
-[2018/10/25 21:22:13] Timelapse: 5
-[2018/10/25 21:22:14] 999150803 nano-sec
-[2018/10/25 21:22:15] 2498924043 nano-sec
-[2018/10/25 21:22:16] 1000 msec
-[2018/10/25 21:22:18] 2500 msec
-[2018/10/25 21:22:18] 2018/10/25 21:22:18.051
-[2018/10/25 21:22:18] 2001/04/03 14:45:03.000
-[2018/10/25 21:22:18] 2011/07/13 01:00:00.000
-[2018/10/25 21:22:18] FromInternetTimeFormat: 1994/11/15 12:45:26.000
-[2018/10/25 21:22:18] ToInternetTimeFormat: Tue, 15 Nov 1994 04:45:26 GMT
-[2018/10/25 21:22:18] LastMonth: 2011/12/01
-[2018/10/25 21:22:18] Date32 diff 1: 0,0
-[2018/10/25 21:22:18] Date32 diff 1: 1,-1
-[2018/10/25 21:22:18] Date32 diff 1: 2,-2
-[2018/10/25 21:22:18] Waiting for 2 seconds ...
-[2018/10/25 21:22:20] os::TickCount: 2
-[2018/10/25 21:22:20] os::Timestamp: -2100
-[2018/10/25 21:22:20]  
-[2018/10/25 21:22:20] ==== test_smallmath ====
-[2018/10/25 21:22:20] (0.0000,1.0000e+100,100.4000,-9.2560e+61)
-[2018/10/25 21:22:20] (0.00,1.00e+10,100.40)
-[2018/10/25 21:22:20] STR-EXP: a=(0.0013,0.5636,0.1933)
-[2018/10/25 21:22:20] (0.0021,0.9459,0.3244)
-[2018/10/25 21:22:20] (0.0021,0.9459,0.3244) dot (0.8087,0.5850,0.4799) = 0.71075
-[2018/10/25 21:22:20] (0.3503,0.7466,0.7105)
+ 
+==== testing_vm ====
+1G VM @ 0x00000000023D0000
+100M File Mapping @ 0x00000000423D0000
+Write Head
+Write Tail
+ 
+==== testing_timedate ====
+2018/10/26 11:31:12.853
+2018/10/26 11:31:12.863
+2018/10/26 11:31:12.873
+1980/03/02 12:21:33.321
+1980/03/02 12:21:33.000
+1980/03/02 12:21:00.000
+1970/01/01 12:21:33.321
+1970/01/01 12:21:33.000
+1980/03/02 00:00:00.000
+1970/01/01 12:21:00.000
+1970/01/01 12:21:00.000
+Day: 0 == 0
+Day: 2 == 2
+Timelapse: 5
+999060559 nano-sec
+2497844631 nano-sec
+1000 msec
+2500 msec
+2018/10/26 11:31:17.880
+2001/04/03 14:45:03.000
+2011/07/13 01:00:00.000
+FromInternetTimeFormat: 1994/11/15 12:45:26.000
+ToInternetTimeFormat: Tue, 15 Nov 1994 04:45:26 GMT
+LastMonth: 2011/12/01
+Date32 diff 1: 0,0
+Date32 diff 1: 1,-1
+Date32 diff 1: 2,-2
+Waiting for 2 seconds ...
+os::TickCount: 2
+os::Timestamp: -2100
+ 
+==== test_smallmath ====
+(0.0000,1.0000e+100,100.4000,-9.2560e+61)
+(0.00,1.00e+10,100.40)
+STR-EXP: a=(0.0013,0.5636,0.1933)
+(0.0021,0.9459,0.3244)
+(0.0021,0.9459,0.3244) dot (0.8087,0.5850,0.4799) = 0.71075
+(0.3503,0.7466,0.7105)
 (0.8960,0.1741,0.5135)
 (0.8228,0.8589,0.3040)
-[2018/10/25 21:22:20] (0.3503,0.8960,0.8228)
+(0.3503,0.8960,0.8228)
 (0.7466,0.1741,0.8589)
 (0.7105,0.5135,0.3040)
-[2018/10/25 21:22:20] (0.9811,0.1885,0.0427)
+(0.9811,0.1885,0.0427)
 (-0.1932,0.9530,0.2335)
 (0.0033,-0.2374,0.9714)
-[2018/10/25 21:22:20] scale = (1.0885,1.0473,1.2277)
-[2018/10/25 21:22:20]  
-[2018/10/25 21:22:20] ==== test_filelist ====
-[2018/10/25 21:22:20]  
-[2018/10/25 21:22:20] ==== testing_multithread ====
-[2018/10/25 21:22:20] c = 1 TH=4024
-[2018/10/25 21:22:20] c = 2 TH=6720
-[2018/10/25 21:22:20] c = 3 TH=6720
-[2018/10/25 21:22:20] c = 4 TH=4024
-[2018/10/25 21:22:20] c = 5 TH=6720
-[2018/10/25 21:22:20] c = 6 TH=4024
-[2018/10/25 21:22:20] c = 7 TH=6720
-[2018/10/25 21:22:20] c = 8 TH=4024
-[2018/10/25 21:22:20] c = 9 TH=6720
-[2018/10/25 21:22:20] c = 10 TH=4024
-[2018/10/25 21:22:20] c = 11 TH=6720
-[2018/10/25 21:22:20] c = 12 TH=4024
-[2018/10/25 21:22:20] c = 13 TH=6720
-[2018/10/25 21:22:20] c = 14 TH=4024
-[2018/10/25 21:22:20] c = 15 TH=6720
-[2018/10/25 21:22:20] c = 16 TH=4024
-[2018/10/25 21:22:21] c = 17 TH=6720
-[2018/10/25 21:22:21] c = 18 TH=4024
-[2018/10/25 21:22:21] c = 19 TH=6720
-[2018/10/25 21:22:21] c = 20 TH=4024
-[2018/10/25 21:22:21] c = 21 TH=6720
-[2018/10/25 21:22:21] c = 22 TH=4024
-[2018/10/25 21:22:21] c = 23 TH=6720
-[2018/10/25 21:22:21] c = 24 TH=4024
-[2018/10/25 21:22:21] c = 25 TH=6720
-[2018/10/25 21:22:21] c = 26 TH=4024
-[2018/10/25 21:22:21] c = 27 TH=6720
-[2018/10/25 21:22:21] c = 28 TH=4024
-[2018/10/25 21:22:21] c = 29 TH=6720
-[2018/10/25 21:22:21] c = 30 TH=4024
-[2018/10/25 21:22:21] c = 31 TH=6720
-[2018/10/25 21:22:21] c = 32 TH=4024
-[2018/10/25 21:22:21] c = 33 TH=6720
-[2018/10/25 21:22:21] c = 34 TH=4024
-[2018/10/25 21:22:21] c = 35 TH=6720
-[2018/10/25 21:22:21] c = 36 TH=4024
-[2018/10/25 21:22:22] c = 37 TH=6720
-[2018/10/25 21:22:22] c = 38 TH=4024
-[2018/10/25 21:22:22] c = 39 TH=4024
-[2018/10/25 21:22:22] c = 40 TH=6720
-[2018/10/25 21:22:22] Exit TH=4024
-[2018/10/25 21:22:22] Exit TH=6720
-[2018/10/25 21:22:22] ATOM Result: 456789
-[2018/10/25 21:22:22] CriticalSection Result: 456789
-[2018/10/25 21:22:23] Async Result: -565561
-[2018/10/25 21:22:23] sync is required: 1
-[2018/10/25 21:22:23] // CriticalSection:  2913.75 kop/s
-[2018/10/25 21:22:23] // ATOM           : 20161.3 kop/s
-[2018/10/25 21:22:23] // Nosync         : inf kop/s
-[2018/10/25 21:22:23] Event Set: 0
-[2018/10/25 21:22:23] Event Set: 1
-[2018/10/25 21:22:23] Thread Run: 1
-[2018/10/25 21:22:25] Event Timeout: 2000
-[2018/10/25 21:22:27] Event Set
-[2018/10/25 21:22:27] Thread Waited: 2000, 1
-[2018/10/25 21:22:27] Thread Ended
-[2018/10/25 21:22:27]  
-[2018/10/25 21:22:27] ==== testing_inet_encoding ====
-[2018/10/25 21:22:27] MQ== = MQ==
-[2018/10/25 21:22:27] Full Data: 1
-[2018/10/25 21:22:27] 1 = 1
-[2018/10/25 21:22:27] MTI= = MTI=
-[2018/10/25 21:22:27] Full Data: 1
-[2018/10/25 21:22:27] 12 = 12
-[2018/10/25 21:22:27] MTIz = MTIz
-[2018/10/25 21:22:27] Full Data: 1
-[2018/10/25 21:22:27] 123 = 123
-[2018/10/25 21:22:27] MTIzNA== = MTIzNA==
-[2018/10/25 21:22:27] Full Data: 1
-[2018/10/25 21:22:27] 1234 = 1234
-[2018/10/25 21:22:27] MTIzNDU= = MTIzNDU=
-[2018/10/25 21:22:27] Full Data: 1
-[2018/10/25 21:22:27] 12345 = 12345
-[2018/10/25 21:22:27] Full Data: 0
-[2018/10/25 21:22:27] 12345
-[2018/10/25 21:22:27] MTIzNDU2
-[2018/10/25 21:22:27]  
-[2018/10/25 21:22:27] ==== testing_inet_encoding_custom ====
-[2018/10/25 21:22:27] a --> CK
-[2018/10/25 21:22:27] ab --> C5HG
-[2018/10/25 21:22:27] abc --> C5H63
-[2018/10/25 21:22:27] abcd --> C5H66SW
-[2018/10/25 21:22:27] abcde --> C5H66S35
-[2018/10/25 21:22:27] abcdef --> C5H66S35CS
-[2018/10/25 21:22:27] abcdefg --> C5H66S35CSKH
-[2018/10/25 21:22:27] abcdefgh --> C5H66S35CSKP8
-[2018/10/25 21:22:27] abcdefghi --> C5H66S35CSKPGTX
-[2018/10/25 21:22:27] abcdefghij --> C5H66S35CSKPGTBA
-[2018/10/25 21:22:27] •áó<¨kHª‹Çä†_e --> JQGZ6F58DD41BAMBFZ3Y91JZCR
-[2018/10/25 21:22:27]  
-[2018/10/25 21:22:27] ==== testing_sysinfo ====
-[2018/10/25 21:22:27] Executable: D:\ArtSq\CPCF\testcases\proj.win\x64\Debug\tests.exe
-[2018/10/25 21:22:27] User: mood@MOOD-PC
-[2018/10/25 21:22:27] #CPU: 8
-[2018/10/25 21:22:27] #CPU (Physical): 4
-[2018/10/25 21:22:27] OS: win6.1.7601-x64  6.1
-[2018/10/25 21:22:28] INV: 999
-[2018/10/25 21:22:28] CPU USAGE: 92%
-[2018/10/25 21:22:28] MEMORY: 18.64 GB/31.92 GB
-[2018/10/25 21:22:28] FREE DISK: 314.83 GB
-[2018/10/25 21:22:28] Power State: 100
-[2018/10/25 21:22:28] DevUID: win-12449057813114318330240208524711000-212B-00426-383-7736203-06847
-[2018/10/25 21:22:28]  
-[2018/10/25 21:22:28] ==== test_BinarySearch ====
-[2018/10/25 21:22:28] {1451,19964,30528,32473,50203,52016,54492,57664,58510,63718}
-[2018/10/25 21:22:28] 1451 is at 0/0
-[2018/10/25 21:22:28] 1461 is at 1/10
-[2018/10/25 21:22:28] 1450 is at 0/10
-[2018/10/25 21:22:28] 32473 is at 3/3
-[2018/10/25 21:22:28] 32474 is at 4/10
-[2018/10/25 21:22:28] 63718 is at 9/9
-[2018/10/25 21:22:28] 63719 is at 10/10
-[2018/10/25 21:22:28] {50203,54492,63718,1451,58510,30528,19964,57664,32473,52016}
-[2018/10/25 21:22:28] {63718,58510,57664,54492,52016,50203,32473,30528,19964,1451}
-[2018/10/25 21:22:28] rt::SortedQueue<int>
-[2018/10/25 21:22:28] 5454544
-[2018/10/25 21:22:28] 545454
-[2018/10/25 21:22:28] 34652
-[2018/10/25 21:22:28] 4643
-[2018/10/25 21:22:28] /===== BEGIN: test_botan_cipher =====\
-[2018/10/25 21:22:28] PlainText: 1234567890ABCDEF
-[2018/10/25 21:22:28] Encrypted: 28F0BA6609AFE8C04ABD1A32BB071274
-[2018/10/25 21:22:28] Decrypted: 1234567890ABCDEF
-[2018/10/25 21:22:28] PlainText: 1234567890ABCDEFfedcba0987654321
-[2018/10/25 21:22:28] Encrypted: F0E61C603FE645B13759D0964C3C4D8671FB8616AAB8F859587826B5924DBD07
-[2018/10/25 21:22:28] Decrypted: 1234567890ABCDEFfedcba0987654321
-[2018/10/25 21:22:28] Encrypted Unchained:
-[2018/10/25 21:22:28]     D14A48202BE61B909692353D24801E26
-[2018/10/25 21:22:28]     D14A48202BE61B909692353D24801E26
-[2018/10/25 21:22:28]     D14A48202BE61B909692353D24801E26
-[2018/10/25 21:22:28] Encrypted Chained:
-[2018/10/25 21:22:28]     D14A48202BE61B909692353D24801E26
-[2018/10/25 21:22:28]     A3C5672648E11E8F1D8EE33F3ABE773C
-[2018/10/25 21:22:28]     DA79435CA167F68C9FC27CB2470E1E3C
-[2018/10/25 21:22:28] \===== END:   test_botan_cipher =====/
-[2018/10/25 21:22:28]  
-[2018/10/25 21:22:28]  
-[2018/10/25 21:22:28] /===== BEGIN: test_botan_hash =====\
-[2018/10/25 21:22:28] Input: "hello world"
-[2018/10/25 21:22:28] MD5: 5EB63BBBE01EEED093CB22BB8F5ACDC3
-[2018/10/25 21:22:28] SHA1: 2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED
-[2018/10/25 21:22:28] Input: "GameWallpaperHD_2013-04_1366753EF3514652A80ECE50A9585524"
-[2018/10/25 21:22:28] SHA1: 95E1F33CA86B4815AA8B7FC7E4865F6529233CD1
-[2018/10/25 21:22:28] SHA1: 95E1F33CA86B4815AA8B7FC7E4865F65 (first 16 bytes)
-[2018/10/25 21:22:28] \===== END:   test_botan_hash =====/
-[2018/10/25 21:22:28]  
-[2018/10/25 21:22:28]  
+scale = (1.0885,1.0473,1.2277)
+ 
+==== test_filelist ====
+/entrypoint.cpp
+/experiments.cpp
+/test_api.cpp
+/test_botan.cpp
+/test_http.cpp
+/test_ipp.cpp
+/test_library.cpp
+/test_mkl.cpp
+
+Process Listed 1
+ 
+==== testing_multithread ====
+ATOM Result: 456789
+CriticalSection Result: 456789
+Event Set: 0
+Event Set: 1
+Thread Run: 1
+Event Timeout: 2000
+Event Set
+Thread Waited: 2000, 1
+Thread Ended
+ 
+==== testing_inet_encoding ====
+MQ== = MQ==
+Full Data: 1
+1 = 1
+MTI= = MTI=
+Full Data: 1
+12 = 12
+MTIz = MTIz
+Full Data: 1
+123 = 123
+MTIzNA== = MTIzNA==
+Full Data: 1
+1234 = 1234
+MTIzNDU= = MTIzNDU=
+Full Data: 1
+12345 = 12345
+Full Data: 0
+12345
+MTIzNDU2
+ 
+==== testing_inet_encoding_custom ====
+a --> CK
+ab --> C5HG
+abc --> C5H63
+abcd --> C5H66SW
+abcde --> C5H66S35
+abcdef --> C5H66S35CS
+abcdefg --> C5H66S35CSKH
+abcdefgh --> C5H66S35CSKP8
+abcdefghi --> C5H66S35CSKPGTX
+abcdefghij --> C5H66S35CSKPGTBA
+•áó<¨kHª‹Çä†_e --> JQGZ6F58DD41BAMBFZ3Y91JZCR
+ 
+==== testing_sysinfo ====
+ 
+==== test_BinarySearch ====
+{1451,19964,30528,32473,50203,52016,54492,57664,58510,63718}
+1451 is at 0/0
+1461 is at 1/10
+1450 is at 0/10
+32473 is at 3/3
+32474 is at 4/10
+63718 is at 9/9
+63719 is at 10/10
+{50203,54492,63718,1451,58510,30528,19964,57664,32473,52016}
+{63718,58510,57664,54492,52016,50203,32473,30528,19964,1451}
+rt::SortedQueue<int>
+5454544
+545454
+34652
+4643
+/===== BEGIN: test_botan_cipher =====\
+PlainText: 1234567890ABCDEF
+Encrypted: 28F0BA6609AFE8C04ABD1A32BB071274
+Decrypted: 1234567890ABCDEF
+PlainText: 1234567890ABCDEFfedcba0987654321
+Encrypted: F0E61C603FE645B13759D0964C3C4D8671FB8616AAB8F859587826B5924DBD07
+Decrypted: 1234567890ABCDEFfedcba0987654321
+Encrypted Unchained:
+    D14A48202BE61B909692353D24801E26
+    D14A48202BE61B909692353D24801E26
+    D14A48202BE61B909692353D24801E26
+Encrypted Chained:
+    D14A48202BE61B909692353D24801E26
+    A3C5672648E11E8F1D8EE33F3ABE773C
+    DA79435CA167F68C9FC27CB2470E1E3C
+\===== END:   test_botan_cipher =====/
+ 
+ 
+/===== BEGIN: test_botan_hash =====\
+Input: "hello world"
+MD5: 5EB63BBBE01EEED093CB22BB8F5ACDC3
+SHA1: 2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED
+Input: "GameWallpaperHD_2013-04_1366753EF3514652A80ECE50A9585524"
+SHA1: 95E1F33CA86B4815AA8B7FC7E4865F6529233CD1
+SHA1: 95E1F33CA86B4815AA8B7FC7E4865F65 (first 16 bytes)
+\===== END:   test_botan_hash =====/
+ 
+ 

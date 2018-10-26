@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		testing_timedate();
+		test_filelist();
 		//testing_multithread();
 		//testing_plog();
 		//test_mkl_linequ();
@@ -25,9 +25,12 @@ void TestMain()
 		LPCSTR logfile = "../testcases.log";
 #endif		
 		os::SetLogFile(logfile, false);
+		os::SetLogPrefix(os::LogPrefix());
+
 		rt::String fn;
 		os::File::ResolveRelativePath(logfile, fn);
-		_LOG_CONSOLE("Log: "<<fn);
+		_LOGC("Log: "<<fn);
+				
 
 		rt::String dir;
 	/*
