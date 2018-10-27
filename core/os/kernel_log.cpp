@@ -2,6 +2,10 @@
 #include "multi_thread.h"
 #include "file_dir.h"
 
+#if defined(PLATFORM_WIN)
+#include <conio.h>
+#endif
+
 namespace os
 {
 namespace _details
@@ -16,6 +20,120 @@ static LogPrefix		_LogPrefix(os::LogPrefix() << '[' << os::_LOG_TIME << "] "); /
 static rt::String		_LogPrompt;
 
 #endif
+
+os::Thread				_LogInputPump;
+ConsoleInputHandler*	_pLogInputHandler = NULL;
+rt::String				_ConsoleRepeatCommand;
+UINT					_ConsoleRepeatCommandInterval;
+LONGLONG				_ConsoleRepeatCommandLastTick;
+DWORD					_LogInputPumpRoute(LPVOID p)
+{
+	static const int API_CMDLINE_BUFSIZE = 2048;
+	os::CommandLine cmd;
+
+	while(!_LogInputPump.WantExit())
+	{
+#ifdef PLATFORM_WIN
+		char cmdbuf[API_CMDLINE_BUFSIZE*3/2];
+#else
+		char cmdbuf[API_CMDLINE_BUFSIZE];
+#endif
+		for(int i=0; !_LogInputPump.WantExit(); i++)
+		{
+			if(_kbhit())break;
+
+			//int c = _fgetc_nolock(stdin);
+			//if(c != EOF)
+			//{
+			//	ungetc(c, stdin);
+			//	break;
+			//}
+
+			os::Sleep(20);
+			if((i&15) == 0 && _ConsoleRepeatCommandInterval && os::Timestamp::Get() - _ConsoleRepeatCommandLastTick > _ConsoleRepeatCommandInterval)
+			{
+				_ConsoleRepeatCommandLastTick = os::Timestamp::Get();
+				cmd.Parse(_ConsoleRepeatCommand);
+				if(_pLogInputHandler)
+					if(_pLogInputHandler->OnCommand(cmd))
+						continue;
+
+				_ConsoleRepeatCommandInterval = 0;
+				_ConsoleRepeatCommand.SecureEmpty();
+			}
+		}
+
+		fgets(cmdbuf, API_CMDLINE_BUFSIZE, stdin);
+
+#ifdef PLATFORM_WIN
+		// take care CJK 
+		int mb_len = (int)strlen(cmdbuf);
+		LPWSTR utf16 = (LPWSTR)alloca((1 + mb_len*2)*sizeof(WCHAR));
+		int utf16_len = MultiByteToWideChar(CP_THREAD_ACP, 0, cmdbuf, mb_len, utf16, 1 + mb_len*2);
+		mb_len = (int)os::UTF8Encode(utf16, utf16_len, cmdbuf);
+		ASSERT(mb_len < API_CMDLINE_BUFSIZE*3/2);
+		cmdbuf[mb_len] = 0;
+#endif
+
+		cmd.Parse(cmdbuf);
+
+		if(cmd.GetTextCount() || cmd.GetOptionCount())
+		{
+			if(_pLogInputHandler && _pLogInputHandler->OnCommand(cmd))
+			{
+				int repeat = -1;
+				if(cmd.HasOption("repeat"))repeat = cmd.GetOptionAs<int>("repeat", 2);
+				if(cmd.HasOption("r"))repeat = cmd.GetOptionAs<int>("r", 2);
+
+				if(repeat > 0)
+				{
+					_ConsoleRepeatCommand = cmdbuf;
+					_ConsoleRepeatCommandInterval = repeat*1000;
+					_ConsoleRepeatCommandLastTick = os::Timestamp::Get();
+				}
+				else
+				{	_ConsoleRepeatCommand.SecureEmpty();
+					_ConsoleRepeatCommandInterval = 0;
+				}
+			}
+		}
+		else
+		{	
+			_LOGC_PROMPT();
+			// stop command repeating
+			if(!_ConsoleRepeatCommand.IsEmpty())
+			{
+				_ConsoleRepeatCommand.Empty();
+				_ConsoleRepeatCommandInterval = 0;
+			}
+		}
+
+		cmd.SecureClear();
+	}
+
+	return 0;
+}
+} // namespace _details
+
+
+void EnableConsoleInput(ConsoleInputHandler* input_handler, LPCSTR prompt)
+{
+	if(input_handler)
+	{
+		os::SetLogConsolePrompt(prompt);
+
+		if(!_details::_LogInputPump.IsRunning())
+			VERIFY(_details::_LogInputPump.Create(_details::_LogInputPumpRoute));
+	}
+	else
+	{	
+		os::SetLogConsolePrompt(NULL);
+
+		_details::_LogInputPump.WantExit() = true;
+		_details::_LogInputPump.WaitForEnding(1000, true);
+	}
+
+	_details::_pLogInputHandler = input_handler;
 }
 
 void SetLogConsolePrompt(LPCSTR prompt)

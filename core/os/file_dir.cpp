@@ -1791,6 +1791,8 @@ void os::CommandLine::Parse(LPCWSTR pCmdLine)		// for _twmain
 
 void os::CommandLine::Parse(int argc, char* argv[])	// for _tmain
 {
+	Empty();
+
 	if(!_details::__FirstCommandLine)
 		_details::__FirstCommandLine = this;
 
@@ -1807,13 +1809,18 @@ void os::CommandLine::Parse(int argc, char* argv[])	// for _tmain
 			if(optstr[-1] == '-' && optstr[0] == '-')
 				optstr++; // linux style cmdline option --xxxx
 
-			rt::String_Ref seg = rt::String_Ref(optstr).TrimSpace();
+			rt::String_Ref seg(optstr); // = rt::String_Ref(optstr).TrimSpace();
 
 			rt::String_Ref f[2];
 			UINT co = seg.Split(f,2,":=");
 			opt.Name = f[0];
 			if(co>1)
-				opt.Value = rt::String_Ref(f[1].Begin(), seg.End()).RemoveCharacters('"');
+			{
+				if(f[1][0] == '"')
+					opt.Value = rt::String_Ref(f[1].Begin() + 1, seg.End());
+				else			
+					opt.Value = rt::String_Ref(f[1].Begin(), seg.End()).RemoveCharacters('"').TrimSpace();
+			}
 		}
 		else
 		{	// is text
@@ -1822,8 +1829,16 @@ void os::CommandLine::Parse(int argc, char* argv[])	// for _tmain
 	}
 }
 
+void os::CommandLine::Empty()
+{
+	_Arguments.SetSize();
+	_Options.SetSize();
+}
+
 void os::CommandLine::Parse(LPCSTR pCmdLine)
 {	
+	Empty();
+
 	rt::String	cmdline(rt::String_Ref(pCmdLine).TrimSpace());
 	if(cmdline.IsEmpty())return;
 

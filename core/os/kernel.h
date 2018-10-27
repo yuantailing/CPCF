@@ -177,6 +177,9 @@ extern void LogWriteFlush();
 
 extern void SetLogConsoleTitle(LPCSTR title);
 
+class CommandLine;
+struct ConsoleInputHandler { virtual bool OnCommand(const os::CommandLine& cmd) = 0; };
+extern void EnableConsoleInput(ConsoleInputHandler* input_handler = NULL, LPCSTR prompt = "=>");
 extern bool SetLogFile(LPCSTR filename, bool append = true); // filename = NULL to disable Log File
 extern void SetLogConsolePrompt(LPCSTR prompt);
 extern rt::String_Ref GetLogFilename();

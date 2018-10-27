@@ -480,6 +480,8 @@ public:
 	CommandLine();
 	~CommandLine();
 
+	void	Empty();
+
 #if defined(PLATFORM_WIN)
 	void	Parse(int argc, WCHAR* argv[]);	// for _tmain
 	void	Parse(LPCWSTR pCmdLine);		// for _twmain
