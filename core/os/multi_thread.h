@@ -687,6 +687,78 @@ public:
     }
 };
 
+
+namespace _details
+{
+template<typename t_MTMutable>
+class _TSM_Updater
+{
+	typedef typename std::remove_reference_t<t_MTMutable>::t_Object t_Object;
+
+	t_Object*		_Cloned;
+	t_MTMutable&	_MTM;
+	bool			_UpdateBegin;
+public:
+	INLFUNC _TSM_Updater(t_MTMutable& x, bool just_try = false):_MTM(x){ _UpdateBegin = _MTM.BeginUpdate(just_try); _Cloned = NULL; }
+
+	INLFUNC bool		IsUpdating() const { return _UpdateBegin; }
+	INLFUNC bool		IsModified() const { return (bool)_Cloned; }
+	INLFUNC const auto&	GetUnmodified() const { return _MTM.Get(); }
+	INLFUNC auto&		GetModified() const { ASSERT(_Cloned); return *_Cloned; }
+	
+	INLFUNC bool		ReadyModify(bool from_new = false){ if(!_Cloned)_Cloned = from_new?_MTM.New():_MTM.Clone(); return (bool)_Cloned; }
+	INLFUNC void		Revert(){ ASSERT(_UpdateBegin); _SafeDel(_Cloned); _MTM.EndUpdate(NULL); _UpdateBegin = false; }
+	INLFUNC void		Commit(){ ASSERT(_UpdateBegin); _MTM.EndUpdate(_Cloned); _UpdateBegin = false; }
+	INLFUNC t_Object*	operator ->(){ ASSERT(_UpdateBegin); ReadyModify(); return _Cloned; }
+	INLFUNC t_Object&	Get(){ ASSERT(_UpdateBegin); ReadyModify(); return *_Cloned; }
+
+	INLFUNC ~_TSM_Updater(){ if(_UpdateBegin)Commit();	}
+};
+} // namespace _details
+
+
+template<class T, UINT old_TTL = 2500>
+class ThreadSafeMutable
+{
+	template<typename t_MTMutable>
+	friend class _details::_TSM_Updater;
+
+	T*		_p;
+	os::CriticalSection _cs;
+protected:
+	INLFUNC bool	BeginUpdate(bool just_try = false)
+					{	if(just_try)return _cs.TryLock();
+						_cs.Lock(); return true;
+					}
+	INLFUNC void	EndUpdate(T* pNew = NULL) // NULL indicates no change
+					{	if(pNew)
+						{	T* pOld = _p;
+							_p = pNew;
+							_SafeDel_Delayed(pOld, old_TTL);
+						}
+						_cs.Unlock();
+					}
+public:
+	typedef T			t_Object;
+	INLFUNC	ThreadSafeMutable(){ _p = NULL; }
+	INLFUNC ~ThreadSafeMutable(){ Clear();	}
+
+	INLFUNC const T&	Get() const { static T _t; return _p?*_p:_t; }
+	INLFUNC const T*	operator -> () const { return &Get(); }
+	INLFUNC T*			Clone() const { return _p?new T(*_p):new T; }
+	INLFUNC T*			New() const { return new T; }
+	INLFUNC void		Clear(){ _cs.Lock(); _SafeDel(_p); _cs.Unlock(); }
+	
+	//unsafe in multi-thread
+	INLFUNC T&			GetObject(){ ASSERT(_cs.IsOwnedByCurrentThread()); return (T&)Get(); }
+};
+
+
+#define TSM_UPDATE(contain, object)		os::_details::_TSM_Updater<decltype(contain)> object(contain, false)
+#define TSM_SET(contain, object)		os::_details::_TSM_Updater<decltype(contain)> object(contain, false); object.ReadyModify(true)
+#define TSM_TRYUPDATE(contain, object)	os::_details::_TSM_Updater<decltype(contain)> object(contain, true)
+
+
 template<class t_ObjFactory>
 class ThreadObjectPool
 {

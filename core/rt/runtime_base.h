@@ -1143,6 +1143,35 @@ public:
 	INLFUNC void	SafeRelease(){ _SafeRelease(_p); }
 };
 
+template<typename T>
+struct Singleton
+{
+	static T& Get(){ static T ret; return ret; }
+};
+
+template<UINT INIT_INTERVAL>
+struct FrequencyDivision
+{
+	int	 _TickOffset;
+	UINT _Interval;
+public:
+	FrequencyDivision(){ Reset(); }
+	void Reset(){ _TickOffset = -1; _Interval = INIT_INTERVAL; }
+	void SetInterval(UINT inv){ _Interval = inv; }
+	bool Hit(UINT tick, bool no_phase_align = false)
+	{	if(no_phase_align)
+		{	return (tick-_TickOffset)%_Interval == 0;
+		}
+		else
+		{	if(_TickOffset < 0)
+			{	_TickOffset = tick;
+				return true; 
+			}
+			return (tick-_TickOffset)%_Interval == 0;
+		}
+	}
+	bool operator ()(UINT tick){ return Hit(tick); }
+};
 
 template<typename T>
 class ObjectPlaceHolder
