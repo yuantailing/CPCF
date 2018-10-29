@@ -1688,6 +1688,29 @@ struct Date:public ::rt::tos::S_<>
 };
 
 template<SIZE_T LEN = 65, bool uppercase = true>
+struct HexNum:public ::rt::tos::S_<1,LEN>
+{
+	template<typename T>
+	INLFUNC HexNum(const T& x){ new (this) HexNum(&x, sizeof(x)); }
+	INLFUNC HexNum(LPCVOID pbyte, int len)
+	{	
+		const char char_base = uppercase?'A':'a';
+		typedef ::rt::tos::S_<1,LEN> _SC;
+		ASSERT(len < (int)sizeofArray( _SC::_string)/2);
+		LPSTR p =  _SC::_string;
+		for(int i=0;i<len;i++,p+=2)
+		{
+			BYTE v = ((LPCBYTE)pbyte)[len - i - 1];
+			p[0] = (v>=0xa0?char_base+((v-0xa0)>>4):'0'+(v>>4));
+			v = v&0xf;
+			p[1] = (v>=0xa?char_base+(v-0xa):'0'+v);
+		}
+		 _SC::_len = 1+len*2;
+		 _SC::_p[ _SC::_len-1] = 0;
+	}
+};
+
+template<SIZE_T LEN = 65, bool uppercase = true>
 struct Binary:public ::rt::tos::S_<1,LEN>
 {
 	template<typename T>
