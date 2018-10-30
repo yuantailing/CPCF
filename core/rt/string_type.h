@@ -1698,14 +1698,17 @@ struct HexNum:public ::rt::tos::S_<1,LEN>
 		typedef ::rt::tos::S_<1,LEN> _SC;
 		ASSERT(len < (int)sizeofArray( _SC::_string)/2);
 		LPSTR p =  _SC::_string;
-		for(int i=0;i<len;i++,p+=2)
+		int i=0;
+		for(;i<len-1 && ((LPCBYTE)pbyte)[len - i - 1] == 0; i++);
+		for(;i<len;i++,p+=2)
 		{
 			BYTE v = ((LPCBYTE)pbyte)[len - i - 1];
 			p[0] = (v>=0xa0?char_base+((v-0xa0)>>4):'0'+(v>>4));
 			v = v&0xf;
 			p[1] = (v>=0xa?char_base+(v-0xa):'0'+v);
 		}
-		 _SC::_len = 1+len*2;
+		*p = 0;
+		 _SC::_len = 1+(p-_SC::_string);
 		 _SC::_p[ _SC::_len-1] = 0;
 	}
 };

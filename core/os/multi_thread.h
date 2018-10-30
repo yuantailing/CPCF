@@ -122,11 +122,13 @@ public:
 	FORCEINL int		AtomicIncrement(volatile int *theValue){ return _InterlockedIncrement((long volatile *)theValue); }
 	FORCEINL int		AtomicDecrement(volatile int *theValue){ return _InterlockedDecrement((long volatile *)theValue); }
 	FORCEINL int		AtomicAdd(int theAmount, volatile int *theValue){ return theAmount + _InterlockedExchangeAdd((long volatile *)theValue, (long)theAmount); }
+	FORCEINL void		AtomicSet(int val, volatile int *theValue){ AtomicAdd(val-*theValue, theValue); }
 	FORCEINL DWORD		AtomicOr(DWORD bits, volatile DWORD* theValue){ return (DWORD)_InterlockedOr((volatile long*)theValue, bits); }
 	#if defined(PLATFORM_64BIT)
 	FORCEINL __int64	AtomicIncrement(volatile __int64 *theValue){ return _InterlockedIncrement64((__int64 volatile *)theValue); }
 	FORCEINL __int64	AtomicDecrement(volatile __int64 *theValue){ return _InterlockedDecrement64((__int64 volatile *)theValue); }
 	FORCEINL __int64	AtomicAdd(__int64 theAmount, volatile __int64 *theValue){ return theAmount + _InterlockedExchangeAdd64((__int64 volatile *)theValue, (__int64)theAmount); }
+	FORCEINL void		AtomicSet(__int64 val, volatile __int64 *theValue){ AtomicAdd(val-*theValue, theValue); }
 	FORCEINL ULONGLONG	AtomicOr(ULONGLONG bits, volatile ULONGLONG* theValue){ return (ULONGLONG)_InterlockedOr64((volatile __int64*)theValue, bits); }
 	#endif
 #elif defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
@@ -135,14 +137,18 @@ public:
 	FORCEINL __int64	AtomicIncrement(volatile __int64 *theValue){ return OSAtomicIncrement64Barrier(theValue); }
 	FORCEINL __int64	AtomicDecrement(volatile __int64 *theValue){ return OSAtomicDecrement64Barrier(theValue); }
 	FORCEINL int		AtomicAdd(int theAmount, volatile int *theValue){ return OSAtomicAdd32Barrier(theAmount, theValue); }
+	FORCEINL void		AtomicSet(int val, volatile int *theValue){ AtomicAdd(val-*theValue, theValue); }
 	FORCEINL __int64	AtomicAdd(__int64 theAmount, volatile __int64 *theValue){ return OSAtomicAdd64Barrier(theAmount, theValue); }
+	FORCEINL void		AtomicSet(__int64 val, volatile __int64 *theValue){ AtomicAdd(val-*theValue, theValue); }
 #else
 	FORCEINL int		AtomicIncrement(volatile int *theValue){ return 1 + __sync_fetch_and_add(theValue,1); }
 	FORCEINL int		AtomicDecrement(volatile int *theValue){ return __sync_fetch_and_sub(theValue,1) - 1; }
 	FORCEINL __int64	AtomicIncrement(volatile __int64 *theValue){ return 1 + __sync_fetch_and_add(theValue,1); }
 	FORCEINL __int64	AtomicDecrement(volatile __int64 *theValue){ return __sync_fetch_and_sub(theValue,1) - 1; }
 	FORCEINL int		AtomicAdd(int theAmount, volatile int *theValue){ return theAmount + __sync_fetch_and_add(theValue, theAmount); }
+	FORCEINL void		AtomicSet(int val, volatile int *theValue){ AtomicAdd(val-*theValue, theValue); }
 	FORCEINL __int64	AtomicAdd(__int64 theAmount, volatile __int64 *theValue){ return theAmount + __sync_fetch_and_add(theValue, theAmount); }
+	FORCEINL void		AtomicSet(__int64 val, volatile __int64 *theValue){ AtomicAdd(val-*theValue, theValue); }
 #endif
 
 class AtomicLock  //  a non-waiting CriticalSection, not thread-recursive
