@@ -527,7 +527,7 @@ public:
 	bool	HasOption(const rt::String_Ref& option_name) const;
 
 	UINT	GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
-	LPCSTR	GetText(UINT idx)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:NULL; }
+	LPCSTR	GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
 
 	UINT	GetOptionCount()const{ return (UINT)_Options.GetSize(); }
 	LPCSTR	GetOptionName(UINT idx)const{ return _Options[idx].Name; }

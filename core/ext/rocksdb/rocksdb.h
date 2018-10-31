@@ -28,6 +28,29 @@ public:
 	}
 };
 
+namespace _details
+{
+template<bool is_pod>
+struct SliceType
+{
+	template<typename T> static LPCSTR ptr(const T& v){ return (LPCSTR)&v; }
+	template<typename T> static size_t size(const T& v){ return sizeof(v); }
+};
+template<>
+struct SliceType<false>
+{	
+	static LPCSTR ptr(const rt::String_Ref& i){ return i.Begin(); }
+	static size_t size(const rt::String_Ref& i){ return i.GetLength(); }
+
+	static LPCSTR ptr(const rt::String& i){ return i.Begin(); }
+	static size_t size(const rt::String& i){ return i.GetLength(); }
+
+	static LPCSTR ptr(const std::string& i){ return i.data(); }
+	static size_t size(const std::string& i){ return i.size(); }
+};
+} // namespace _details
+
+
 class SliceValue: public Slice
 {
 protected:
@@ -45,28 +68,25 @@ public:
 	INLFUNC SliceValue(float i):Slice(_embedded, sizeof(i)){ *((float*)_embedded) = i; }
 	INLFUNC SliceValue(double i):Slice(_embedded, sizeof(i)){ *((double*)_embedded) = i; }
 
-	INLFUNC SliceValue(const rt::String_Ref& i):Slice(i.Begin(), i.GetLength()){}
-	INLFUNC SliceValue(rt::String_Ref& i):Slice(i.Begin(), i.GetLength()){}
-
-	INLFUNC SliceValue(const rt::String& i):Slice(i.Begin(), i.GetLength()){}
-	INLFUNC SliceValue(rt::String& i):Slice(i.Begin(), i.GetLength()){}
-
-	INLFUNC SliceValue(const std::string& i):Slice(i.data(), i.size()){}
-	INLFUNC SliceValue(std::string& i):Slice(i.data(), i.size()){}
-
+	INLFUNC SliceValue(LPSTR str):Slice(str, str?strlen(str):0){}
+	INLFUNC SliceValue(LPCSTR str):Slice(str, str?strlen(str):0){}
+	
 	INLFUNC SliceValue(const SliceDyn& i):Slice(i){}
 	INLFUNC SliceValue(const Slice& i):Slice(i){}
 
-	INLFUNC SliceValue(LPSTR str):Slice(str, str?strlen(str):0){}
-	INLFUNC SliceValue(LPCSTR str):Slice(str, str?strlen(str):0){}
+	template<typename T>
+	INLFUNC SliceValue(const T& x)
+		:Slice(_details::SliceType<rt::TypeTraits<T>::IsPOD>::ptr(x),
+			   _details::SliceType<rt::TypeTraits<T>::IsPOD>::size(x)
+		)
+	{}
+
 
 	//template<size_t LEN>
 	//INLFUNC SliceValue(char str[LEN]):Slice(str, LEN-1){}
 	//template<size_t LEN>
 	//INLFUNC SliceValue(const char str[LEN]):Slice(str, LEN-1){}
 
-	template<typename T>
-	INLFUNC SliceValue(const T& x):Slice((LPCSTR)&x, (size_t)sizeof(T)){}
 
 	INLFUNC SIZE_T GetSize() const { return size(); }
 
@@ -81,6 +101,32 @@ public:
 #define SliceValueNull		::rocksdb::Slice()
 #define SliceValueSS(x)		::rocksdb::Slice(x, sizeof(x)-1)
 
+class RocksCursor
+{
+	Iterator* iter;
+	friend class RocksDB;
+
+public:
+	template<typename T>
+	INLFUNC const T&			Value() const { return *(T*)iter->value().data(); }
+	template<typename T>
+	INLFUNC const T&			Key() const { return *(T*)iter->key().data(); }
+
+	INLFUNC const SliceValue	Key() const { return (const SliceValue&)iter->key(); }
+	INLFUNC const SliceValue	Value() const { return (const SliceValue&)iter->value(); }
+	INLFUNC SIZE_T				KeyLength() const { return iter->key().size(); }
+	INLFUNC SIZE_T				ValueLength() const { return iter->value().size(); }
+	INLFUNC						RocksCursor(){ iter = NULL; }
+	INLFUNC						RocksCursor(Iterator* i):iter(i){}
+	INLFUNC						~RocksCursor(){ _SafeDel(iter); }
+	INLFUNC Iterator*			operator = (Iterator* it){ _SafeDel(iter); return iter = it; }
+	INLFUNC bool				IsValid() const { return iter && iter->Valid(); }
+	INLFUNC void				Next(){ iter->Next(); }
+	INLFUNC void				Prev(){ iter->Prev(); }
+	INLFUNC Iterator*			Detach(){ Iterator* ret = iter; iter = NULL; return ret; }
+	INLFUNC bool				IsEmpty() const { return iter == NULL; }
+};
+
 class RocksDB
 {
 protected:
@@ -88,29 +134,6 @@ protected:
 	WriteOptions	__DefaultWriteOpt;
 	DB*		_pDB;
 public:
-	class Cursor
-	{	Iterator* iter;
-		friend class RocksDB;
-	public:
-		template<typename T>
-		INLFUNC const T&			Value() const { return *(T*)iter->value().data(); }
-		template<typename T>
-		INLFUNC const T&			Key() const { return *(T*)iter->key().data(); }
-
-		INLFUNC const SliceValue	Key() const { return (const SliceValue&)iter->key(); }
-		INLFUNC const SliceValue	Value() const { return (const SliceValue&)iter->value(); }
-		INLFUNC SIZE_T				KeyLength() const { return iter->key().size(); }
-		INLFUNC SIZE_T				ValueLength() const { return iter->value().size(); }
-		INLFUNC						Cursor(){ iter = NULL; }
-		INLFUNC						Cursor(Iterator* i):iter(i){}
-		INLFUNC						~Cursor(){ _SafeDel(iter); }
-		INLFUNC Iterator*			operator = (Iterator* it){ _SafeDel(iter); return iter = it; }
-		INLFUNC bool				IsValid() const { return iter && iter->Valid(); }
-		INLFUNC void				Next(){ iter->Next(); }
-		INLFUNC void				Prev(){ iter->Prev(); }
-		INLFUNC Iterator*			Detach(){ Iterator* ret = iter; iter = NULL; return ret; }
-		INLFUNC bool				IsEmpty() const { return iter == NULL; }
-	};
 public:
 	INLFUNC RocksDB(){ _pDB = NULL; }
 	INLFUNC ~RocksDB(){ Close(); }
@@ -202,7 +225,7 @@ public:
 	template<typename func_visit>
 	INLFUNC SIZE_T ScanBackward(const func_visit& v, ReadOptions* opt = NULL) const
 	{	ASSERT(_pDB);
-		Cursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
+		RocksCursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
 		ASSERT(!it.IsEmpty());
 		SIZE_T ret = 0;
 		for(it.iter->SeekToLast(); it.IsValid(); it.Prev())
@@ -215,7 +238,7 @@ public:
 	template<typename func_visit>
 	INLFUNC SIZE_T Scan(const func_visit& v, const SliceValue& begin, ReadOptions* opt = NULL) const
 	{	ASSERT(_pDB);
-		Cursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
+		RocksCursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
 		ASSERT(!it.IsEmpty());
 		SIZE_T ret = 0;
 		for(it.iter->Seek(begin); it.IsValid(); it.Next())
@@ -228,7 +251,7 @@ public:
 	template<typename func_visit>
 	INLFUNC SIZE_T Scan(const func_visit& v, ReadOptions* opt = NULL) const
 	{	ASSERT(_pDB);
-		Cursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
+		RocksCursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
 		ASSERT(!it.IsEmpty());
 		SIZE_T ret = 0;
 		for(it.iter->SeekToFirst(); it.IsValid(); it.Next())
@@ -241,7 +264,7 @@ public:
 	template<typename func_visit>
 	INLFUNC SIZE_T ScanPrefix(const func_visit& v, const SliceValue& prefix, ReadOptions* opt = NULL) const
 	{	ASSERT(_pDB);
-		Cursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
+		RocksCursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
 		ASSERT(!it.IsEmpty());
 		SIZE_T ret = 0;
 		for(it.iter->Seek(prefix); it.IsValid() && it.Key().starts_with(prefix); it.Next())
