@@ -40,14 +40,11 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 #endif
 		for(int i=0; !_LogInputPump.WantExit(); i++)
 		{
+#if defined(PLATFORM_WIN)
 			if(_kbhit())break;
-
-			//int c = _fgetc_nolock(stdin);
-			//if(c != EOF)
-			//{
-			//	ungetc(c, stdin);
-			//	break;
-			//}
+#else
+			if(!feof(stdin))break;
+#endif
 
 			os::Sleep(20);
 			if((i&15) == 0 && _ConsoleRepeatCommandInterval && os::Timestamp::Get() - _ConsoleRepeatCommandLastTick > _ConsoleRepeatCommandInterval)
