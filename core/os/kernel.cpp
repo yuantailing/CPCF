@@ -82,10 +82,12 @@ void os::HighPerformanceCounter::SetOutputUnit(LONGLONG u)
 	if(_bMul){ _Mul = m; }
 	else{ _Div = _Mul*u/1000000000LL; }
 #elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
-    LONGLONG m = 1000000LL*::os::TickCount::__mach_tick_unit.numer/::os::TickCount::__mach_tick_unit.denom/u;
-	_bMul = _Mul>0;
+    struct mach_timebase_info tbi;
+    mach_timebase_info(&tbi);
+    LONGLONG m = tbi.numer/tbi.denom/u;
+	_bMul = m>0;
 	if(_bMul){ _Mul = m; }
-	else{ _Div = ::os::TickCount::__mach_tick_unit.denom*u/1000000LL/::os::TickCount::__mach_tick_unit.numer; }
+    else{ _Div = tbi.denom*u/tbi.numer; }
 #else
 	_Div = u;
 #endif

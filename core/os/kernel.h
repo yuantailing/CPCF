@@ -100,7 +100,7 @@ struct TickCount		// in msec, 10^-3
 #pragma pack()
 
 
-class HighPerformanceCounter // in nanosecond 10^-9 (default), time elapsed includes system sleep/standby/hibernation
+class HighPerformanceCounter // in nanosecond 10^-9 (default), time elapsed excludes system sleep/standby/hibernation
 {
 	LONGLONG		_Div;
 #if defined(PLATFORM_WIN) || defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
@@ -117,8 +117,9 @@ public:
 				#elif defined (PLATFORM_IOS) || defined (PLATFORM_MAC)
 						return _bMul?mach_absolute_time()*_Mul:mach_absolute_time()/_Div;
 				#else
+                
 						timespec	ts;
-						clock_gettime(CLOCK_MONOTONIC,&ts);
+						clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 						return (((ULONGLONG)ts.tv_sec)*1000000000LL + ts.tv_nsec)/_Div;
 				#endif	
 				}
