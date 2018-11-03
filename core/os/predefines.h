@@ -102,18 +102,19 @@ typedef char*               	LPSTR;
 typedef const char*         	LPCSTR;
 typedef WORD*               	LPWORD;
 typedef DWORD*              	LPDWORD;
-typedef size_t              	SIZE_T;
-typedef ssize_t             	SSIZE_T;
-typedef __int64_t				__time64_t;
-typedef __int64_t				__int64;
-typedef __uint64_t				__uint64;
+typedef LONGLONG				__time64_t;
+typedef LONGLONG				__int64;
+typedef ULONGLONG				__uint64;
 
-#ifndef PLATFORM_WIN
-    #define __FUNCTION__   __func__ 
+#if defined(PLATFORM_64BIT)
+typedef ULONGLONG              	SIZE_T;
+typedef LONGLONG             	SSIZE_T;
+#else
+typedef UINT            	  	SIZE_T;
+typedef INT             		SSIZE_T;
 #endif
 
-#else
-
+#define __FUNCTION__   __func__ 
 typedef ULONGLONG	__uint64;
 
 #endif

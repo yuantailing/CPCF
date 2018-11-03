@@ -212,7 +212,7 @@ public:
 	template<typename func_visit>
 	INLFUNC SIZE_T ScanBackward(const func_visit& v, const SliceValue& begin, ReadOptions* opt = NULL) const
 	{	ASSERT(_pDB);
-		Cursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
+		RocksCursor it = _pDB->NewIterator(opt?*opt:__DefaultReadOpt);
 		ASSERT(!it.IsEmpty());
 		SIZE_T ret = 0;
 		for(it.iter->Seek(begin); it.IsValid(); it.Prev())
