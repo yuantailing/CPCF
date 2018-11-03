@@ -115,6 +115,10 @@ typedef INT             		SSIZE_T;
 #endif
 
 #define __FUNCTION__   __func__ 
+
+// on PLATFORM_WIN
+#else
+
 typedef ULONGLONG	__uint64;
 
 #endif
