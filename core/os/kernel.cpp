@@ -188,38 +188,24 @@ bool os::GetProcessMemoryLoad(SIZE_T* vmem, SIZE_T* phy_mem)
 	if(phy_mem)*phy_mem = pmc.WorkingSetSize;
 	return true;
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_ANDRIOD)
-	struct _call
-	{	static int parseLine(char* line){
-			// This assumes that a digit will be found and the line ends in " Kb".
-			int i = strlen(line);
-			const char* p = line;
-			while (*p <'0' || *p > '9') p++;
-			line[i-3] = '\0';
-			i = atoi(p);
-			return i;
-		}
-	};
-	
 	if(phy_mem)*phy_mem = 0;
 	if(vmem)*vmem = 0;
-	FILE* file = fopen("/proc/self/status", "r");
-	if(file)
+	rt::String str;
+	if(os::File::LoadText("/proc/self/status", str))
 	{
-		int result = -1;
-		char line[128];
-
-		while (fgets(line, 128, file) != NULL){
-			if (phy_mem && strncmp(line, "VmRSS:", 6) == 0){
-				*phy_mem = _call::parseLine(line);
-				break;
-			}
-			if (vmem && strncmp(line, "VmSize:", 7) == 0){
-				*vmem = _call::parseLine(line);
-				break;
-			}
+		if(phy_mem)
+		{	LPCSTR vmrss = strstr(str, "VmRSS:");
+			rt::String_Ref(vmrss + 6).ToNumber(*phy_mem);
+			*phy_mem *= 1024;
 		}
-		fclose(file);
-	}else return false;
+		if(vmem)
+		{	LPCSTR vm = strstr(str, "VmSize:");
+			rt::String_Ref(vm + 7).ToNumber(*vmem);
+			*vmem *= 1024;
+		}
+		return true;
+	}	
+	return false;
 #elif defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
 	struct task_basic_info t_info;
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
@@ -233,11 +219,13 @@ bool os::GetProcessMemoryLoad(SIZE_T* vmem, SIZE_T* phy_mem)
 
 	if(phy_mem)*phy_mem = t_info.resident_size;
 	if(vmem)*vmem = t_info.virtual_size;
+	return true;
+	
 #else
 	#error TBD
 #endif
 
-	return true;
+	return false;
 }
 
 UINT os::GetNumberOfProcessors()
