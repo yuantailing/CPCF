@@ -1823,7 +1823,11 @@ void testing_sysinfo()
 	{	ULONGLONG free,total;
 		os::GetSystemMemoryInfo(&free, &total);
 		_LOGC("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
+
+		os::GetProcessMemoryLoad(&free, &total);
+		_LOGC("MEMORY Load: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
 	}
+	
 	_LOGC("FREE DISK: "<<rt::tos::FileSize<>(os::GetFreeDiskSpace("./")));
 	_LOGC("Power State: "<<os::GetPowerState());
 
