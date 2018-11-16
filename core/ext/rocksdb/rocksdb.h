@@ -157,7 +157,8 @@ public:
 	INLFUNC bool Has(const SliceValue& k, ReadOptions* opt = NULL){ thread_local std::string t; return Get(k, t, opt); }
 	template<typename t_POD>
 	INLFUNC bool Get(const SliceValue& k, t_POD* valout, ReadOptions* opt = NULL) const
-	{	thread_local static std::string temp;
+	{	ASSERT_NONRECURSIVE;
+		thread_local std::string temp;
 		ASSERT(_pDB);
 		if(_pDB->Get(opt?*opt:__DefaultReadOpt, k, &temp).ok() && temp.length() == sizeof(t_POD))
 		{	memcpy(valout, temp.data(), sizeof(t_POD));
@@ -166,14 +167,16 @@ public:
 	}
 	template<typename t_NUM>
 	INLFUNC t_NUM Get(const SliceValue& k, t_NUM default_val = 0, ReadOptions* opt = NULL) const
-	{	thread_local static std::string temp;
+	{	ASSERT_NONRECURSIVE;
+		thread_local std::string temp;
 		ASSERT(_pDB);
 		return (_pDB->Get(opt?*opt:__DefaultReadOpt, k, &temp).ok() && temp.length() == sizeof(t_NUM))?
 			   *((t_NUM*)temp.data()):default_val;
 	}
 	template<typename t_Type>
 	INLFUNC const t_Type* Fetch(const SliceValue& k, SIZE_T* len_out = NULL, ReadOptions* opt = NULL) const // Get a inplace referred buffer, will be invalid after next Fetch
-	{	thread_local static std::string temp;
+	{	ASSERT_NONRECURSIVE;
+		thread_local std::string temp;
 		ASSERT(_pDB);
 		if(_pDB->Get(opt?*opt:__DefaultReadOpt, k, &temp).ok() && temp.length() >= sizeof(t_Type))
 		{	if(len_out)*len_out = temp.length();
@@ -185,7 +188,8 @@ public:
 		}
 	}
 	INLFUNC rt::String_Ref Fetch(const SliceValue& k, ReadOptions* opt = NULL) const
-	{	thread_local static std::string temp;
+	{	ASSERT_NONRECURSIVE;
+		thread_local std::string temp;
 		ASSERT(_pDB);
 		return (_pDB->Get(opt?*opt:__DefaultReadOpt, k, &temp).ok())?
 				rt::String_Ref(temp.data(), temp.length()):rt::String_Ref();
