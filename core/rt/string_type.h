@@ -833,6 +833,11 @@ public:
 	{	if(end){ _p = (char*)p; ASSERT(end>=p); _SC::_len = (int)(end-p+1); }
 		else{ *this = p; }
 	}
+	template <template<class, class, class> class std_string, class _Traits, class _Alloc>
+	FORCEINL String_Ref(const std_string<char, _Traits, _Alloc>& str)
+	{	if(str.size()){	_SC::_p = (LPSTR)str.c_str(); _SC::_len = str.size()+1; }
+		else{ _SC::_p = NULL; _SC::_len = 0; }
+	}
 	FORCEINL const String_Ref& operator = (const char* x)
 	{	if(x)
 		{	_SC::_p = (char*)x;
@@ -841,7 +846,6 @@ public:
 		else Empty();
 		return *this;
 	}
-
 	FORCEINL static const String_Ref& EmptyString(){ static const rt::String_Ref _empty; return _empty; }
 	FORCEINL void SetLength(SIZE_T len){ _SC::_len = rt::min(_SC::_len, len+1); }
 public:

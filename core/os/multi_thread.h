@@ -738,7 +738,7 @@ public:
 	INLFUNC t_Object*	operator ->(){ ASSERT(_UpdateBegin); ReadyModify(); return _Cloned; }
 	INLFUNC t_Object&	Get(){ ASSERT(_UpdateBegin); ReadyModify(); return *_Cloned; }
 
-	INLFUNC ~_TSM_Updater(){ if(_UpdateBegin)Commit();	}
+	INLFUNC ~_TSM_Updater(){ if(_UpdateBegin)Commit(); }
 };
 } // namespace _details
 

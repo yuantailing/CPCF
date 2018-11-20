@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		testing_sysinfo();
+		testing_json();
 		return;
 	}
 	else

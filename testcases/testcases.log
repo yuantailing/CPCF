@@ -58,6 +58,7 @@ inf
 ==== testing_string ====
 123ðŸ“¢å¥½çš„ 456
 123å¥½çš„ 456
+std::string = 1234!!
 int i=110; i/=2;
 _LOG("/*some comment*/");
 i += 32;
@@ -158,7 +159,7 @@ TimeSpan<false>: 16d:7h:41m:0s
 "name":"mary",
 "age": 7 
 },1,false,"haha","@"]
-Json Size: 522 = 522
+Json Size: 543 = 543
 {
 "Key:Complex":"complex\" key",
 "name":"this is name",
@@ -174,7 +175,7 @@ Json Size: 522 = 522
 "weight":"123.50kg",
 "state": {
 "paid": false ,
-"lastshow":"2018/10/26"
+"lastshow":"2007/03/02"
 } ,
 "children": [{
 "name":"jake",
@@ -191,6 +192,7 @@ Json Size: 522 = 522
 },{
 "f1": 1 
 }] ,
+"std":"std::string",
 "bin": <21/1234567890ABCDEFGHIJK> ,
 "raw": null ,
 "empty": [0] 
@@ -220,7 +222,7 @@ phone [object] = {
 weight [string] = 123.50kg
 state [object] = {
 "paid": false ,
-"lastshow":"2018/10/26"
+"lastshow":"2007/03/02"
 }
 children [array] = [{
 "name":"jake",
@@ -237,6 +239,7 @@ other [array] = [{
 },{
 "f1": 1 
 }]
+std [string] = std::string
 bin [binary] = 1234567890ABCDEFGHIJK
 raw [null] = null
 empty [array] = [0]
@@ -326,8 +329,8 @@ IT = "this is the value of IT"Values;
 MultiLine = Line1 Line2 Line3;
 MultiLine is Line1 Line2 MOOD-PC
 
-ComSpec = C:\Windows\system32\cmd.exeC:SomeMissing
-%NotClosed \Users\mood%%
+ComSpec = cmd.exeC:SomeMissing
+%NotClosed /var/usr/home%%
 MOOD-PC>12?MOOD-PC:12
 Merged = "this is the value of IT" + Values
 TT = 234
@@ -343,7 +346,7 @@ it = "this is the value of it" Values;
 multiLine = Line1 Line2 Line3;
 multiLine is Line1 Line2 MOOD-PC
 
-comSpec = C:\Windows\system32\cmd.exe C: SomeMissing
+comSpec = cmd.exe C: SomeMissing
 MOOD-PC>12?MOOD-PC:12
 Merged = "this is the value of it" + Values + HAHA234XIXI2>3?2:3WIWI
 tt = 234
@@ -373,12 +376,134 @@ Write Tail
 Day: 0 == 0
 Day: 2 == 2
 Timelapse: 5
-2001/04/03 14:45:03.000
-2011/07/13 01:00:00.000
+2001/04/03 13:45:03.000
+2011/07/13 00:00:00.000
 FromInternetTimeFormat: 1994/11/15 12:45:26.000
-ToInternetTimeFormat: Tue, 15 Nov 1994 04:45:26 GMT
+ToInternetTimeFormat: Tue, 15 Nov 1994 12:45:26 GMT
 LastMonth: 2011/12/01
 Date32 diff 1: 0,0
 Date32 diff 1: 1,-1
 Date32 diff 1: 2,-2
 Waiting for 2 seconds ...
+os::TickCount: 2
+os::Timestamp: -2100
+ 
+==== test_smallmath ====
+(0.0000,1.0000e+100,100.4000,-9.2560e+61)
+(0.00,1.00e+10,100.40)
+STR-EXP: a=(0.0013,0.5636,0.1933)
+(0.0021,0.9459,0.3244)
+(0.0021,0.9459,0.3244) dot (0.8087,0.5850,0.4799) = 0.71075
+(0.3503,0.7466,0.7105)
+(0.8960,0.1741,0.5135)
+(0.8228,0.8589,0.3040)
+(0.3503,0.8960,0.8228)
+(0.7466,0.1741,0.8589)
+(0.7105,0.5135,0.3040)
+(0.9811,0.1885,0.0427)
+(-0.1932,0.9530,0.2335)
+(0.0033,-0.2374,0.9714)
+scale = (1.0885,1.0473,1.2277)
+ 
+==== test_filelist ====
+/entrypoint.cpp
+/experiments.cpp
+/test_api.cpp
+/test_botan.cpp
+/test_http.cpp
+/test_ipp.cpp
+/test_library.cpp
+/test_mkl.cpp
+
+Process Listed 1
+ 
+==== testing_multithread ====
+ATOM Result: 456789
+CriticalSection Result: 456789
+Event Set: 0
+Event Set: 1
+Thread Run: 1
+Event Timeout: 2000
+Event Set
+Thread Waited: 2000, 1
+Thread Ended
+ 
+==== testing_inet_encoding ====
+MQ== = MQ==
+Full Data: 1
+1 = 1
+MTI= = MTI=
+Full Data: 1
+12 = 12
+MTIz = MTIz
+Full Data: 1
+123 = 123
+MTIzNA== = MTIzNA==
+Full Data: 1
+1234 = 1234
+MTIzNDU= = MTIzNDU=
+Full Data: 1
+12345 = 12345
+Full Data: 0
+12345
+MTIzNDU2
+ 
+==== testing_inet_encoding_custom ====
+a --> CK
+ab --> C5HG
+abc --> C5H63
+abcd --> C5H66SW
+abcde --> C5H66S35
+abcdef --> C5H66S35CS
+abcdefg --> C5H66S35CSKH
+abcdefgh --> C5H66S35CSKP8
+abcdefghi --> C5H66S35CSKPGTX
+abcdefghij --> C5H66S35CSKPGTBA
+•áó<¨kHª‹Çä†_e --> JQGZ6F58DD41BAMBFZ3Y91JZCR
+ 
+==== testing_sysinfo ====
+ 
+==== test_BinarySearch ====
+{1451,19964,30528,32473,50203,52016,54492,57664,58510,63718}
+1451 is at 0/0
+1461 is at 1/10
+1450 is at 0/10
+32473 is at 3/3
+32474 is at 4/10
+63718 is at 9/9
+63719 is at 10/10
+{50203,54492,63718,1451,58510,30528,19964,57664,32473,52016}
+{63718,58510,57664,54492,52016,50203,32473,30528,19964,1451}
+rt::SortedQueue<int>
+5454544
+545454
+34652
+4643
+/===== BEGIN: test_botan_cipher =====\
+PlainText: 1234567890ABCDEF
+Encrypted: 28F0BA6609AFE8C04ABD1A32BB071274
+Decrypted: 1234567890ABCDEF
+PlainText: 1234567890ABCDEFfedcba0987654321
+Encrypted: F0E61C603FE645B13759D0964C3C4D8671FB8616AAB8F859587826B5924DBD07
+Decrypted: 1234567890ABCDEFfedcba0987654321
+Encrypted Unchained:
+    D14A48202BE61B909692353D24801E26
+    D14A48202BE61B909692353D24801E26
+    D14A48202BE61B909692353D24801E26
+Encrypted Chained:
+    D14A48202BE61B909692353D24801E26
+    A3C5672648E11E8F1D8EE33F3ABE773C
+    DA79435CA167F68C9FC27CB2470E1E3C
+\===== END:   test_botan_cipher =====/
+ 
+ 
+/===== BEGIN: test_botan_hash =====\
+Input: "hello world"
+MD5: 5EB63BBBE01EEED093CB22BB8F5ACDC3
+SHA1: 2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED
+Input: "GameWallpaperHD_2013-04_1366753EF3514652A80ECE50A9585524"
+SHA1: 95E1F33CA86B4815AA8B7FC7E4865F6529233CD1
+SHA1: 95E1F33CA86B4815AA8B7FC7E4865F65 (first 16 bytes)
+\===== END:   test_botan_hash =====/
+ 
+ 

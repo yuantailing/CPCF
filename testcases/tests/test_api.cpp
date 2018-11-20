@@ -10,6 +10,7 @@
 #include "../../core/os/high_level.h"
 #include "../../core/os/precompiler.h"
 #include "../../core/inet/inet.h"
+#include <string>
 
 #pragma warning(disable: 4838)
 
@@ -30,6 +31,8 @@ void testing_json()
 
 	_LOG(rt::String(a));
 
+	std::string std_string("std::string");
+
 	auto JsonObject = 
 	(	J(Key:Complex) = "complex\\\" key",
 		J(name) = "this is name", 
@@ -43,7 +46,7 @@ void testing_json()
 					),
 		J(weight) = rt::String_Ref() + 123.5f + "kg",
 		J(state) =	(	J(paid) = false,
-						J(lastshow) = rt::tos::Date<>(os::Date32().LoadCurrentDate())
+						J(lastshow) = rt::tos::Date<>(os::Date32(2007,3,2))
 					),
 		J(children) = a,
 		J(numbers) =	JA(	1,
@@ -57,6 +60,7 @@ void testing_json()
 		J(other) =	JA(	(J(f0) = 0),
 						(J(f1) = 1)
 					),
+		J(std) = std_string,
 		J(bin) = JB("1234567890ABCDEFGHIJK"),
 		J(raw) = rt::_JObj(""),
 		J(empty) = JA(0)
@@ -498,6 +502,13 @@ void testing_string()
 		_LOG(s);
 		s.RegularizeUTF8();
 		_LOG(s);
+	}
+
+	{
+		std::string a("1234!!");
+		rt::String_Ref b;
+		b = a;
+		_LOG("std::string = "<<b);
 	}
 
 	{	LPCSTR code = 
@@ -988,6 +999,10 @@ void test_Precompiler()
 	
 	os::PrecompilerPredefinedMacros predefined;
 	predefined.ImportCmdLineOptions(cmd);
+	predefined.Set("COMPUTERNAME", "MOOD-PC");
+	predefined.Set("ComSpec", "cmd.exe");
+	predefined.Set("HOMEDRIVE", "C:");
+	predefined.Set("HOMEPATH", "/var/usr/home");
 
 	{	os::Precompiler s(&predefined, "%", "%");
 		s.Compile("test.bat", source);
@@ -1331,7 +1346,7 @@ void testing_timedate()
 		_LOG("FromInternetTimeFormat: "<<rt::tos::TimestampFields<>(tt.GetDateTime()));
 
 		char ttt[30];
-		tt.GetLocalDateTime().ToInternetTimeFormat(ttt);
+		tt.GetDateTime().ToInternetTimeFormat(ttt);
 		_LOG("ToInternetTimeFormat: "<<ttt);
 	}
 
