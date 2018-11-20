@@ -66,6 +66,12 @@ public:
 						if(bin){ _Ref = rt::String_Ref(str);			_SetBinLen(); }
 						else _Ref = rt::String_Ref(str).TrimSpace();
 					}
+	template <template<class, class, class> class std_string, class _Traits, class _Alloc>
+	FORCEINL explicit _JObj(const std_string<char, _Traits, _Alloc>& str, bool bin = false)
+					{	_AsBinary = bin;
+						if(bin){ _Ref = str;							_SetBinLen(); }
+						else _Ref = rt::String_Ref(str).TrimSpace();
+					}
 	FORCEINL explicit _JObj(rt::String_Ref& str, bool bin = false)
 					{	_AsBinary = bin;
 						if(bin){ _Ref = str;							_SetBinLen(); }
