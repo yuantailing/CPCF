@@ -126,14 +126,19 @@ public:
 
 namespace _details
 {
-	FORCEINL UINT _json_GetLengthPrev(LPVOID){ return 0; }
-	FORCEINL UINT _json_CopyToPrev(LPVOID, LPSTR){ return 0; }
+	FORCEINL UINT _json_GetLengthPrev(LPVOID, bool no_commma = false){ return 0; }
+	FORCEINL UINT _json_CopyPrev(LPVOID, LPSTR, bool no_commma = false){ return 0; }
 
 	template<typename T>
-	FORCEINL UINT _json_GetLengthPrev(T& n){ return n.GetLength() + 2; }
+	FORCEINL UINT _json_GetLengthPrev(T& n, bool no_commma = false){ return n.GetLength() + ((n.IsGhost()||no_commma)?0:2); }
 	template<typename T>
-	FORCEINL UINT _json_CopyToPrev(T& n, LPSTR p){ UINT l = n.CopyTo(p); ASSERT(l == n.GetLength()); p[l]=','; p[l+1]='\n'; return l+2; }
-
+	FORCEINL UINT _json_CopyPrev(T& n, LPSTR p, bool no_commma = false)
+					{	UINT l = n.CopyTo(p);
+						ASSERT(l == n.GetLength()); 
+						if(n.IsGhost() || no_commma)return l;
+						p[l]=','; p[l+1]='\n';
+						return l+2;
+					}
 	FORCEINL UINT _json_StartClosure(LPVOID, LPSTR p){ p[0]='{'; p[1]='\n'; return 2; }
 	FORCEINL UINT _json_EndClosure(LPVOID, LPSTR p){ p[0]='\n'; p[1]='}'; return 2; }
 	FORCEINL UINT _json_GetClosureLength(LPVOID){ return 4; }
@@ -142,11 +147,13 @@ namespace _details
 	FORCEINL UINT _json_EndClosure(int, LPSTR p){ return 0; }
 	FORCEINL UINT _json_GetClosureLength(int){ return 0; }
 
+	template<typename t_Obj>
 	struct _JObj_Ref
-	{	const _JObj& _Obj;
-		FORCEINL UINT	GetLength() const { return _Obj.GetLength(); }
-		FORCEINL UINT	CopyTo(LPSTR p) const { return _Obj.CopyTo(p); }
-		FORCEINL		_JObj_Ref(const _JObj& x):_Obj(x){}
+	{	const t_Obj* _Obj;
+		FORCEINL UINT	GetLength() const { ASSERT(_Obj); return (UINT)_Obj->GetLength(); }
+		FORCEINL UINT	CopyTo(LPSTR p) const { ASSERT(_Obj); return (UINT)_Obj->CopyTo(p); }
+		FORCEINL		_JObj_Ref(const t_Obj& x):_Obj(&x){}
+		FORCEINL		_JObj_Ref(){ _Obj = NULL; }
 	};
 
 } // namespace _details
@@ -161,12 +168,17 @@ struct _JVar
 	DWORD			value_type;
 	
 	template<typename t_V>
-	FORCEINL _JVar(const rt::String_Ref& name,t_V& v, DWORD vt):tagname(name), value(v), value_type(vt){}
+	FORCEINL _JVar(const rt::String_Ref& name, t_V& v, DWORD vt):tagname(name), value(v), value_type(vt){}
+	FORCEINL _JVar(){}
 	template<typename Prev, typename t_V>
 	FORCEINL _JVar(Prev& n, const rt::String_Ref& name,t_V& v, DWORD vt):tagname(name), value(v), value_type(vt), prev(n){}
+
+	bool	IsGhost() const { return tagname.IsEmpty(); }
+
 	UINT	GetLength() const
-	{	return (UINT)(tagname.GetLength() + 5 +
-						value.GetLength() +  
+	{	if(IsGhost())return _details::_json_GetLengthPrev(prev, true) + _details::_json_GetClosureLength((void_is_end)0);
+		return (UINT)(tagname.GetLength() + 5 +
+						value.GetLength() + 
 						_details::_json_GetLengthPrev(prev) +
 						_details::_json_GetClosureLength((void_is_end)0)
 				);
@@ -174,22 +186,20 @@ struct _JVar
 	UINT	CopyTo(LPSTR p) const
 	{	LPSTR org = p;
 		p += _details::_json_StartClosure((void_is_end)0, p);
-		p += _details::_json_CopyToPrev(prev, p);
-		*p++='"'; p += tagname.CopyTo(p); *p++='"';
-		*p++=':';
-		static const char sep[8] = { ' ', '"', ' ', ' ', ' ', '"', ' ', ' ' };
-		*p++=sep[value_type];
-		int len = (int)value.CopyTo(p);
-		//while(p[len-1] == '\\')len--;
-		//if(value_type == 1)
-		//{	int rlen = 0;
-		//	for(int i=0;i<len;i++)
-		//		if((p[i] == '"' && p[rlen-1]!='\\') || (p[i]>0 && p[i]<' ')){}
-		//		else{ p[rlen++] = p[i]; }
-		//	len = rlen;
-		//}
-		p += len;
-		*p++=sep[value_type+4];
+		if(!IsGhost())
+		{
+			p += _details::_json_CopyPrev(prev, p);
+			*p++='"'; p += tagname.CopyTo(p); *p++='"';
+			*p++=':';
+			static const char sep[8] = { ' ', '"', ' ', ' ', ' ', '"', ' ', ' ' };
+			*p++=sep[value_type];
+			int len = (int)value.CopyTo(p);
+			p += len;
+			*p++=sep[value_type+4];
+		}
+		else
+		{	p += _details::_json_CopyPrev(prev, p, true);
+		}
 		p += _details::_json_EndClosure((void_is_end)0, p);
 		return (UINT)(p - org);
 	}
@@ -269,7 +279,7 @@ public:
 #define J_EXPR_CONNECT_OP(type, type_in, vt)	\
 FORCEINL _JVar<LPVOID, type>					\
 operator = (type_in p)							\
-{ return _JVar<LPVOID, type>(tagname, p, vt); }	\
+{ return tagname.IsEmpty() ? _JVar<LPVOID, type>(tagname, type(), vt) : _JVar<LPVOID, type>(tagname, p, vt); }
 
 struct _JTag
 {	
@@ -296,21 +306,21 @@ struct _JTag
 #endif
 	J_EXPR_CONNECT_OP(tos::S_<MARCO_CONCAT(1,32)>,	float				, _JTag::VARTYPE_BUILTIN)
 	J_EXPR_CONNECT_OP(tos::S_<MARCO_CONCAT(1,64)>,	double				, _JTag::VARTYPE_BUILTIN)
-	J_EXPR_CONNECT_OP(_details::_JObj_Ref,			const _JObj& 		, _JTag::VARTYPE_OBJECT)
+	J_EXPR_CONNECT_OP(_details::_JObj_Ref<_JObj>,	const _JObj& 		, _JTag::VARTYPE_OBJECT)
 
 	template<typename prev, typename type>
-	FORCEINL _JVar<LPVOID, const _JVar<prev, type>& > operator = (const _JVar<prev, type>& p)
-	{	return _JVar<LPVOID, const _JVar<prev, type>& >(tagname, p, _JTag::VARTYPE_OBJECT);
+	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _JVar<prev, type>> > operator = (const _JVar<prev, type>& p)
+	{	return _JVar<LPVOID, _details::_JObj_Ref<const _JVar<prev, type>> >(tagname, p, _JTag::VARTYPE_OBJECT);
 	}
 
 	template<int t_LEN>
-	FORCEINL _JVar<LPVOID, const _JArray<t_LEN>& > operator = (const _JArray<t_LEN>& p)
-	{	return _JVar<LPVOID, const _JArray<t_LEN>& >(tagname, p, _JTag::VARTYPE_ARRAY);
+	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _JArray<t_LEN>> > operator = (const _JArray<t_LEN>& p)
+	{	return _JVar<LPVOID, _details::_JObj_Ref<const _JArray<t_LEN>> >(tagname, p, _JTag::VARTYPE_ARRAY);
 	}
 
 	template<typename t_Left, typename t_Right>
-	FORCEINL _JVar<LPVOID, const _SE<t_Left,t_Right>& > operator = (const _SE<t_Left,t_Right>& p)
-	{	return _JVar<LPVOID, const _SE<t_Left,t_Right>& >(tagname, p, _JTag::VARTYPE_STRING);
+	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _SE<t_Left,t_Right>> > operator = (const _SE<t_Left,t_Right>& p)
+	{	return _JVar<LPVOID, _details::_JObj_Ref<const _SE<t_Left,t_Right>> >(tagname, p, _JTag::VARTYPE_STRING);
 	}
 };
 
@@ -354,9 +364,10 @@ public:
 } // namespace rt
 
 
-#define J(x)		rt::_JTag(#x)
-#define JA(...)		((rt::_JArray<>(), __VA_ARGS__))
-#define JB(x)		(rt::_JObj((x), true))
+#define J(x)					rt::_JTag(#x)
+#define J_IF(cond, x, value)	((cond) ? (rt::_JTag(#x) = value) : decltype(rt::_JTag(NULL) = value)())
+#define JA(...)					((rt::_JArray<>(), __VA_ARGS__))
+#define JB(x)					(rt::_JObj((x), true))
 
 
 namespace rt

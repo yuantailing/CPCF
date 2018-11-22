@@ -945,7 +945,6 @@ namespace tos
 		template<typename t_Left, typename t_Right>	friend class String_AddExpr;
 	protected:
         char _string[LEN];
-		S_(){ _p = _string; _len = 0; }
 		template<typename T>
 		FORCEINL static int __toS_vec(LPSTR p, const T& x)
 		{	return S_<1, LEN>::__toS(p, x[0]);
@@ -994,6 +993,8 @@ namespace tos
 		{	if(x){ *((DWORD*)p) = 0x65757274; return 4; }
 			else{ *((DWORD*)p) = 0x736c6166; p[4] = 'e'; return 5; }
 		}
+		FORCEINL S_(const S_& x){ _p = _string; _len = x._len; memcpy(_p, x._p, _len); }
+		FORCEINL S_(){ _p = _string; _len = 0; }
 		FORCEINL S_(bool x){ _len = 1 + __toS(_string,x); ASSERT(_len <= LEN); _string[_len] = 0; _p = _string; }
 		FORCEINL S_(char x){ _len = 1 + __toS(_string,x); ASSERT(_len <= LEN); _string[_len] = 0; _p = _string; }
 		FORCEINL S_(int x){ _len = 1 + __toS(_string,x); ASSERT(_len <= LEN); _string[_len] = 0; _p = _string; }
