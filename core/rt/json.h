@@ -198,6 +198,11 @@ struct _JVar
 	{	VERIFY(out.SetLength(GetLength()));
 		out.SetLength(CopyTo(out.Begin()));
 	}
+	// override operator , for connecting key-value pairs in declaring json object
+	template<typename t_right>
+	FORCEINL auto operator , (const _JVar<LPVOID, t_right>& right) const
+	{	return _JVar< _JVar<t_Prev,t_Val,int>, t_right>((const _JVar<t_Prev,t_Val,int>&)*this, right.tagname, right.value, right.value_type);
+	}
 };
 
 namespace _details
@@ -309,28 +314,23 @@ struct _JTag
 	J_EXPR_CONNECT_OP(_O<_JObj>,	const _JObj& 		, _JTag::VARTYPE_OBJECT)
 
 	template<typename prev, typename type>
-	FORCEINL _JVar<LPVOID, _O<const _JVar<prev, type>> > operator = (const _JVar<prev, type>& p)
+	FORCEINL auto operator = (const _JVar<prev, type>& p)
 	{	return _JVar<LPVOID, _O<const _JVar<prev, type>> >(tagname, p, _JTag::VARTYPE_OBJECT);
 	}
 
 	template<int t_LEN>
-	FORCEINL _JVar<LPVOID, _O<const _JArray<t_LEN>> > operator = (const _JArray<t_LEN>& p)
+	FORCEINL auto operator = (const _JArray<t_LEN>& p)
 	{	return _JVar<LPVOID, _O<const _JArray<t_LEN>> >(tagname, p, _JTag::VARTYPE_ARRAY);
 	}
 
 	template<typename t_Left, typename t_Right>
-	FORCEINL _JVar<LPVOID, _O<const _SE<t_Left,t_Right>> > operator = (const _SE<t_Left,t_Right>& p)
+	FORCEINL auto operator = (const _SE<t_Left,t_Right>& p)
 	{	return _JVar<LPVOID, _O<const _SE<t_Left,t_Right>> >(tagname, p, _JTag::VARTYPE_STRING);
 	}
 };
 
 #undef J_EXPR_CONNECT_OP
 
-// override operator , for connecting key-value pairs in declaring json object
-template<typename t_prev, typename t_left, typename t_right>
-FORCEINL _JVar< _JVar<t_prev,t_left,int>, t_right> operator , (const _JVar<t_prev,t_left>& left, const _JVar<LPVOID, t_right>& right)
-{	return _JVar< _JVar<t_prev,t_left,int>, t_right>((const _JVar<t_prev,t_left,int>&)left, right.tagname, right.value, right.value_type);
-}
 
 class _JObject
 {
