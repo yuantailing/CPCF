@@ -147,15 +147,6 @@ namespace _details
 	FORCEINL UINT _json_EndClosure(int, LPSTR p){ return 0; }
 	FORCEINL UINT _json_GetClosureLength(int){ return 0; }
 
-	template<typename t_Obj>
-	struct _JObj_Ref
-	{	const t_Obj* _Obj;
-		FORCEINL UINT	GetLength() const { ASSERT(_Obj); return (UINT)_Obj->GetLength(); }
-		FORCEINL UINT	CopyTo(LPSTR p) const { ASSERT(_Obj); return (UINT)_Obj->CopyTo(p); }
-		FORCEINL		_JObj_Ref(const t_Obj& x):_Obj(&x){}
-		FORCEINL		_JObj_Ref(){ _Obj = NULL; }
-	};
-
 } // namespace _details
 
 
@@ -283,6 +274,15 @@ operator = (type_in p)							\
 
 struct _JTag
 {	
+	template<typename t_Obj>
+	struct _O
+	{	const t_Obj* _Obj;
+		FORCEINL UINT	GetLength() const { ASSERT(_Obj); return (UINT)_Obj->GetLength(); }
+		FORCEINL UINT	CopyTo(LPSTR p) const { ASSERT(_Obj); return (UINT)_Obj->CopyTo(p); }
+		FORCEINL		_O(const t_Obj& x):_Obj(&x){}
+		FORCEINL		_O(){ _Obj = NULL; }
+	};
+
 	enum _tagVARTYPE
 	{	VARTYPE_BUILTIN = 0,
 		VARTYPE_STRING  = 1,
@@ -306,21 +306,21 @@ struct _JTag
 #endif
 	J_EXPR_CONNECT_OP(tos::S_<MARCO_CONCAT(1,32)>,	float				, _JTag::VARTYPE_BUILTIN)
 	J_EXPR_CONNECT_OP(tos::S_<MARCO_CONCAT(1,64)>,	double				, _JTag::VARTYPE_BUILTIN)
-	J_EXPR_CONNECT_OP(_details::_JObj_Ref<_JObj>,	const _JObj& 		, _JTag::VARTYPE_OBJECT)
+	J_EXPR_CONNECT_OP(_O<_JObj>,	const _JObj& 		, _JTag::VARTYPE_OBJECT)
 
 	template<typename prev, typename type>
-	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _JVar<prev, type>> > operator = (const _JVar<prev, type>& p)
-	{	return _JVar<LPVOID, _details::_JObj_Ref<const _JVar<prev, type>> >(tagname, p, _JTag::VARTYPE_OBJECT);
+	FORCEINL _JVar<LPVOID, _O<const _JVar<prev, type>> > operator = (const _JVar<prev, type>& p)
+	{	return _JVar<LPVOID, _O<const _JVar<prev, type>> >(tagname, p, _JTag::VARTYPE_OBJECT);
 	}
 
 	template<int t_LEN>
-	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _JArray<t_LEN>> > operator = (const _JArray<t_LEN>& p)
-	{	return _JVar<LPVOID, _details::_JObj_Ref<const _JArray<t_LEN>> >(tagname, p, _JTag::VARTYPE_ARRAY);
+	FORCEINL _JVar<LPVOID, _O<const _JArray<t_LEN>> > operator = (const _JArray<t_LEN>& p)
+	{	return _JVar<LPVOID, _O<const _JArray<t_LEN>> >(tagname, p, _JTag::VARTYPE_ARRAY);
 	}
 
 	template<typename t_Left, typename t_Right>
-	FORCEINL _JVar<LPVOID, _details::_JObj_Ref<const _SE<t_Left,t_Right>> > operator = (const _SE<t_Left,t_Right>& p)
-	{	return _JVar<LPVOID, _details::_JObj_Ref<const _SE<t_Left,t_Right>> >(tagname, p, _JTag::VARTYPE_STRING);
+	FORCEINL _JVar<LPVOID, _O<const _SE<t_Left,t_Right>> > operator = (const _SE<t_Left,t_Right>& p)
+	{	return _JVar<LPVOID, _O<const _SE<t_Left,t_Right>> >(tagname, p, _JTag::VARTYPE_STRING);
 	}
 };
 
