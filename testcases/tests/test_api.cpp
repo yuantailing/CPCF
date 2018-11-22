@@ -24,25 +24,24 @@ void testing_json()
 	{
 		rt::String str =
 		(
-			J_IF(false, cond_false1, "no"),
+			J_IF(false, J(cond_false) = "no"),
 			J(abs) = 1.3,
-			J_IF(1>0, cond_true,
+			J_IF(1>0, J(cond_true) =
 				(	
-					J_IF(2>1, cond_true_nested, JA(1,2,"eee")),
+					J_IF(2>1, J(cond_true_nested) = JA(1,2,"eee")),
 					J(qwe) = "nested",
-					J_IF(2<1, cond_false_nested, 1),
-					J_IF(2<1, cond_false_nested, 1),
-					J_IF(2<1, cond_false_nested, 1),
-					J(yue) = 3.1f
+					J_IF(2<1, J(cond_false_nested) = 1),
+					J_IF(2<1, J(cond_false_nested) = 1),
+					J(yue) = 3.1f,
+					J_IF(2<1, J(cond_false_nested) = 1)
 				)
 			),
 			J(empty) = (
-					J_IF(2<1, cond_false_nested, 2),
-					J_IF(2<1, cond_false_nested, 2),
-					J_IF(2<1, cond_false_nested, 2)
+					J_IF(2<1, J(cond_false_nested) = 2),
+					J_IF(2<1, J(cond_false_nested) = 2)
 				),
-			J_IF(true, cond_true, 1234),
-			J_IF(false, cond_false1, "no")
+			J_IF(true, J(cond_true) = 1234),
+			J_IF(false, J(cond_false) = "no")
 		);
 
 		_LOG(str);

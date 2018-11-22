@@ -365,7 +365,7 @@ public:
 
 
 #define J(x)					rt::_JTag(#x)
-#define J_IF(cond, x, value)	((cond) ? (rt::_JTag(#x) = value) : decltype(rt::_JTag(NULL) = value)())
+#define J_IF(cond, definition)	((cond) ? (definition) : decltype(definition)())
 #define JA(...)					((rt::_JArray<>(), __VA_ARGS__))
 #define JB(x)					(rt::_JObj((x), true))
 
