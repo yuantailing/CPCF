@@ -47,6 +47,17 @@ void testing_json()
 		_LOG(str);
 	}
 
+	{
+		rt::_JObject obj;
+		obj << (
+			J(H)=0,
+			J_IF(false, J(R) = 1),
+			J_IF(true, J(R) = 2)
+			);
+		_LOG(obj.GetString());
+	}
+
+
 	rt::_JArray<> a;
 	a.append((J(name) = "jake", J(age) = 12));
 	a.append((J(name) = "mary", J(age) = 7));
