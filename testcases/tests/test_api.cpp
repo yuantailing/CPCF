@@ -40,23 +40,17 @@ void testing_json()
 					J_IF(2<1, J(cond_false_nested) = 2),
 					J_IF(2<1, J(cond_false_nested) = 2)
 				),
+			J(fix) = (
+					J(H)=0,
+					J_IF(false, J(R) = 1),
+					J_IF(true, J(R) = 2)
+				),
 			J_IF(true, J(cond_true) = 1234),
 			J_IF(false, J(cond_false) = "no")
 		);
 
 		_LOG(str);
 	}
-
-	{
-		rt::_JObject obj;
-		obj << (
-			J(H)=0,
-			J_IF(false, J(R) = 1),
-			J_IF(true, J(R) = 2)
-			);
-		_LOG(obj.GetString());
-	}
-
 
 	rt::_JArray<> a;
 	a.append((J(name) = "jake", J(age) = 12));

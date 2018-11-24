@@ -153,60 +153,63 @@ TimeSpan<true>: 1d:3h:46m:40s
 TimeSpan<true>: 16d:7h:41m
 TimeSpan<false>: 16d:7h:41m:0s
 {
-"abs": 1.3000 ,
-"cond_true": {
-"cond_true_nested": [1,2,"eee"] ,
-"qwe":"nested""yue": 3.10 
-} ,
-"empty": {
-
-} ,
-"cond_true": 1234 
+"abs":1.3000,
+"cond_true":{
+"cond_true_nested":[1,2,"eee"],
+"qwe":"nested",
+"yue":3.10
+},
+"empty":{},
+"fix":{
+"H":0,
+"R":2
+},
+"cond_true":1234
 }
 [{
 "name":"jake",
-"age": 12 
+"age":12
 },{
 "name":"mary",
-"age": 7 
+"age":7
 },1,false,"haha","@"]
-Json Size: 543 = 543
+Json Size: 507 = 507
 {
 "Key:Complex":"complex\" key",
 "name":"this is name",
 "sex":"a female",
 "empty":"",
-"alive": true ,
-"age": 20 ,
+"alive":true,
+"age":20,
 "char":"C",
-"phone": {
-"number": 5235251 ,
-"ext": 432 
-} ,
+"phone":{
+"number":5235251,
+"ext":432
+},
 "weight":"123.50kg",
-"state": {
-"paid": false ,
+"state":{
+"paid":false,
 "lastshow":"2007/03/02"
-} ,
-"children": [{
+},
+"children":[{
 "name":"jake",
-"age": 12 
+"age":12
 },{
 "name":"mary",
-"age": 7 
-},1,false,"haha","@"] ,
-"numbers": [1,2,"hello",{
-"c": 1.2000 
-},[3,"c",false],<7/InArray>,4.50] ,
-"other": [{
-"f0": 0 
+"age":7
+},1,false,"haha","@"],
+"numbers":[1,2,"hello",{
+"c":1.2000
+},[3,"c",false],<7/InArray>,4.50],
+"other":[{
+"f0":0
 },{
-"f1": 1 
-}] ,
+"f1":1
+}],
 "std":"std::string",
-"bin": <21/1234567890ABCDEFGHIJK> ,
-"raw": null ,
-"empty": [0] 
+"bin":<21/1234567890ABCDEFGHIJK>,
+"raw":null,
+"empty":[0]
 }
 complex\" key
 this is name
@@ -227,28 +230,28 @@ alive [bool] = true
 age [number] = 20
 char [string] = C
 phone [object] = {
-"number": 5235251 ,
-"ext": 432 
+"number":5235251,
+"ext":432
 }
 weight [string] = 123.50kg
 state [object] = {
-"paid": false ,
+"paid":false,
 "lastshow":"2007/03/02"
 }
 children [array] = [{
 "name":"jake",
-"age": 12 
+"age":12
 },{
 "name":"mary",
-"age": 7 
+"age":7
 },1,false,"haha","@"]
 numbers [array] = [1,2,"hello",{
-"c": 1.2000 
+"c":1.2000
 },[3,"c",false],<7/InArray>,4.50]
 other [array] = [{
-"f0": 0 
+"f0":0
 },{
-"f1": 1 
+"f1":1
 }]
 std [string] = std::string
 bin [binary] = 1234567890ABCDEFGHIJK
@@ -270,12 +273,12 @@ mary
 Escaped String: \x00\t\\ABC\'\"123
 Unescaped Matches: 1
 {
-"num": 100 
+"num":100
 ,
-"arr": [0,1,"12"] ,
+"arr":[0,1,"12"],
 "str":"string"
 ,
-"bin": <7/ABCDEFG> 
+"bin":<7/ABCDEFG>
 }
 -9.8
 -9.8

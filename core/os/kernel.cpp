@@ -797,7 +797,7 @@ bool Timestamp::GetDateTime(Fields& f, int Timezone) const	// Local Time
 
 bool Timestamp::SetLocalDateTime(const Fields& f)
 {
-	struct tm tmstruct = { f.Second, f.Minute, f.Hour, f.Day, f.Month-1, f.Year-1900, 0, 0, 0 };
+	struct tm tmstruct = { f.Second, f.Minute, f.Hour, f.Day, f.Month-1, f.Year-1900, 0, 0, -1 };
 	__time64_t t;
 #if defined(PLATFORM_WIN)
 	t = _mktime64(&tmstruct);
