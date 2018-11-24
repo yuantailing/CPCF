@@ -159,10 +159,10 @@ struct _JVar
 	DWORD			value_type;
 	
 	template<typename t_V>
-	FORCEINL _JVar(const rt::String_Ref& name, t_V& v, DWORD vt):tagname(name), value(v), value_type(vt){}
-	FORCEINL _JVar(){}
+	_JVar(const rt::String_Ref& name, t_V& v, DWORD vt):tagname(name), value(v), value_type(vt){}
+	_JVar(){}
 	template<typename Prev, typename t_V>
-	FORCEINL _JVar(Prev& n, const rt::String_Ref& name,t_V& v, DWORD vt):tagname(name), value(v), value_type(vt), prev(n){}
+	_JVar(Prev& n, const rt::String_Ref& name,t_V& v, DWORD vt):tagname(name), value(v), value_type(vt), prev(n){}
 
 	bool	IsGhost() const { return tagname.IsEmpty(); }
 
@@ -272,10 +272,14 @@ public:
 	FORCEINL rt::_JArray<t_LEN>& operator , (T&& right){ append(right); return *this; }
 };
 
-#define J_EXPR_CONNECT_OP(type, type_in, vt)	\
-FORCEINL _JVar<LPVOID, type>					\
-operator = (type_in p)							\
-{ return tagname.IsEmpty() ? _JVar<LPVOID, type>(tagname, type(), vt) : _JVar<LPVOID, type>(tagname, p, vt); }
+#define J_EXPR_CONNECT_OP(type, type_in, vt)					\
+FORCEINL _JVar<LPVOID, type>									\
+operator = (type_in p)											\
+{	if(tagname.IsEmpty())										\
+	{	static type __empty_p; 									\
+		return _JVar<LPVOID, type>(tagname, __empty_p, vt); 	\
+	} else { return _JVar<LPVOID, type>(tagname, p, vt); }		\
+}																\
 
 struct _JTag
 {	
