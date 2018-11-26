@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../rt/type_traits.h"
 #include "../../os/multi_thread.h"
 #include "../../os/file_dir.h"
 #include "rocksdb_conf.h"
@@ -29,29 +30,6 @@ public:
 	}
 };
 
-namespace _details
-{
-template<bool is_pod>
-struct SliceType
-{
-	template<typename T> static LPCSTR ptr(const T& v){ return (LPCSTR)&v; }
-	template<typename T> static size_t size(const T& v){ return sizeof(v); }
-};
-template<>
-struct SliceType<false>
-{	
-	static LPCSTR ptr(const rt::String_Ref& i){ return i.Begin(); }
-	static size_t size(const rt::String_Ref& i){ return i.GetLength(); }
-
-	static LPCSTR ptr(const rt::String& i){ return i.Begin(); }
-	static size_t size(const rt::String& i){ return i.GetLength(); }
-
-	static LPCSTR ptr(const std::string& i){ return i.data(); }
-	static size_t size(const std::string& i){ return i.size(); }
-};
-} // namespace _details
-
-
 class SliceValue: public Slice
 {
 protected:
@@ -77,17 +55,13 @@ public:
 
 	template<typename T>
 	INLFUNC SliceValue(const T& x)
-		:Slice(_details::SliceType<rt::TypeTraits<T>::IsPOD>::ptr(x),
-			   _details::SliceType<rt::TypeTraits<T>::IsPOD>::size(x)
-		)
+		:Slice((LPCSTR)rt::GetDataPtr(x), rt::GetDataSize(x))
 	{}
-
 
 	//template<size_t LEN>
 	//INLFUNC SliceValue(char str[LEN]):Slice(str, LEN-1){}
 	//template<size_t LEN>
 	//INLFUNC SliceValue(const char str[LEN]):Slice(str, LEN-1){}
-
 
 	INLFUNC SIZE_T GetSize() const { return size(); }
 

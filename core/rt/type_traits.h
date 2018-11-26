@@ -31,7 +31,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "../os/predefines.h"
-
+#include <float.h>
+#include <tuple>
 
 namespace rt
 {
@@ -457,6 +458,40 @@ INLFUNC auto CallLambda(return_type _def_ret_val, func_type&& func, arg_types&&.
 {
 	return rt::_details::_CallLambda<return_type, decltype(func(std::forward<arg_types>(args)...))>(_def_ret_val, func, std::forward<arg_types>(args)...).retval;
 }
+
+////////////////////////////////////////////////////////
+// Data traits
+namespace _details
+{
+struct _GetDataPtr
+{	LPVOID	_p;
+	template<typename T> auto _Begin(T& x) -> decltype(x.Begin()) { _p = (LPVOID)x.Begin(); return NULL; }
+	template<typename T> auto _Begin(const T& x) -> decltype(x.begin()) { _p = (LPVOID)x.begin(); return NULL; }
+	template<typename T> auto _Begin(T& x) -> decltype(x.c_str()) { _p = (LPVOID)x.c_str(); return NULL; }
+						 void _Begin(...){}
+	template<typename T> _GetDataPtr(T& x){ _p = (LPVOID)&x; }
+};
+
+struct _GetDataSize
+{	SIZE_T	_s;
+	SIZE_T	_s_ele;
+	template<typename T> auto _SizeEle(T& x) -> decltype(sizeof(x[0])) { _s_ele = sizeof(x[0]); return 0; }
+						 void _SizeEle(...){ _s_ele = 1; }
+
+	template<typename T> auto _Size(T& x) -> decltype(x.Size()) { _s = x.Size(); return 0; }
+	template<typename T> auto _Size(T& x) -> decltype(x.GetSize()) { _s = x.GetSize(); return 0; }
+	template<typename T> auto _Size(T& x) -> decltype(x.size()) { _s = x.size(); return 0; }
+	template<typename T> auto _Size(T& x) -> decltype(x.GetLength()) { _s = x.GetLength(); return 0; }
+						 void _Size(...){ _s /= _s_ele; }
+	template<typename T> _GetDataSize(T& x){ _s = sizeof(x); }
+};
+} // namespace _details
+
+template<typename T>
+INLFUNC LPVOID GetDataPtr(T& x){ _details::_GetDataPtr p(x); p._Begin(*rt::_CastToNonconst(&x)); return p._p; }
+
+template<typename T>
+INLFUNC SIZE_T GetDataSize(T& x){ _details::_GetDataSize s(x); s._SizeEle(x); s._Size(x); return s._s * s._s_ele; }
 
 ////////////////////////////////////////////////////////
 // Function traits

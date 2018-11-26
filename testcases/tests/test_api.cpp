@@ -1245,6 +1245,20 @@ void testing_pcqueue()
 void testing_rt()
 {
 	DEF_TEST_SECTION;
+
+	{
+		int					a[4];
+		LONGLONG			b;
+		rt::BufferEx<int>	c;		c.SetSize(10);
+		std::string			d;		d = "1234";
+		rt::String_Ref		e;		e = "89014444";
+
+		_LOG("a = "<<rt::GetDataSize(a)<<" PTR="<<(a == rt::GetDataPtr(a)));
+		_LOG("b = "<<rt::GetDataSize(b)<<" PTR="<<(&b == rt::GetDataPtr(b)));
+		_LOG("c = "<<rt::GetDataSize(c)<<" PTR="<<(c.Begin() == rt::GetDataPtr(c)));
+		_LOG("d = "<<rt::GetDataSize(d)<<" PTR="<<(d.c_str() == rt::GetDataPtr(d)));
+		_LOG("e = "<<rt::GetDataSize(e)<<" PTR="<<(e.Begin() == rt::GetDataPtr(e)));
+	}
 	
 	{	
 		_LOG("sizeof(rt::TypeTraits<MyType>::t_Val) = "<<sizeof(rt::TypeTraits<MyType>::t_Val));
