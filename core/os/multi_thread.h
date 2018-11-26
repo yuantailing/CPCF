@@ -376,17 +376,17 @@ public:
 
 
 #if defined(PLATFORM_DEBUG_BUILD)
-#define _NonrecursiveAssertClass(ln)								\
-	struct MARCO_JOIN(_NonrecursiveAssert,ln)						\
-	{	bool _hit(bool enter)										\
-		{	thread_local static volatile int c = 0;					\
-			if(enter)return os::AtomicIncrement(&c) <= 1;			\
-			else return os::AtomicDecrement(&c) < 1;				\
-		}															\
-		MARCO_JOIN(_NonrecursiveAssert,ln)(){ ASSERT(_hit(true)); }	\
-		MARCO_JOIN(~_NonrecursiveAssert,ln)(){ _hit(false); }		\
-	};																\
-	MARCO_JOIN(_NonrecursiveAssert,ln)		MARCO_JOIN(___nrsa,ln);	\
+#define _NonrecursiveAssertClass(ln)											\
+	struct MARCO_JOIN(_NonrecursiveAssert,ln)									\
+	{	bool _RecursiveCall(bool enter)											\
+		{	thread_local static volatile int c = 0;								\
+			if(enter)return os::AtomicIncrement(&c) <= 1;						\
+			else return os::AtomicDecrement(&c) < 1;							\
+		}																		\
+		MARCO_JOIN(_NonrecursiveAssert,ln)(){ ASSERT(_RecursiveCall(true)); }	\
+		MARCO_JOIN(~_NonrecursiveAssert,ln)(){ _RecursiveCall(false); }			\
+	};																			\
+	MARCO_JOIN(_NonrecursiveAssert,ln)		MARCO_JOIN(___nrsa,ln);				\
 
 #define ASSERT_NONRECURSIVE		_NonrecursiveAssertClass(__LINE__)
 

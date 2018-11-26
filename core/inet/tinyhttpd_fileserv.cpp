@@ -303,9 +303,13 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 void HttpVirtualPath::SetMappedPath(LPCSTR p, bool readonly)
 {
 	_ReadOnly = readonly;
-	_MappedPath = p;
+	os::File::ResolveRelativePath(p, _MappedPath);
+
 	if(_MappedPath.Last() == '\\' || _MappedPath.Last() == '/')
 		_MappedPath = rt::String_Ref(_MappedPath.Begin(),_MappedPath.GetLength()-1);
+
+	if(!os::File::IsExist(_MappedPath))
+		_LOG_WARNING("[HttpVirtualPath::SetMappedPath]: '"<<_MappedPath<<"' not exist");
 }
 
 

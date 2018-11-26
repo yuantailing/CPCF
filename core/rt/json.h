@@ -51,7 +51,7 @@ public:
 		VARTYPE_ARRAY   = 2,
 		VARTYPE_OBJECT  = 3
 	};
-	//FORCEINL _JObj(){}
+	FORCEINL _JObj(){ static rt::SS n("null"); _Ref = n; }
 	FORCEINL explicit _JObj(LPCSTR str, bool bin = false)
 					{	_AsBinary = bin;
 						if(bin){ _Ref = rt::String_Ref(str);			_SetBinLen(); }
@@ -161,16 +161,14 @@ struct _JVar
 			{	_details::_json_CopyPrev(prev, p, len);
 				if(!IsGhost())
 				{	if(len)
-					{	len += 2;
-						p += len;
+					{	len += 2;	p += len;
 						*(WORD*)(p-2) = 0x0a2c; /* ",\n" */ 
 					}
 					int l;
 					*p++='"'; p += (l = (UINT)tagname.CopyTo(p)); *p++='"';
 					*p++=':'; len += l + 3;
 					if(_JObj::VARTYPE_STRING == value_type)
-					{
-						*p++='"';
+					{	*p++='"';
 						p += (l = (UINT)value.CopyTo(p));
 						*p++='"';
 						len += l + 2;
@@ -187,17 +185,15 @@ struct _JVar
 	bool	IsGhost() const { return tagname.IsEmpty(); }
 
 	UINT	GetLength() const
-	{	
-		UINT len = 0;	_GetLength(len);
+	{	UINT len = 0;	_GetLength(len);
 		if(len)return len + 4;
 		return 2;
 	}
 	UINT	CopyTo(LPSTR p) const
-	{	
-		*p++ = '{';	*p++ = '\n';	// L += 2
+	{	*(WORD*)p = 0x0a7b; /* "{\n" */	p+=2;
 		UINT len = 0;
 		_CopyTo(p, len);
-		if(len){ p+=len; *p++ = '\n';	*p++ = '}'; return len + 4; }
+		if(len){ p+=len; *(WORD*)p = 0x7d0a; /* \n} */ return len + 4; }
 		p[-1] = '}';
 		return 2;
 	}

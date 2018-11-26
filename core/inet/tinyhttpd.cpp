@@ -284,7 +284,7 @@ rt::String_Ref inet::HttpResponse::GetHeaderField(LPCSTR name) const
 		LPCSTR end = line;
 		while(*end >= ' ' && end < RemainHeader.End())end++;
 
-		return rt::String_Ref(line,end);
+		return rt::String_Ref(line,end).TrimSpace();
 	}
 
 	return rt::String_Ref();
