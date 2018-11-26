@@ -231,10 +231,10 @@ protected:
 	}
 public:
 	// allow for(iterator : Buffer) syntax (C++ 11)
-	INLFUNC t_Val*			begin(){ return _p; }
-	INLFUNC const t_Val*	begin() const { return _p; }
-	INLFUNC t_Val*			end(){ return _p + GetSize(); }
-	INLFUNC const t_Val*	end() const { return _p + GetSize(); }
+	INLFUNC t_Val*			begin(){ return _SC::_p; }
+	INLFUNC const t_Val*	begin() const { return _SC::_p; }
+	INLFUNC t_Val*			end(){ return _SC::_p + _SC::_len; }
+	INLFUNC const t_Val*	end() const { return _SC::_p + _SC::_len; }
 
 	INLFUNC Buffer(){}
 	INLFUNC Buffer(const t_Val* p, SIZE_T len){ *this = Buffer_Ref<t_Val>(p,len); }

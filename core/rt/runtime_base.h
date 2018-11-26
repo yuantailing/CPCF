@@ -434,7 +434,7 @@ namespace _details
 	static const UINT PRIME2 =  2246822519U;
 	static const UINT PRIME3 =  3266489917U;
 	static const UINT PRIME4 =   668265263U;
-	static const UINT PRIME5 =  0x165667b1;
+	static const UINT PRIME5 =  0x165667b1U;
 
 	// This version is for very small inputs (< 16  bytes)
 	FORCEINL unsigned int xxHash_small(const void* key, int len, unsigned int seed)
@@ -759,6 +759,10 @@ namespace rt
 FORCEINL SIZE_T EnlargeTo32AL(SIZE_T num){ return (((num) + 0x7)&(~((SIZE_T)0x7))); }
 #define _Alloca32AL(sz)	(rt::EnlargeTo32AL((SIZE_T)alloca(sz + 4)))
 #define _StackNew(type)	new (alloca(sizeof(type))) type
+
+#ifndef _alloca
+#define _alloca alloca
+#endif
 
 struct mem32AL
 {

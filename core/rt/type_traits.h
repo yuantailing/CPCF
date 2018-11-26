@@ -31,7 +31,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "../os/predefines.h"
+#include "runtime_base.h"
 #include <float.h>
+#include <limits.h>
 #include <tuple>
 
 namespace rt
