@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../os/kernel.h"
+#include "../../os/multi_thread.h"
+#include "../../os/file_dir.h"
 #include "rocksdb_conf.h"
 
 #include "./include/db.h"

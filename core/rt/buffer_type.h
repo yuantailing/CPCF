@@ -230,6 +230,12 @@ protected:
 		_SafeFree32AL(((LPVOID&)_SC::_p));
 	}
 public:
+	// allow for(iterator : Buffer) syntax (C++ 11)
+	INLFUNC t_Val*			begin(){ return _p; }
+	INLFUNC const t_Val*	begin() const { return _p; }
+	INLFUNC t_Val*			end(){ return _p + GetSize(); }
+	INLFUNC const t_Val*	end() const { return _p + GetSize(); }
+
 	INLFUNC Buffer(){}
 	INLFUNC Buffer(const t_Val* p, SIZE_T len){ *this = Buffer_Ref<t_Val>(p,len); }
 	INLFUNC explicit Buffer(const Buffer_Ref<t_Val> &x){ *this=x; }	//copy ctor should be avoided, use reference for function parameters
