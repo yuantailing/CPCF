@@ -817,13 +817,13 @@ const rt::String_Ref& Precompiler::_Compile(const rt::String_Ref& filename, cons
 		}
 		else
 		{	// C-style line connecting
-			if(line.Last() == '\\')
+			if(!line.IsEmpty() && line.Last() == '\\')
 			{	
 				code.Content += line.TrimRight(1).TrimRightSpace();
 				code.Content += ' ';
 				while(source.GetNextLine(line, false))
 				{	
-					if(line.Last() == '\\')
+					if(!line.IsEmpty() && line.Last() == '\\')
 					{	code.Content += line.TrimRight(1).TrimSpace(); 
 						code.Content += ' ';
 					}
