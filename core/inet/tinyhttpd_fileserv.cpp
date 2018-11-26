@@ -127,10 +127,11 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 	LPBYTE buf = NULL;
 	UINT	fsz;
 
-	if(uri.IsEmpty())return false;
+	ASSERT_NONRECURSIVE;
+	thread_local rt::BufferEx<BYTE>	conv_data;
 
 	rt::String a;
-	if(uri.Last() == '/' && os::File::IsDirectory((a = _MappedPath + uri.TrimRight(1))))
+	if(!uri.IsEmpty() && uri.Last() == '/' && os::File::IsDirectory((a = _MappedPath + uri.TrimRight(1))))
 	{
 		if(resp.HttpVerb == HTTP_GET)
 		{
@@ -219,42 +220,73 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 
 		return true;
 	}
-	else if(uri.Last() != '/')
+	else
 	{
 		if(resp.HttpVerb == HTTP_GET)
 		{	
-			os::File	file;
-			if(	file.Open(_MappedPath + uri) &&
-				(fsz = (UINT)file.GetLength()) < MAX_FILELOAD_SIZE
-			)
-			{
-				ULONGLONG offset = 0;
-				UINT len = (UINT)fsz;
-
-				if(resp.ParseRequestRange(fsz, &offset, &len))
+			a = _MappedPath + uri;
+			if(os::File::IsDirectory(a))
+			{	// index.html/index.htm
+				rt::String q = a + rt::SS("/index.html");
+				rt::String file;
+				bool loaded;
+				if(!(loaded = os::File::IsFile(q)))
 				{
-					if(	(buf = resp.GetWorkSpace(len)) &&
-						file.Seek((SSIZE_T)offset) == offset &&
-						file.Read(buf, len) == len
-					)
-					{	resp.Send(buf, len, TinyHttpd::_GetMIME(resp.URI), offset, offset+len-1, fsz);
-						return true;
+					q.SetLength(q.GetLength()-1);
+					if(!(loaded = os::File::IsFile(q)))
+					{	q = a + rt::SS("/default.html");
+						if(!(loaded = os::File::IsFile(q)))
+						{	
+							q.SetLength(q.GetLength()-1);
+							loaded = os::File::IsFile(q);
+						}
 					}
 				}
-				else
-				{
-					if(	(buf = resp.GetWorkSpace(fsz)) &&
-						file.Read(buf, fsz) == fsz
-					)
-					{	rt::BufferEx<BYTE>	conv_data;
-						if(_HttpDataConv && _HttpDataConv(uri,buf,fsz,conv_data))
-						{
-							resp.Send(conv_data,(int)conv_data.GetSize(),TinyHttpd::_GetMIME(resp.URI),_MaxAge);
-						}
-						else
-							resp.Send(buf,(int)fsz,TinyHttpd::_GetMIME(resp.URI),_MaxAge);
 
-						return true;
+				if(loaded)
+				{
+					a = resp.URI + q.TrimLeft(_MappedPath.GetLength());
+					resp.SendRedirection(HTTP_FOUND, a, (int)a.GetLength());
+				}
+				else
+					resp.SendHttpError(404);
+
+				return true;
+			}
+			else
+			{
+				os::File	file;
+				if(	file.Open(a) &&
+					(fsz = (UINT)file.GetLength()) < MAX_FILELOAD_SIZE
+				)
+				{
+					ULONGLONG offset = 0;
+					UINT len = (UINT)fsz;
+
+					if(resp.ParseRequestRange(fsz, &offset, &len))
+					{
+						if(	(buf = resp.GetWorkSpace(len)) &&
+							file.Seek((SSIZE_T)offset) == offset &&
+							file.Read(buf, len) == len
+						)
+						{	resp.Send(buf, len, TinyHttpd::_GetMIME(resp.URI), offset, offset+len-1, fsz);
+							return true;
+						}
+					}
+					else
+					{
+						if(	(buf = resp.GetWorkSpace(fsz)) &&
+							file.Read(buf, fsz) == fsz
+						)
+						{	if(_HttpDataConv && _HttpDataConv(uri,buf,fsz,conv_data))
+							{
+								resp.Send(conv_data,(int)conv_data.GetSize(),TinyHttpd::_GetMIME(resp.URI),_MaxAge);
+							}
+							else
+								resp.Send(buf,(int)fsz,TinyHttpd::_GetMIME(resp.URI),_MaxAge);
+
+							return true;
+						}
 					}
 				}
 			}

@@ -214,10 +214,10 @@ public:
 	FORCEINL char*			Begin() { return _SC::_p; }	// may NOT terminated by ZERO !!
 	FORCEINL const char*	GetString() const { if(_SC::IsEmpty())return ""; ASSERT(IsZeroTerminated()); return _SC::_p; }
 	FORCEINL const char*	End() const { return _SC::_p+GetLength(); }
-	FORCEINL char&			Last(){ return _SC::_p[GetLength()-1]; }
-	FORCEINL const char&	Last() const { return _SC::_p[GetLength()-1]; }
-	FORCEINL char&			First(){ return _SC::_p[0]; }
-	FORCEINL const char&	First() const { return _SC::_p[0]; }
+	FORCEINL char&			Last()		{ ASSERT(GetLength()); return _SC::_p[GetLength()-1]; }
+	FORCEINL const char&	Last()const	{ ASSERT(GetLength()); return _SC::_p[GetLength()-1]; }
+	FORCEINL char&			First()		{ ASSERT(GetLength()); return _SC::_p[0]; }
+	FORCEINL const char&	First()const{ ASSERT(GetLength()); return _SC::_p[0]; }
 	FORCEINL bool			IsZeroTerminated() const { return _SC::_p && _SC::_p[GetLength()] == 0; }
 	template<typename t_Str>
 	FORCEINL void			ToString(t_Str& str){ str = *this; }

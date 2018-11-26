@@ -146,18 +146,22 @@ public:
 	//void	SetTime_LastAccess(__time64_t x);
 	//void	SetTime_LastModify(__time64_t x);
 
-	static  bool CreateDirectory(LPCSTR path);
-	static  bool CreateDirectories(LPCSTR path, bool path_is_file = true);	// create intermediate subdirectories if necessary, 
+	static bool CreateDirectory(LPCSTR path);
+	static bool CreateDirectories(LPCSTR path, bool path_is_file = true);	// create intermediate subdirectories if necessary, 
 																		// if file_mode is true, last segment will be treated as file name. e.g. a/b/c/d/e, the folder a/b/c/d will be created, e is regard as the filename
-	static	bool IsDirectory(LPCSTR path);
-	static	bool IsExist(LPCSTR fn);
-	static	bool ProbeAvailableFilename(LPCSTR fn, rt::String& fn_out);	// true, confliction found, false no confliction, fn_out will not be set in this case
-	static	bool Remove(LPCSTR fn, bool secure = false);
-	static  bool RemoveDirectory(LPCSTR path);
-	static	bool Rename(LPCSTR fn,LPCSTR new_fn);
-	static  void GetCurrentDirectory(rt::String& out);
-	static  bool SetCurrentDirectory(LPCSTR path);
-	static  void ResolveRelativePath(LPCSTR path, rt::String& fn_out);
+	static bool IsDirectory(LPCSTR path);
+	static bool IsFile(LPCSTR path);
+	static bool IsExist(LPCSTR fn);
+	static bool ProbeAvailableFilename(LPCSTR fn, rt::String& fn_out);	// true, confliction found, false no confliction, fn_out will not be set in this case
+	static bool Remove(LPCSTR fn, bool secure = false);
+	static bool RemoveDirectory(LPCSTR path);
+	static bool Rename(LPCSTR fn,LPCSTR new_fn);
+	static void GetCurrentDirectory(rt::String& out);
+	static bool SetCurrentDirectory(LPCSTR path);
+	static void ResolveRelativePath(LPCSTR path, rt::String& fn_out);
+	static bool	GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify);	// handles file and directory, feed NULL if not interested
+	static bool	SetPathTime(LPCSTR pathname, __time64_t last_access, __time64_t last_modify);	// zero for not set
+	static bool	MoveFile(LPCSTR from, LPCSTR to, bool overwrite = true);	// will try move if fail, try copy & delete
 
 	//static	bool Copy(LPCSTR fn,LPCSTR new_fn,bool no_overwrite = false){ return ::CopyFile(fn,new_fn,no_overwrite); }
 	//static	bool Move(LPCSTR fn,LPCSTR new_fn,bool no_overwrite = false){ return ::MoveFileEx(fn,new_fn,MOVEFILE_COPY_ALLOWED|(no_overwrite?0:MOVEFILE_REPLACE_EXISTING)); }
@@ -167,13 +171,11 @@ public:
 	__time64_t	GetTime_Creation() const { __time64_t x=0; return GetFileTime(&x, NULL, NULL)?x:0; }
 	__time64_t	GetTime_LastAccess() const { __time64_t x=0; return GetFileTime(NULL, &x, NULL)?x:0; }
 	__time64_t	GetTime_LastModify() const { __time64_t x=0; return GetFileTime(NULL, NULL, &x)?x:0; }
-	bool GetFileTime(__time64_t* creation,__time64_t* last_access,__time64_t* last_modify) const;
-	bool SetFileTime(__time64_t last_access, __time64_t last_modify) const; // zero for not set
-	static  bool GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify);	// handles file and directory, feed NULL if not interested
-	static  bool SetPathTime(LPCSTR pathname, __time64_t last_access, __time64_t last_modify);	// zero for not set
-	static  bool MoveFile(LPCSTR from, LPCSTR to, bool overwrite = true);	// will try move if fail, try copy & delete
-	static  ULONGLONG	GetFileSize(LPCSTR pathname);
-	ULONGLONG	GetFileSize() const;
+	bool		GetFileTime(__time64_t* creation,__time64_t* last_access,__time64_t* last_modify) const;
+	bool		SetFileTime(__time64_t last_access, __time64_t last_modify) const; // zero for not set
+
+	static ULONGLONG	GetFileSize(LPCSTR pathname);
+	ULONGLONG			GetFileSize() const;
 
 	static bool LoadText(LPCSTR fn, rt::String& out, UINT expire_sec = rt::TypeTraits<UINT>::MaxVal());
 	static bool SaveText(LPCSTR fn, const rt::String_Ref& in, bool add_utf8_signature = true, bool append = false);

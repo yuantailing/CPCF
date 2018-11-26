@@ -402,6 +402,12 @@ bool os::File::IsDirectory(LPCSTR path)
 	return _GetFileStat(path,stat) && (stat.st_mode & _S_IFDIR);
 }
 
+bool os::File::IsFile(LPCSTR path)
+{
+	struct _stat stat;
+	return _GetFileStat(path,stat) && (0==(stat.st_mode & _S_IFDIR));
+}
+
 bool os::File::IsExist(LPCSTR fn)
 {
 	struct _stat stat;
