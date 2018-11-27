@@ -760,7 +760,8 @@ FORCEINL SIZE_T EnlargeTo32AL(SIZE_T num){ return (((num) + 0x7)&(~((SIZE_T)0x7)
 #define _Alloca32AL(sz)	(rt::EnlargeTo32AL((SIZE_T)alloca(sz + 4)))
 #define _StackNew(type)	new (alloca(sizeof(type))) type
 
-#ifndef _alloca
+
+#ifndef PLATFORM_WIN
 #define _alloca alloca
 #endif
 
