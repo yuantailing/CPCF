@@ -139,10 +139,9 @@ namespace _details
 		struct _thread_class:public os::Thread
 		{	void __clear_after_run(DWORD exitcode)
 			{	ExitCode = exitcode;
-				if(hThread)
-				{	__release_handle(hThread);
-					hThread = NULL;
-				}
+                while(!hThread)os::Sleep(10); // creator thread is blocked
+				__release_handle(hThread);
+				hThread = NULL;
 			}
 		};
 		FUNC_THREAD_ROUTE	x;
