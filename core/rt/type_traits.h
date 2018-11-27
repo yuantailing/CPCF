@@ -203,6 +203,7 @@ namespace _details
 }
 
 #define TYPETRAITS_DECLARE_POD	public: static const bool __IsPOD = true;
+#define TYPETRAITS_DECLARE_VARSIZE_POD	public: static const bool __IsVarSizePOD = true;
 
 #else
 
@@ -465,13 +466,21 @@ INLFUNC auto CallLambda(return_type _def_ret_val, func_type&& func, arg_types&&.
 // Data traits
 namespace _details
 {
+struct __PodRequired {};
+template<typename pod_required, typename T, bool is_pod = rt::TypeTraits<T>::IsPOD>
+struct _PodAssert {};
+	template<typename T>
+	struct _PodAssert<__PodRequired, T, false>
+	{	_PodAssert(){ ASSERT_STATIC(0); }	};	// T should be a POD
+
 struct _GetDataPtr
 {	LPVOID	_p;
 	template<typename T> auto _Begin(T* x) -> decltype(x->Begin()) { _p = (LPVOID)x->Begin(); return NULL; }
 	template<typename T> auto _Begin(const T* x) -> decltype(x->begin()) { _p = (LPVOID)x->begin(); return NULL; }
+	template<typename T> auto _Begin(const T* x) -> decltype(x->__IsVarSizePOD) { _p = (LPVOID)x; return NULL; }
 	template<typename T> auto _Begin(T* x) -> decltype(x->c_str()) { _p = (LPVOID)x->c_str(); return NULL; }
-						 void _Begin(...){}
-	template<typename T> _GetDataPtr(T& x){ _p = (LPVOID)&x; }
+				__PodRequired _Begin(...){ return __PodRequired(); }
+	template<typename T>	  _GetDataPtr(T& x){ _p = (LPVOID)&x; }
 };
 
 struct _GetDataSize
@@ -484,16 +493,27 @@ struct _GetDataSize
 	template<typename T> auto _Size(T* x) -> decltype(x->GetSize()) { _s = x->GetSize(); return 0; }
 	template<typename T> auto _Size(T* x) -> decltype(x->size()) { _s = x->size(); return 0; }
 	template<typename T> auto _Size(T* x) -> decltype(x->GetLength()) { _s = x->GetLength(); return 0; }
-						 void _Size(...){ _s /= _s_ele; }
-	template<typename T> _GetDataSize(T& x){ _s = sizeof(x); }
+				__PodRequired _Size(...){ _s /= _s_ele; return __PodRequired(); }
+	template<typename T>	  _GetDataSize(T& x){ _s = sizeof(x); }
 };
 } // namespace _details
 
 template<typename T>
-INLFUNC LPVOID GetDataPtr(T& x){ _details::_GetDataPtr p(x); p._Begin(rt::_CastToNonconst(&x)); return p._p; }
+INLFUNC LPVOID GetDataPtr(T& x)
+{	_details::_GetDataPtr p(x);
+	auto r = p._Begin(rt::_CastToNonconst(&x));
+	_details::_PodAssert<decltype(r), T> _a;	_a = _a;
+	return p._p; 
+}
 
 template<typename T>
-INLFUNC SIZE_T GetDataSize(T& x){ _details::_GetDataSize s(x); s._SizeEle(&x); s._Size(&x); return s._s * s._s_ele; }
+INLFUNC SIZE_T GetDataSize(T& x)
+{	_details::_GetDataSize s(x);
+	s._SizeEle(&x);
+	auto r = s._Size(&x);
+	_details::_PodAssert<decltype(r), T> _a;	_a = _a;
+	return s._s * s._s_ele;
+}
 
 ////////////////////////////////////////////////////////
 // Function traits
