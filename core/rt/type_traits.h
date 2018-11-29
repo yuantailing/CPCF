@@ -469,9 +469,9 @@ namespace _details
 struct __PodRequired {};
 template<typename pod_required, typename T, bool is_pod = rt::TypeTraits<T>::IsPOD>
 struct _PodAssert {};
-	template<typename T>
-	struct _PodAssert<__PodRequired, T, false>
-	{	_PodAssert(){ ASSERT_STATIC(0); }	};	// T should be a POD
+	template<typename T, bool is_pod>
+	struct _PodAssert<__PodRequired, T, is_pod>
+	{	_PodAssert(){ ASSERT_STATIC(is_pod); }	};	// T should be a POD
 
 struct _GetDataPtr
 {	LPVOID	_p;
