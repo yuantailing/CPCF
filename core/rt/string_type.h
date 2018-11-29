@@ -175,6 +175,10 @@ struct CharacterSet_Symbol: public CharacterSet_AlphabetDigits		// C/C++ Symbol
 	}
 };
 
+struct CharacterSet_Printable: public CharacterSet_Symbol
+{	FORCEINL CharacterSet_Printable():CharacterSet_Symbol(".{}[]|\\\"';:,<>?/-=+`~!@#$%^&*()"){}
+};
+
 namespace _details
 {
 	struct _StringPtrStore
@@ -850,6 +854,7 @@ public:
 	FORCEINL void SetLength(SIZE_T len){ _SC::_len = rt::min(_SC::_len, len+1); }
 public:
 	FORCEINL String_Ref& Replace(char a, char b){ ((_SC*)this)->Replace(a,b); return *this; }
+	FORCEINL String_Ref& Replace(const CharacterSet& a, char b){ ((_SC*)this)->Replace(a,b); return *this; }
 	template<typename T1, typename TString>
 	FORCEINL UINT ReplaceTo(const T1& a, const String_Ref& b, TString& replaced) const // replace all a with b in the current string, low performance, return # of replacement
 	{	SIZE_T a_len = rt::String_Ref(a).GetLength();

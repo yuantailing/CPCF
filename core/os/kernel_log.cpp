@@ -21,6 +21,37 @@ static rt::String		_LogPrompt;
 
 #endif
 
+#if defined(PLATFORM_WIN)
+void _CreateConsole()
+{
+	if(::GetConsoleWindow() == NULL)
+	{
+#pragma warning(disable:4311)
+		// allocate a console for this app
+		AllocConsole();
+		// set the screen buffer to be big enough to let us scroll text
+        CONSOLE_SCREEN_BUFFER_INFO coninfo;
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+		coninfo.dwSize.Y = 9999;
+		// How many lines do you want to have in the console buffer
+		SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+        // redirect unbuffered STDOUT to the console
+        freopen("CONOUT$", "w", stdout);
+		setvbuf(stdout, NULL, _IONBF, 0);
+		// redirect unbuffered STDIN to the console
+        freopen("CONIN$", "r", stdin);
+		setvbuf(stdin, NULL, _IONBF, 0);
+		// redirect unbuffered STDERR to the console
+        freopen("CONOUT$", "w", stderr);
+        setvbuf(stderr, NULL, _IONBF, 0);
+
+		// make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog point to console as well
+		std::ios::sync_with_stdio();
+#pragma warning(default:4311)
+	}
+}
+#endif
+
 os::Thread				_LogInputPump;
 ConsoleInputHandler*	_pLogInputHandler = NULL;
 rt::String				_ConsoleRepeatCommand;
@@ -32,13 +63,10 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 	os::CommandLine cmd;
 
 #ifdef PLATFORM_WIN
+	ASSERT(::GetConsoleWindow());
 	// If thread start without console, _kbhit() will return 0 forever
-	AllocConsole();
-#else
-	// Should we do something for other platforms?
-#endif
-
-	
+	// Console will be created when EnableConsoleInput is called, or the first _LOG is printed
+#endif // other platforms don't use _kbhit
 
 	while(!_LogInputPump.WantExit())
 	{
@@ -69,11 +97,12 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 			}
 		}
 
+		cmdbuf[0] = 0;
 		fgets(cmdbuf, API_CMDLINE_BUFSIZE, stdin);
 
 #ifdef PLATFORM_WIN
 		// take care CJK 
-		int mb_len = (int)strlen(cmdbuf);
+		int mb_len = (int)rt::String_Ref(cmdbuf).TrimRightSpace().GetLength();
 		LPWSTR utf16 = (LPWSTR)alloca((1 + mb_len*2)*sizeof(WCHAR));
 		int utf16_len = MultiByteToWideChar(CP_THREAD_ACP, 0, cmdbuf, mb_len, utf16, 1 + mb_len*2);
 		mb_len = (int)os::UTF8Encode(utf16, utf16_len, cmdbuf);
@@ -124,6 +153,10 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 
 void EnableConsoleInput(ConsoleInputHandler* input_handler, LPCSTR prompt)
 {
+#ifdef PLATFORM_WIN
+	_details::_CreateConsole();
+#endif
+
 	if(input_handler)
 	{
 		os::SetLogConsolePrompt(prompt);
@@ -270,41 +303,7 @@ namespace _details
 {
 	void __ConsoleLogWriteDefault(LPCSTR log, int type, LPVOID)
 	{	
-		static bool ConsoleCreated = false;
-
-		if(!ConsoleCreated)
-		{
-			if(::GetConsoleWindow()){ ConsoleCreated = true; }
-			else
-			{
-#pragma warning(disable:4311)
-				// allocate a console for this app
-				AllocConsole();
-				// set the screen buffer to be big enough to let us scroll text
-                CONSOLE_SCREEN_BUFFER_INFO coninfo;
-                GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
-				coninfo.dwSize.Y = 9999;
-				// How many lines do you want to have in the console buffer
-				SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
-                // redirect unbuffered STDOUT to the console
-                freopen("CONOUT$", "w", stdout);
-				setvbuf(stdout, NULL, _IONBF, 0);
-				// redirect unbuffered STDIN to the console
-                freopen("CONIN$", "r", stdin);
-				setvbuf(stdin, NULL, _IONBF, 0);
-				// redirect unbuffered STDERR to the console
-                freopen("CONOUT$", "w", stderr);
-                setvbuf(stderr, NULL, _IONBF, 0);
-
-				// make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog point to console as well
-				std::ios::sync_with_stdio();
-
-				HWND hConsoleWnd = ::GetConsoleWindow();
-				ASSERT(hConsoleWnd);
-				ConsoleCreated = true;
-#pragma warning(default:4311)
-			}
-		}
+		_details::_CreateConsole();
 
 		int color[] = { 8, 8, 7, 10, 14, 12 };
 		SetConsoleTextAttribute(GetStdHandle( STD_OUTPUT_HANDLE ), color[type&rt::LOGTYPE_LEVEL_MASK]);
