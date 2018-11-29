@@ -31,6 +31,15 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 	static const int API_CMDLINE_BUFSIZE = 2048;
 	os::CommandLine cmd;
 
+#ifdef PLATFORM_WIN
+	// If thread start without console, _kbhit() will return 0 forever
+	AllocConsole();
+#else
+	// Should we do something for other platforms?
+#endif
+
+	
+
 	while(!_LogInputPump.WantExit())
 	{
 #ifdef PLATFORM_WIN
