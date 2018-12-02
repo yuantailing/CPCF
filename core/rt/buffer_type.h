@@ -120,6 +120,32 @@ public:
 			if(_p[i] == x)return i;
 		return -1;
 	}
+	INLFUNC t_Val& MaxValue()
+	{	ASSERT(GetSize());		auto* mp = &_p[0];
+		for(t_Index i=1;i<GetSize();i++)if(*mp < _p[i]){ mp = &_p[i]; }
+		return *mp;
+	}
+	INLFUNC const t_Val& MaxValue() const { return rt::_CastToNonconst(this)->MaxValue(); }
+	INLFUNC t_SignedIndex Max() const
+	{	if(GetSize())
+		{	auto* mp = &_p[0];	t_SignedIndex m = 0;
+			for(t_Index i=1;i<GetSize();i++)if(*mp < _p[i]){ mp = &_p[i]; m = i; }
+			return m;
+		}else return -1;
+	}
+	INLFUNC t_Val& MinValue()
+	{	ASSERT(GetSize());		auto* mp = &_p[0];
+		for(t_Index i=1;i<GetSize();i++)if(_p[i] < *mp){ mp = &_p[i]; }
+		return *mp;
+	}
+	INLFUNC const t_Val& MinValue() const { return rt::_CastToNonconst(this)->MinValue(); }
+	INLFUNC t_SignedIndex Min() const
+	{	if(GetSize())
+		{	auto* mp = &_p[0];	t_SignedIndex m = 0;
+			for(t_Index i=1;i<GetSize();i++)if(_p[i] < *mp){ mp = &_p[i]; m = i; }
+			return m;
+		}else return -1;
+	}
 	INLFUNC t_SignedIndex SearchSortedItem(const t_Val& x) const // binary search
 	{	return std::find(Begin(), End(), x) - Begin();
 	}
@@ -127,7 +153,6 @@ public:
 	{	return std::lower_bound(Begin(), End(), x) - Begin();
 	}
 	INLFUNC void Zero(){ memset((LPVOID)_p, 0, _len*sizeof(t_Val)); }
-
 	template<typename T>
 	INLFUNC void CopyFrom(const Buffer_Ref<T>& x)
 	{	ASSERT(GetSize() == x.GetSize());
