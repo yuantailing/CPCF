@@ -851,7 +851,7 @@ public:
 		return *this;
 	}
 	FORCEINL static const String_Ref& EmptyString(){ static const rt::String_Ref _empty; return _empty; }
-	FORCEINL bool SetLength(SIZE_T len){ if(len<=GetLength()){ _SC::_len = len; return true; } return false; }
+	FORCEINL bool SetLength(SIZE_T len){ if(len<=GetLength()){ _SC::_len = len + 1; return true; } return false; }
 public:
 	FORCEINL String_Ref& Replace(char a, char b){ ((_SC*)this)->Replace(a,b); return *this; }
 	FORCEINL String_Ref& Replace(const CharacterSet& a, char b){ ((_SC*)this)->Replace(a,b); return *this; }
@@ -1491,7 +1491,10 @@ public:
 	static const bool IsNumeric = false;
 };
 
-} 
+}
+
+#define ALLOCA_STRING(name, size)		rt::String_Ref name((LPSTR)alloca(size), size);
+
 
 
 namespace rt

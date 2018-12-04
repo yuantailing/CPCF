@@ -141,7 +141,7 @@ public:
 		}else return false;
 	}
 	template<typename t_NUM>
-	INLFUNC t_NUM Get(const SliceValue& k, t_NUM default_val = 0, ReadOptions* opt = NULL) const
+	INLFUNC t_NUM GetAs(const SliceValue& k, t_NUM default_val = 0, ReadOptions* opt = NULL) const
 	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
@@ -285,6 +285,10 @@ public:
 	}
 };
 
+#define ALLOCA_DBKEY(varname, ...)	auto	varname##_strexp = __VA_ARGS__;	\
+									char*	varname##_buf = (char*)alloca(varname##_strexp.GetLength());	\
+									UINT	varname##_strlen = (UINT)varname##_strexp.CopyTo(varname##_buf); \
+									SliceValue varname(varname##_buf, varname##_strlen); \
 
 } // namespace rocksdb
 

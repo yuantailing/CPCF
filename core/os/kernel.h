@@ -849,7 +849,9 @@ struct Base32LowercaseOnStack: public ::rt::tos::S_<1, LEN>
 };
 
 struct Base64: public String
-{	Base64(LPCVOID pData, SIZE_T len)
+{	
+	Base64(const rt::String_Ref& data):Base64(data.Begin(), data.GetLength()){}
+	Base64(LPCVOID pData, SIZE_T len)
 	{	SetLength(os::Base64EncodeLength((UINT)len));
 		os::Base64Encode(Begin(), pData,(UINT)len);
 	}

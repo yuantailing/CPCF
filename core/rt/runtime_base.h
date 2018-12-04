@@ -1207,15 +1207,16 @@ public:
 	template<typename... Params>
 	ObjectPlaceHolder<T>&	Reinit(Params&&... args){ Term(); new (_Place) T(std::forward<Params>(args)...); _bInit = true; return *this; }
 
-	T&			Object(){ return *(T*)_Place; }
-	const T&	Object() const { return *(const T*)_Place; }
+	T&						Object(){ return *(T*)_Place; }
+	const T&				Object() const { return *(const T*)_Place; }
+	bool					IsInitialized() const { return _bInit; }
 
-	operator T& (){ ASSERT(_bInit); return *(T*)_Place; }
-	operator const T& () const { ASSERT(_bInit); return *(const T*)_Place; }
-	operator T* (){ ASSERT(_bInit); return (T*)_Place; }
-	operator const T* () const { ASSERT(_bInit); return (const T*)_Place; }
+	operator T&			(){ ASSERT(_bInit); return *(T*)_Place; }
+	operator const T&	() const { ASSERT(_bInit); return *(const T*)_Place; }
+	operator T*			(){ ASSERT(_bInit); return (T*)_Place; }
+	operator const T*	() const { ASSERT(_bInit); return (const T*)_Place; }
 
-	T* operator ->(){ ASSERT(_bInit); return (T*)_Place; }
+	T* operator ->		(){ ASSERT(_bInit); return (T*)_Place; }
 	const T* operator ->() const { ASSERT(_bInit); return (const T*)_Place; }
 };
 
