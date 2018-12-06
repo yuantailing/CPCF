@@ -541,6 +541,19 @@ public:
 		}
 		return default_val;
 	}
+	INLFUNC const rt::String_Ref GetValue(const rt::String_Ref& xpath, bool& p_exist, bool bDoNotSplitDot = false)	// xxx.yyy.zzz
+	{	if(xpath.IsEmpty())return _Doc;
+		LPCSTR p, tail;
+		if((p = _LocateValue(xpath, bDoNotSplitDot)))
+		{	p_exist = true;
+			if((tail = _seek_json_object_closure(p,_Doc.End())))
+			{	_cook_raw_value(p, tail);
+				return rt::String_Ref(p, tail);
+			}
+		}
+		p_exist = false;
+		return NULL;
+	}
 	template<typename T>
 	INLFUNC T GetValueAs(const rt::String_Ref& xpath, T default_val)
 	{	rt::String_Ref s = GetValue(xpath);
