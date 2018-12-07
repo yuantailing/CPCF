@@ -573,11 +573,16 @@ public:
     struct Info
     {
         UINT            PID;
+		UINT			ParentPID;
         rt::String      Name;
         os::Timestamp   StartTime;
     };
-    static void Populate(rt::Buffer<Info>& list_out);
-	static bool Search(Info& out, const rt::String_Ref& process_substr);
+    static void		Populate(rt::Buffer<Info>& list_out);
+	static bool		Search(Info& out, const rt::String_Ref& process_substr);
+	static UINT		CurrentId();
+	static UINT		CurrentParentId();
+	static bool		IsRunning(UINT pid);
+	static void		Terminate(UINT pid);
 };
 
 #if defined(PLATFORM_WIN)

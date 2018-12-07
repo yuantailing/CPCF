@@ -10,6 +10,7 @@
 #include <io.h> 
 #include <Psapi.h>
 #include <sys/utime.h>
+#include <tlhelp32.h>
 
 #else
 
@@ -2383,6 +2384,50 @@ void os::Process::Populate(rt::Buffer<Info>& list_out)
 	}
 }
 
+UINT os::Process::CurrentId()
+{
+	return ::GetCurrentProcessId();
+}
+
+UINT os::Process::CurrentParentId()
+{
+	UINT pid = CurrentId();
+	HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+	PROCESSENTRY32W procentry;
+	procentry.dwSize = sizeof(PROCESSENTRY32);
+	bool bContinue = Process32First(hSnapShot, &procentry);
+    while( bContinue )
+    {
+	   if(pid == procentry.th32ProcessID)
+	   {
+		   ::CloseHandle(hSnapShot);
+		   return procentry.th32ParentProcessID;
+	   }
+
+       procentry.dwSize = sizeof(PROCESSENTRY32) ;
+       bContinue = Process32Next(hSnapShot, &procentry);
+    }//while ends
+
+	::CloseHandle(hSnapShot);
+	return 0;
+}
+
+bool os::Process::IsRunning(UINT pid)
+{
+	DWORD ids[2048];
+	DWORD count;
+
+	if(::EnumProcesses(ids, sizeof(ids), &count))
+	{
+		for(UINT i=0; i<count; i++)
+			if(pid == ids[i])return true;
+	}
+
+	return false;
+}
+
+
 bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
 {
 	DWORD ids[2048];
@@ -2427,6 +2472,17 @@ bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
 	return false;
 }
 
+void os::Process::Terminate(UINT pid)
+{
+	HANDLE h = ::OpenProcess(PROCESS_TERMINATE, false, pid);
+	if(h != INVALID_HANDLE_VALUE)
+	{
+		::TerminateProcess(h, -1);
+		::CloseHandle(h);
+	}	
+}
+
+
 #elif defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
 void os::Process::Populate(rt::Buffer<Info>& list_out)
 {
@@ -2457,6 +2513,30 @@ void os::Process::Populate(rt::Buffer<Info>& list_out)
         list_out[i].PID = (UINT)process[i].kp_proc.p_pid;
     }
 }
+
+bool os::Process::IsRunning(UINT pid)
+{
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
+    size_t miblen = 4;
+	UINT self = os::GetProcessId();
+    
+    size_t size;
+    int st = sysctl(mib, (u_int)miblen, NULL, &size, NULL, 0);
+    
+    rt::Buffer<BYTE> buf;
+    VERIFY(buf.SetSize((size_t)(size*1.25f)));
+    
+    struct kinfo_proc * process = (struct kinfo_proc *)buf.Begin();
+    
+    st = sysctl(mib, (u_int)miblen, process, &size, NULL, 0);
+    
+    UINT co = (UINT)(size/sizeof(kinfo_proc));
+	for(UINT i=0;i<co;i++)
+		if(process[i].kp_proc.p_pid == pid)return true;
+
+	return false;
+}
+
 bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
 {
 	rt::String pn = process_substr;
@@ -2489,6 +2569,22 @@ bool os::Process::Search(Info& list_out, const rt::String_Ref& process_substr)
     }
 	return false;
 }
+
+UINT os::Process::CurrentId()
+{
+	return getpid();
+}
+
+UINT os::Process::CurrentParentId()
+{
+	return getppid();
+}
+
+void os::Process::Terminate(UINT pid)
+{
+	kill(pid, 0);
+}
+
 #else
 void os::Process::Populate(rt::Buffer<Info>& list_out)
 {
@@ -2537,6 +2633,41 @@ void os::Process::Populate(rt::Buffer<Info>& list_out)
 		else list_out[i].StartTime = 0;
 	}
 }
+
+bool os::Process::IsRunning(UINT pid_in)
+{
+	DIR* d = opendir("/proc");
+	struct dirent * de;
+	
+	while((de = readdir(d)) != 0){
+		if(isdigit(de->d_name[0])){
+			int pid = atoi(de->d_name);
+			if(pid == pid_in)
+			{
+				closedir(d);
+				return true;
+			}
+		}
+	}
+	
+	closedir(d);
+}
+
+UINT os::Process::CurrentId()
+{
+	return getpid();
+}
+
+UINT os::Process::CurrentParentId()
+{
+	return getppid();
+}
+
+void os::Process::Terminate(UINT pid)
+{
+	kill(pid, 0);
+}
+
 #endif
 
 
