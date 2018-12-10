@@ -16,6 +16,7 @@
 
 #include <unistd.h>
 #include <dirent.h>
+#include <signal.h>
 
 namespace os
 {
