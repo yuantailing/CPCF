@@ -236,7 +236,10 @@ public:
 	{	int ret = memcmp(_SC::_p,x.Begin(),min(GetLength(),x.GetLength())*sizeof(char));
 		return (ret < 0) || (ret==0 && (GetLength() < x.GetLength()));
 	}
-
+	template< class StrT >
+	FORCEINL bool	IsReferring(const StrT& x)  // (*this) is a part of x
+	{	return Begin() >= x.Begin() && (End() <= x.End());
+	}
 public:
 	FORCEINL t_String_Ref SubStrTail(SIZE_T len) const { return len > GetLength() ? *this : t_String_Ref(_SC::_p+GetLength()-len, len); }
 	FORCEINL t_String_Ref SubStrHead(SIZE_T len) const { return t_String_Ref(_SC::_p,rt::min(len,GetLength())); }
