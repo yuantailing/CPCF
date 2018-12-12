@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- place in C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Packages\Debugger\Visualizers\cpcf.natvis -->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="rt::String">
+    <DisplayString Condition="_len == 0">null</DisplayString>
+    <DisplayString Condition="_len == 1">empty</DisplayString>
+    <DisplayString>{_p,s}</DisplayString>
+	<StringView>_p,s</StringView>
+  </Type>
+  <Type Name="rt::String_Ref">
+   <DisplayString Condition="_len == 0">null</DisplayString>
+   <DisplayString Condition="_len == 1">empty</DisplayString>
+   <DisplayString>{_p,s}</DisplayString>
+	<Expand> 
+		<Item Name="Begin">_p</Item> 
+		<Item Name="End">_p + _len - 1</Item> 
+		<ArrayItems Condition="_len > 1"> 
+		  <Size>_len - 1</Size> 
+		  <ValuePointer>_p</ValuePointer> 
+		</ArrayItems> 
+	</Expand> 
+  </Type>
+</AutoVisualizer>
