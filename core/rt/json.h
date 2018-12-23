@@ -673,7 +673,9 @@ public:
 	{	Override(base, rt::String(sub), derived, append);
 	}
 	static void Override(const rt::String_Ref& base, const rt::String_Ref& sub, rt::String& derived, bool append = false)
-	{	typedef rt::hash_map<rt::String_Ref, rt::String_Ref, rt::String_Ref::hash_compare> t_ValList;
+	{	
+		ASSERT(base.Begin() != sub.Begin());
+		typedef rt::hash_map<rt::String_Ref, rt::String_Ref, rt::String_Ref::hash_compare> t_ValList;
 		t_ValList	vals;
 		{	JsonKeyValuePair kv;
 			JsonObject base_doc(base);

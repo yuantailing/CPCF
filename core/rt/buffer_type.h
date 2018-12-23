@@ -373,7 +373,7 @@ public:
 	}
 	INLFUNC SIZE_T GetSize() const { return Buffer<t_Val>::GetSize(); } // make Visual Studio happy
 	INLFUNC bool Clear(){ return SetSize(0); }
-	INLFUNC bool ChangeSize(SIZE_T new_size) // Original data at front is preserved
+	INLFUNC bool ChangeSize(SIZE_T new_size, bool keep_old_data = true) // Original data at front is preserved
 	{	if( new_size == Buffer<t_Val>::_len )return true;
 		if( new_size<Buffer<t_Val>::_len ){ return Buffer<t_Val>::ChangeSize(new_size); }
 		else 
@@ -387,7 +387,8 @@ public:
 					if(pNewBuffer){}else{ return false; }
 				}
 				// copy old elements
-				memcpy(pNewBuffer,Buffer<t_Val>::_p,sizeof(t_Val)*Buffer<t_Val>::_len);
+				if(keep_old_data)
+					memcpy(pNewBuffer,Buffer<t_Val>::_p,sizeof(t_Val)*Buffer<t_Val>::_len);
 				_SafeFree32AL(Buffer<t_Val>::_p);
 				Buffer<t_Val>::_p = (t_Val*)pNewBuffer;
 			}

@@ -1,23 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- place in C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Packages\Debugger\Visualizers\cpcf.natvis -->
+<!-- place in C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Packages\Debugger\Visualizers\cpf.natvis -->
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="rt::String">
     <DisplayString Condition="_len == 0">null</DisplayString>
     <DisplayString Condition="_len == 1">empty</DisplayString>
     <DisplayString>{_p,s}</DisplayString>
-	<StringView>_p,s</StringView>
+	  <StringView>_p,s</StringView>
+    <Expand>
+      <Item Condition="_len > 1" Name="First">_p</Item>
+      <Item Condition="_len > 1" Name="Last">_p + _len - 2</Item>
+      <Item Condition="_len > 1" Name="Length">_len - 1</Item>
+      <ArrayItems Condition="_len > 1">
+        <Size>_len - 1</Size>
+        <ValuePointer>_p</ValuePointer>
+      </ArrayItems>
+    </Expand>
   </Type>
   <Type Name="rt::String_Ref">
    <DisplayString Condition="_len == 0">null</DisplayString>
    <DisplayString Condition="_len == 1">empty</DisplayString>
    <DisplayString>{_p,s}</DisplayString>
 	<Expand> 
-		<Item Name="Begin">_p</Item> 
-		<Item Name="End">_p + _len - 1</Item> 
-		<ArrayItems Condition="_len > 1"> 
+		<Item Condition="_len > 1" Name="First">_p</Item> 
+		<Item Condition="_len > 1" Name="Last">_p + _len - 2</Item>
+    <Item Condition="_len > 1" Name="Length">_len - 1</Item>
+    <ArrayItems Condition="_len > 1"> 
 		  <Size>_len - 1</Size> 
 		  <ValuePointer>_p</ValuePointer> 
 		</ArrayItems> 
 	</Expand> 
+  </Type>
+  <Type Name="rt::Buffer&lt;*&gt;">
+    <DisplayString>{_p,s}</DisplayString>
+    <Expand>
+      <Item Condition="_len > 0" Name="First">_p</Item>
+      <Item Condition="_len > 0" Name="Last">_p + _len - 1</Item>
+      <Item Name="Length">_len</Item>
+      <ArrayItems Condition="_len > 0">
+        <Size>_len</Size>
+        <ValuePointer>_p</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="rt::BufferEx&lt;*&gt;">
+    <DisplayString>{_p,s}</DisplayString>
+    <Expand>
+      <Item Condition="_len > 0" Name="First">_p</Item>
+      <Item Condition="_len > 0" Name="Last">_p + _len - 1</Item>
+      <Item Name="Length">_len</Item>
+      <ArrayItems Condition="_len > 0">
+        <Size>_len</Size>
+        <ValuePointer>_p</ValuePointer>
+      </ArrayItems>
+    </Expand>
   </Type>
 </AutoVisualizer>

@@ -340,8 +340,9 @@ public:
 		_SC::_len = open+1;
 		return *this;
 	}
-	FORCEINL void Fill(CHAR x)
-	{	for(SIZE_T i=0;i<GetLength();i++)_SC::_p[i] = x;
+	FORCEINL t_String_Ref Fill(CHAR c = 0)
+	{	memset(_SC::_p, c, GetLength());
+		return *this;
 	}
 	FORCEINL bool	operator == (const char* in) const { return *this == t_String_Ref(in); }
 	FORCEINL bool	operator == (const t_String_Ref & in) const

@@ -848,6 +848,20 @@ struct Base32LowercaseOnStack: public ::rt::tos::S_<1, LEN>
 	}
 };
 
+template<UINT LEN = 256>
+struct Base16OnStack: public ::rt::tos::S_<1, LEN>
+{	typedef ::rt::tos::S_<1, LEN> _SC;
+	Base16OnStack(LPCVOID pData, SIZE_T len)
+	{	int slen = (int)os::Base16EncodeLength((UINT)len);
+		ASSERT(slen < LEN);
+		os::Base16Encode(_SC::_p, pData,(UINT)len);
+		_SC::_p[slen] = 0;
+		_SC::_len = slen + 1;
+	}
+	template<typename T>
+	Base16OnStack(const T& x):Base16OnStack(&x, sizeof(x)){}
+};
+
 struct Base64: public String
 {	
 	Base64(const rt::String_Ref& data):Base64(data.Begin(), data.GetLength()){}
