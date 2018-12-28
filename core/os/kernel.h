@@ -230,7 +230,7 @@ extern bool CreateRegKey(HKEY root, LPCWSTR regkey);
 
 #endif
 
-extern bool	OpenDefaultBrowser(LPCSTR url, DWORD show_window);
+extern bool	OpenDefaultBrowser(LPCSTR url);
 extern void SetPreferenceLocation(const rt::String_Ref& app_name);
 extern INT	LoadPreference(const rt::String_Ref& keyname, INT   default_value);
 extern bool	SavePreference(const rt::String_Ref& keyname, INT   value);

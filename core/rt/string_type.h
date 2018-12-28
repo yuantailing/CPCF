@@ -1160,8 +1160,8 @@ public:
 	FORCEINL StringFixed(){ _SC::_len = 0; }
 	template<typename T>
 	FORCEINL StringFixed(const T& x)
-	{	ASSERT(SetLength(x.GetLength()));
-		VERIFY(x.CopyTo(_SC::_p) == x.GetLength());
+	{	if(SetLength(x.GetLength()))
+			VERIFY(x.CopyTo(_SC::_p) == x.GetLength());
 	}
 	FORCEINL bool SetLength(SIZE_T sz)
 	{	if(sz <= LEN){ _SC::_len = sz+1; _SC::_p[sz] = 0; return true; }
@@ -1171,18 +1171,30 @@ public:
 	FORCEINL const StringFixed& operator = (char* x){ *this = String_Ref(x); return *this; }
 	FORCEINL const StringFixed& operator = (const String_Ref& x)
 	{	if(!x.IsEmpty())
-		{	VERIFY(SetLength(x.GetLength()));	// handle the case of x = substring of x
-			memcpy(_SC::_p,x.Begin(),_SC::GetLength());
+		{	if(SetLength(x.GetLength()))	// handle the case of x = substring of x
+				memcpy(_SC::_p,x.Begin(),_SC::GetLength());
 		}else{ _SC::Empty(); }
 		return *this;
 	}
 	template<typename T>
 	FORCEINL const StringFixed& operator = (const T& string_expr)
 	{	SIZE_T len = string_expr.GetLength();
-		VERIFY(SetLength(len));
-		VERIFY(len == string_expr.CopyTo(_SC::_p));
+		if(SetLength(len))
+			VERIFY(len == string_expr.CopyTo(_SC::_p));
 		return *this;
 	}
+	template<typename T>
+	FORCEINL const T& operator += (const T& string_expr)
+	{	SIZE_T len = string_expr.GetLength();
+		if(len + _len < LEN)
+		{	VERIFY(len == string_expr.CopyTo(_p+GetLength()));
+			_p[len+GetLength()] = '\0';
+			_len = len + GetLength() + 1;
+		}
+		return string_expr;
+	}
+	FORCEINL LPCSTR operator += (LPCSTR str){ (*this) += rt::String_Ref(str); return str; }
+	FORCEINL void operator += (char x){ SIZE_T pos = GetLength(); if(SetLength(pos+1))_p[pos] = x; }
 };
 
 class String: public String_Ref
@@ -1270,14 +1282,14 @@ public:
 		return string_expr;
 	}
 	FORCEINL LPCSTR operator += (LPCSTR str){ (*this) += rt::String_Ref(str); return str; }
+	FORCEINL void operator += (char x){ SIZE_T pos = GetLength(); SetLength(pos+1); _p[pos] = x; }
 private:
 	FORCEINL bool ParseNextNumber(UINT& out){ ASSERT(0); return false; } // ParseNextNumber cannot be used on a String
 public:
-	FORCEINL void RecalculateLength(){ if(_p){ _len = strlen(_p) + 1; }else{ _len = 0; } }
 	FORCEINL operator LPCSTR () const { ASSERT(!_p || !_p[GetLength()]); return _p; }
 	FORCEINL operator LPSTR () { if(_p){ ASSERT(!_p[GetLength()]); } return _p; }
 	FORCEINL String_Ref RemoveCharacters(const rt::CharacterSet& s){ String_Ref::RemoveCharacters(s); if(!IsEmpty())_p[_len-1] = 0; return *this; }
-	FORCEINL void operator += (char x){ SIZE_T pos = GetLength(); SetLength(pos+1); _p[pos] = x; }
+	FORCEINL void		RecalculateLength(){ if(_p){ _len = strlen(_p) + 1; }else{ _len = 0; } }
 	FORCEINL SSIZE_T	FindString(const char* pSub, SIZE_T skip_first = 0) const // return -1 if not found
 	{	return (skip_first<GetLength() && (pSub=strstr(Begin()+skip_first,pSub)))?(int)(pSub-Begin()):-1;
 	}

@@ -2397,7 +2397,7 @@ UINT os::Process::CurrentParentId()
 
 	PROCESSENTRY32W procentry;
 	procentry.dwSize = sizeof(PROCESSENTRY32);
-	bool bContinue = Process32First(hSnapShot, &procentry);
+	bool bContinue = Process32FirstW(hSnapShot, &procentry);
     while( bContinue )
     {
 	   if(pid == procentry.th32ProcessID)
@@ -2407,7 +2407,7 @@ UINT os::Process::CurrentParentId()
 	   }
 
        procentry.dwSize = sizeof(PROCESSENTRY32) ;
-       bContinue = Process32Next(hSnapShot, &procentry);
+       bContinue = Process32NextW(hSnapShot, &procentry);
     }//while ends
 
 	::CloseHandle(hSnapShot);

@@ -1399,7 +1399,7 @@ void os::DeleteRegKeyValue(HKEY root, LPCWSTR regkey, LPCWSTR value_name)
 	if(key)::RegCloseKey(key);
 }
 
-bool os::OpenDefaultBrowser(LPCSTR url, DWORD show_window)
+bool os::OpenDefaultBrowser(LPCSTR url)
 {
 	WCHAR file[MAX_PATH+MAX_PATH];
 	if(LoadRegKeyString(HKEY_CLASSES_ROOT, L"HTTP\\shell\\open\\command", NULL, file, MAX_PATH+MAX_PATH))
@@ -1420,7 +1420,7 @@ bool os::OpenDefaultBrowser(LPCSTR url, DWORD show_window)
 		STARTUPINFOW si;
 		ZeroMemory(&si,sizeof(si));
 		si.cb = sizeof(si);
-		si.wShowWindow = (WORD)show_window;
+		si.wShowWindow = SW_SHOW;
 
 		PROCESS_INFORMATION pi;
 		if(::CreateProcessW(NULL,os::__UTF16(str).Begin(),NULL,NULL,false,0,NULL,NULL,&si,&pi))
@@ -1434,10 +1434,9 @@ bool os::OpenDefaultBrowser(LPCSTR url, DWORD show_window)
 	struct _open_url: public os::Thread
 	{
 		os::__UTF16		url;
-		DWORD			show_window;
 		static DWORD _call(LPVOID p)
 		{	
-			::ShellExecuteW(NULL,L"open",((_open_url*)p)->url,NULL,NULL,((_open_url*)p)->show_window);
+			::ShellExecuteW(NULL,L"open",((_open_url*)p)->url,NULL,NULL,SW_SHOW);
 			delete ((_open_url*)p);
 			return os::Thread::THREAD_OBJECT_DELETED_ON_RETURN;
 		};
@@ -1445,7 +1444,6 @@ bool os::OpenDefaultBrowser(LPCSTR url, DWORD show_window)
 
 	_open_url* p = new _open_url;
 	p->url = url;
-	p->show_window = show_window;
 	p->Create(_open_url::_call, p);
 
 	return true;
@@ -1460,7 +1458,7 @@ bool os::OpenDefaultBrowser(LPCSTR url, DWORD show_window)
 #include <CoreFoundation/CFBundle.h>
 #include <ApplicationServices/ApplicationServices.h>
 
-bool os::OpenDefaultBrowser(LPCSTR url_in, DWORD show_window)
+bool os::OpenDefaultBrowser(LPCSTR url_in)
 {
     CFURLRef url = CFURLCreateWithBytes (
                                          NULL,                  // allocator
@@ -1475,7 +1473,7 @@ bool os::OpenDefaultBrowser(LPCSTR url_in, DWORD show_window)
 }
 #else
 
-bool os::OpenDefaultBrowser(LPCSTR url_in, DWORD show_window)
+bool os::OpenDefaultBrowser(LPCSTR url_in)
 {
 	return 0 == system(rt::SS("xdg-open \"") + url_in + '"');
 }

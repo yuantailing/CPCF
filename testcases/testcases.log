@@ -1,5 +1,10 @@
 ﻿ 
 ==== testing_rt ====
+a = 16 PTR=1
+b = 8 PTR=1
+c = 40 PTR=1
+d = 4 PTR=1
+e = 8 PTR=1
 sizeof(rt::TypeTraits<MyType>::t_Val) = 8
 rt::TypeTraits<MyType>::IsPOD = 1
 sizeof(rt::TypeTraits<MyTypeTR>::t_Val) = 8

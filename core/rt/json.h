@@ -216,13 +216,12 @@ namespace _details
 	struct _NeedQuote<const rt::String_Ref*>{ static const int need = 1; };
 }
 
-template<int t_LEN = 2048>
+template<typename t_String = rt::StringFixed<1024>>  // or StringFixed<LEN>
 class _JArray
 {
-	char	_buf[t_LEN];
-	UINT	_len;
+	t_String	_buf;
 public:
-	FORCEINL _JArray(){ _buf[0] = '['; _len = 1; }
+	FORCEINL _JArray(){ _buf = "["; }
 
 #define JA_NUMERIC_ITEM(numeric_type)	FORCEINL void append(numeric_type x){ append(rt::tos::Number(x), false); }
 	JA_NUMERIC_ITEM(bool)
@@ -246,33 +245,27 @@ public:
 
 	template<typename T>
 	FORCEINL void	append(const T& obj, bool need_quote = (bool)rt::_details::_NeedQuote<const T*>::need)
-	{	if(_len != 1)
-		{	_buf[_len++] = ',';
-			//_buf[_len++] = '\n';
+	{	if(_buf.GetLength() != 1)
+		{	_buf += ',';
 		}
 		if(need_quote)
-		{
-			_buf[_len++] = '"';
-			_len += (UINT)obj.CopyTo(_buf+_len);
-			_buf[_len++] = '"';
-			ASSERT(_len < t_LEN);
+		{	_buf += '"';
+			_buf += obj;
+			_buf += '"';
 		}
 		else
-		{
-			_len += (UINT)obj.CopyTo(_buf+_len);
-			ASSERT(_len < t_LEN);
+		{	_buf += obj;
 		}
 	}
-	FORCEINL UINT	GetLength() const { return _len + 1; }
+	FORCEINL UINT	GetLength() const { return (UINT)(_buf.GetLength() + 1); }
 	FORCEINL UINT	CopyTo(LPSTR p) const 
-	{	memcpy(p, _buf, _len);
-		//p[_len] = '\n';
-		p[_len] = ']';
-		return _len+1;
+	{	_buf.CopyTo(p);
+		p[_buf.GetLength()] = ']';
+		return (UINT)(_buf.GetLength()+1);
 	}
 	
 	template<typename T>
-	FORCEINL rt::_JArray<t_LEN>& operator , (T&& right){ append(right); return *this; }
+	FORCEINL rt::_JArray<t_String>& operator , (T&& right){ append(right); return *this; }
 };
 
 #define J_EXPR_CONNECT_OP(type, type_in, vt)					\
@@ -319,9 +312,9 @@ struct _JTag
 	{	return _JVar<LPVOID, _O<const _JVar<prev, type>> >(tagname, p, _JObj::VARTYPE_OBJECT);
 	}
 
-	template<int t_LEN>
-	FORCEINL auto operator = (const _JArray<t_LEN>& p)
-	{	return _JVar<LPVOID, _O<const _JArray<t_LEN>> >(tagname, p, _JObj::VARTYPE_ARRAY);
+	template<typename T>
+	FORCEINL auto operator = (const _JArray<T>& p)
+	{	return _JVar<LPVOID, _O<const _JArray<T>> >(tagname, p, _JObj::VARTYPE_ARRAY);
 	}
 
 	template<typename t_Left, typename t_Right>
