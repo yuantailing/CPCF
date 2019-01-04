@@ -480,6 +480,7 @@ void os::File::ResolveRelativePath(LPCSTR path, rt::String& fn_out)
         temp += '/';
         temp += input;
         input = temp;
+		fn_out.Empty();
     }
     else
     {   rt::Swap(temp, fn_out);

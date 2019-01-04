@@ -1186,15 +1186,15 @@ public:
 	template<typename T>
 	FORCEINL const T& operator += (const T& string_expr)
 	{	SIZE_T len = string_expr.GetLength();
-		if(len + _len < LEN)
-		{	VERIFY(len == string_expr.CopyTo(_p+GetLength()));
-			_p[len+GetLength()] = '\0';
-			_len = len + GetLength() + 1;
+		if(len + _SC::_len < LEN)
+		{	VERIFY(len == string_expr.CopyTo(_SC::_p+_SC::GetLength()));
+			_SC::_p[len+_SC::GetLength()] = '\0';
+			_SC::_len = len + _SC::GetLength() + 1;
 		}
 		return string_expr;
 	}
 	FORCEINL LPCSTR operator += (LPCSTR str){ (*this) += rt::String_Ref(str); return str; }
-	FORCEINL void operator += (char x){ SIZE_T pos = GetLength(); if(SetLength(pos+1))_p[pos] = x; }
+	FORCEINL void operator += (char x){ SIZE_T pos = _SC::GetLength(); if(SetLength(pos+1))_SC::_p[pos] = x; }
 };
 
 class String: public String_Ref
