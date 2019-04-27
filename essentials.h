@@ -39,6 +39,7 @@
 #include "./core/os/high_level.h"
 #include "./core/os/kernel.h"
 #include "./core/os/multi_thread.h"
+#include "./core/inet/inet.h"
 
 /*** Compiler/Linker Options on Linux ***/
 // C++ Compiler Options: -std=c++14;-pthread
