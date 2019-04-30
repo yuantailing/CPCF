@@ -322,18 +322,23 @@ namespace _details
 
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
+#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
 			{	putchar('\r');
 				fputs(&clear_len[sizeof(clear_len) - 3 - _details::_LogPrompt.GetLength()], stdout);
 			}
+#endif // #ifndef PLATFORM_DISABLE_LOG
+
 
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
 				puts(mb);
 
 			SetConsoleTextAttribute(GetStdHandle( STD_OUTPUT_HANDLE ), color[2]);
 
+#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
 				fputs(_details::_LogPrompt, stdout);
+#endif // #ifndef PLATFORM_DISABLE_LOG
 
 			_last_updating = false;
 		}
@@ -406,16 +411,20 @@ namespace _details
 		fputs(color[type&rt::LOGTYPE_LEVEL_MASK], stdout);
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
+#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
                 fputs("\r                                                                \r", stdout);
-			
+#endif 
+
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
 				puts(mb);
 			
 			fputs("\033[0m", stdout);
 			
+#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
 				fputs(_details::_LogPrompt, stdout);
+#endif 
 				
 			fflush(stdout);
 			_last_is_updating = false;
