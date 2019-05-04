@@ -780,9 +780,9 @@ public:
 };
 
 
-#define TSM_UPDATE(contain, object)		os::_details::_TSM_Updater<decltype(contain)> object(contain, false)
-#define TSM_SET(contain, object)		os::_details::_TSM_Updater<decltype(contain)> object(contain, false); object.ReadyModify(true)
-#define TSM_TRYUPDATE(contain, object)	os::_details::_TSM_Updater<decltype(contain)> object(contain, true)
+#define TSM_UPDATE(org_obj, new_obj)	os::_details::_TSM_Updater<decltype(org_obj)> new_obj(org_obj, false)
+#define TSM_SET(org_obj, new_obj)		os::_details::_TSM_Updater<decltype(org_obj)> new_obj(org_obj, false); new_obj.ReadyModify(true)
+#define TSM_TRYUPDATE(org_obj, new_obj)	os::_details::_TSM_Updater<decltype(org_obj)> new_obj(org_obj, true)
 
 
 template<class t_ObjFactory>

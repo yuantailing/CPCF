@@ -475,8 +475,10 @@ class CommandLine
 		rt::String	Value;
 	};
 protected:
+	rt::String					_CommandLine;
 	rt::BufferEx<rt::String>	_Arguments; // Text
 	rt::BufferEx<_opt>			_Options;
+	void						_Parse(int argc, char* argv[]);	// for _tmain
 
 public:
 	CommandLine();
@@ -530,6 +532,8 @@ public:
 
 	UINT	GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
 	LPCSTR	GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
+
+	LPCSTR	GetOriginalLine() const { return _CommandLine; }
 
 	UINT	GetOptionCount()const{ return (UINT)_Options.GetSize(); }
 	LPCSTR	GetOptionName(UINT idx)const{ return _Options[idx].Name; }

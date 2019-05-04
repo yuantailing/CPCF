@@ -1805,11 +1805,20 @@ void os::CommandLine::Parse(int argc, char* argv[])	// for _tmain
 	if(!_details::__FirstCommandLine)
 		_details::__FirstCommandLine = this;
 
+	_Parse(argc, argv);
+
+	for(int i=1;i<argc;i++)
+	{	
+		_CommandLine += rt::String_Ref(argv[i]);
+		if(i+1 < argc)_CommandLine += ' ';
+	}
+}
+
+void os::CommandLine::_Parse(int argc, char* argv[])	// for _tmain
+{
 	ASSERT(argc>=0);
-	_Arguments.SetSize();
-	_Options.SetSize();
-	
-	for(UINT i=1;i<(UINT)argc;i++)
+		
+	for(int i=1;i<argc;i++)
 	{	
 		if(argv[i][0] == '/' || argv[i][0] == '-')
 		{	// is option
@@ -1842,13 +1851,16 @@ void os::CommandLine::Empty()
 {
 	_Arguments.SetSize();
 	_Options.SetSize();
+	_CommandLine.Empty();
 }
 
 void os::CommandLine::Parse(LPCSTR pCmdLine)
 {	
 	Empty();
 
-	rt::String	cmdline(rt::String_Ref(pCmdLine).TrimSpace());
+	_CommandLine = rt::String_Ref(pCmdLine).TrimSpace();
+
+	rt::String	cmdline(_CommandLine);
 	if(cmdline.IsEmpty())return;
 
 	LPSTR pCmd = cmdline.Begin();
@@ -1884,7 +1896,7 @@ void os::CommandLine::Parse(LPCSTR pCmdLine)
 		pCmd++;
 	}
 
-	Parse((int)argv.GetSize(),argv);
+	_Parse((int)argv.GetSize(),argv);
 }
 
 void os::CommandLine::SubstituteOptions(rt::String& string, const rt::String_Ref& prefix, const rt::String_Ref& suffix) const
