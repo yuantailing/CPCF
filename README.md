@@ -72,3 +72,5 @@ CPCF embeds the Intel IPP 7.1.1 and the MKL 11.3.3. (Static linking libraries) f
 * RocksDB: https://rocksdb.org/
 * Snappy: https://github.com/google/snappy
 * zlib: https://zlib.net/
+* concurrentqueue: https://github.com/cameron314/concurrentqueue
+* Google sparsehash: http://goog-sparsehash.sourceforge.net/
