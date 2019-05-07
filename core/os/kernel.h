@@ -192,6 +192,7 @@ extern int  GetLastError();
 extern void GetHostName(rt::String& name);
 extern void GetLogonUserName(rt::String& name);
 extern void GetExecutableFilename(rt::String& name);
+extern void GetCPUBrand(rt::String& brand);
 extern UINT GetNumberOfProcessors();
 extern UINT GetNumberOfPhysicalProcessors();
 extern void CPUID(unsigned i, unsigned regs[4]);

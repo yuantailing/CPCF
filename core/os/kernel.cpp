@@ -228,6 +228,29 @@ bool os::GetProcessMemoryLoad(SIZE_T* vmem, SIZE_T* phy_mem)
 	return false;
 }
 
+void os::GetCPUBrand(rt::String& brand)
+{
+	unsigned CPUInfo[4];
+	unsigned   nExIds, i = 0;
+	char CPUBrandString[0x40];
+	// Get the information associated with each extended ID.
+	CPUID(0x80000000, CPUInfo);
+	nExIds = CPUInfo[0];
+	for (i = 0x80000000; i <= nExIds; ++i)
+	{
+		CPUID(i, CPUInfo);
+		// Interpret CPU brand string
+		if (i == 0x80000002)
+			memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
+		else if (i == 0x80000003)
+			memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
+		else if (i == 0x80000004)
+			memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+	}
+	//string includes manufacturer, model and clockspeed
+	brand = CPUBrandString;
+}
+
 UINT os::GetNumberOfProcessors()
 {
 #if defined(PLATFORM_WIN)
