@@ -180,7 +180,10 @@ void RenderContext::Destroy()
 #if		defined(PLATFORM_WIN)
 	wglDeleteContext(rc);
 	rc = NULL;
+#pragma warning(push)
+#pragma warning(disable:4302)
 	if( ((DWORD)AssocWnd) != 0xffffffff )
+#pragma warning(pop)
 		ReleaseDC(AssocWnd,dc);
 	dc = NULL;
 #elif	defined(PLATFORM_MAC)
