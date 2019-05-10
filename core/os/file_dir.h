@@ -493,6 +493,7 @@ public:
 	explicit CommandLine(LPCWSTR pCmdLine){ Parse(pCmdLine); }
 #endif
 
+	void	ParseURI(const rt::String_Ref& path, const rt::String_Ref& query);
 	void	Parse(int argc, char* argv[]);	// for _tmain
 	void	Parse(LPCSTR pCmdLine);			// for _twmain
 	explicit CommandLine(int argc, char* argv[]){ Parse(argc, argv); }

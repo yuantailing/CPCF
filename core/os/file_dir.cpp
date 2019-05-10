@@ -1847,6 +1847,36 @@ void os::CommandLine::_Parse(int argc, char* argv[])	// for _tmain
 	}
 }
 
+void os::CommandLine::ParseURI(const rt::String_Ref& path, const rt::String_Ref& query)
+{
+	Empty();
+
+	_CommandLine = path;
+	if(!query.IsEmpty())
+	{	_CommandLine += '?';
+		_CommandLine += query;
+	}
+
+	rt::String_Ref seg[256];
+	UINT co = path.Split(seg, sizeofArray(seg), " \t\r\n");
+	for(UINT i=0; i<co; i++)
+	{
+		_Arguments.push_back(seg[i]);
+	}
+
+	co = query.Split(seg, sizeofArray(seg), '&');
+	for(UINT i=0; i<co; i++)
+	{
+		auto e = seg[i].FindCharacter('=');
+		if(e>0)
+		{
+			auto& opt = _Options.push_back();
+			opt.Name = seg[i].SubStr(0, e);
+			opt.Value = seg[i].SubStr(e+1);
+		}
+	}
+}
+
 void os::CommandLine::Empty()
 {
 	_Arguments.SetSize();

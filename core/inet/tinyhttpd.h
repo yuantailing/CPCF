@@ -54,16 +54,12 @@ typedef bool (*FUNC_WebAssetsConvertion)(const rt::String_Ref& fn, LPCVOID data,
 
 struct HttpEndpoint
 {	
-	volatile int _RefCount;
 protected:
 	rt::String					L1_Path;
 	FUNC_HTTP_HANLDER			Handler;
-	FUNC_HTTP_HANLDER_RELEASE	Releaser;
 public:
 	const rt::String_Ref&	GetEndPoint() const { return L1_Path; }
 	void	SetEndPoint(LPCSTR path){ L1_Path = path; }
-	void	AddRef(){ os::AtomicIncrement(&_RefCount); }
-	void	Release(){ if(os::AtomicDecrement(&_RefCount) == 0)Releaser(this); }
 	bool	HandleRequest(HttpResponse* resp){ return Handler(resp, this); }
 };
 
@@ -168,13 +164,8 @@ class HttpHandler:public HttpEndpoint
 		{	return tDerived::OnRequest(resp); }
 	};
 	static bool _endpoint_handler(HttpResponse* resp, HttpEndpoint* pThis){ return ((_tDerived_wrap*)pThis)->OnRequest(*resp); }
-	static void _endpoint_releaser(HttpEndpoint* pThis){ delete (tDerived*)pThis; }
 protected:
-	HttpHandler()
-	{	_RefCount = 1;
-		Handler = _endpoint_handler;
-		Releaser = _endpoint_releaser;
-	}
+	HttpHandler(){ Handler = _endpoint_handler; }
 };
 
 class TinyHttpd
@@ -278,11 +269,12 @@ public:
 	TinyHttpd(void);
 	~TinyHttpd(void);
 	void	ReplaceEndpoint(LPHTTPENDPOINT ep);
-	bool	SetEndpoints(LPHTTPENDPOINT* ep, UINT count);	// httpd will NOT manage the lifecycle of eps, but will keep it alive when using endpoints by AddRef/Release
+	bool	SetEndpoints(LPHTTPENDPOINT* ep, UINT count);	// httpd will NOT manage the lifecycle of eps
 	bool	Start(int port, int concurrency = 0);	 // bind to all local addresses
 	void	SetConcurrencyRestricted(bool restricted = true);
 	bool	Start(const InetAddr& bind, int concurrency = 0){ return Start(&bind, 1, concurrency); }
 	bool	Start(const InetAddr* pBindAddress, int address_count, int concurrency = 0);
+	bool	IsRunning() const { return m_Listeners.GetSize(); }
 	void	Stop();
 	void	SetHangingTimeout(UINT msec = 10000){ m_IOHangTimeout = msec; }
 

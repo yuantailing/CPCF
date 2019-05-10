@@ -645,7 +645,7 @@ inet::TinyHttpd::_Response::~_Response()
 
 bool inet::TinyHttpd::_Response::ExtendRecvBuf()
 {
-	LPSTR p = _Malloc32AL(char,_RecvBufSize*2);
+	LPSTR p = _Malloc32AL(char,_RecvBufSize*2+1);  // 1 is for the tailing zero
 	if(p)
 	{	memcpy(p,_RecvBuf,_RecvBufUsed);
 		_RecvBufSize = _RecvBufSize*2;
@@ -791,6 +791,7 @@ REQUEST_DATA_IS_READY:
 	RemainHeader = rt::String_Ref(tail+2, hlen - (int)((LPSTR)tail+2-hdr) - 2);
 
 	Body = rt::String_Ref(&_RecvBuf[_RequestHeaderSize], &_RecvBuf[_RecvBufUsedExpected]);
+	_RecvBuf[_RecvBufUsedExpected] = 0;
 
 	// no range allowed
 	// if(strstr(RemainHeader.Begin(),"Range: "))return HTTP_FAIL;
@@ -877,13 +878,13 @@ WAIT_NEXT_REQUEST:
 		{	os::Sleep(50);
 			continue;
 		}
-		// receiving request
+		// receiving request and close
 		for(;;)
 		{
 			if(response.GetBufRemain() < HTTP_RECV_BLOCK)response.ExtendRecvBuf();
 			UINT recv_len = 0;
 			response._SocketAccepted.Recv(response._RecvBuf + response._RecvBufUsed,response.GetBufRemain(),recv_len);
-			//int i = recv(response._Socket,response._RecvBuf + response._RecvBufUsed,response.GetBufRemain(),0);
+
 			if(recv_len>0)
 			{	response._RecvBufUsed += recv_len;
 				UINT ret = response.OnDataRecv(recv_len);
@@ -895,6 +896,7 @@ WAIT_NEXT_REQUEST:
 			os::Sleep(50);
 			goto WAIT_NEXT_REQUEST;
 		}
+
 REQUEST_IS_READY:
 		if(m_IsConcurrencyRestricted)
 		{
@@ -902,6 +904,7 @@ REQUEST_IS_READY:
 			{
 				os::AtomicDecrement(&__ConcurrencyCount);
 				response.SendHttpError(503);
+				response._SocketAccepted.Close();
 				continue;
 			}
 		}
@@ -921,11 +924,8 @@ REQUEST_IS_READY:
 
 			if(p!=EndPoints.end())
 			{	
-				p->second->AddRef();
-				bool ret = p->second->HandleRequest(&response);
-				p->second->Release();
-				
-				if(!ret)response.SendHttpError(400);
+				bool ret = p->second->HandleRequest(&response);			
+				if(!ret)response.SendHttpError(501);
 			}
 			else
 			{	
@@ -943,16 +943,19 @@ REQUEST_IS_READY:
 	}
 }
 
-bool inet::HttpRequestEcho::OnRequest(HttpResponse& response)
+bool inet::HttpRequestEcho::OnRequest(HttpResponse& resp)
 {
-	response.SendChuncked_Begin(TinyHttpd::_MIMEs[TinyHttpd::MIME_TEXT]);
-		response.SendChuncked("URL: ",5);
-		response.SendChuncked(response.URI);
-		response.SendChuncked("\nQuery: ",6);
-		if(!response.Query.IsEmpty())response.SendChuncked(response.Query);
-		response.SendChuncked("\nRest of HTTP Header: \n",6);
-		response.SendChuncked(response.RemainHeader);
-	response.SendChuncked_End();
+	resp.SendChuncked_Begin(TinyHttpd::_MIMEs[TinyHttpd::MIME_TEXT]);
+		resp.SendChuncked(rt::SS("URL: "));
+		resp.SendChuncked(resp.URI);
+		resp.SendChuncked(rt::SS("\nQuery: "));
+		if(!resp.Query.IsEmpty())resp.SendChuncked(resp.Query);
+		if(!resp.Body.IsEmpty())
+			resp.SendChuncked(rt::SS("\nPostData :") + resp.Body.GetLength() + 'b');
+		resp.SendChuncked(rt::SS("\n\n** Rest of HTTP Header **\n"));
+		resp.SendChuncked(resp.RemainHeader);
+	resp.SendChuncked_End();
 
 	return true;
 }
+
