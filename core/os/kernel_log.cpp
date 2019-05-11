@@ -303,6 +303,7 @@ namespace _details
 {
 	void __ConsoleLogWriteDefault(LPCSTR log, int type, LPVOID)
 	{	
+#ifndef PLATFORM_DISABLE_LOG
 		_details::_CreateConsole();
 
 		int color[] = { 8, 8, 7, 10, 14, 12 };
@@ -322,23 +323,18 @@ namespace _details
 
 		if((type&rt::LOGTYPE_LEVEL_MASK) != rt::LOGTYPE_UPDATING)
 		{
-#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
 			{	putchar('\r');
 				fputs(&clear_len[sizeof(clear_len) - 3 - _details::_LogPrompt.GetLength()], stdout);
 			}
-#endif // #ifndef PLATFORM_DISABLE_LOG
-
 
 			if((type&rt::LOGTYPE_IN_CONSOLE_PROMPT) == 0)
 				puts(mb);
 
 			SetConsoleTextAttribute(GetStdHandle( STD_OUTPUT_HANDLE ), color[2]);
 
-#ifndef PLATFORM_DISABLE_LOG
 			if(!_details::_LogPrompt.IsEmpty())
 				fputs(_details::_LogPrompt, stdout);
-#endif // #ifndef PLATFORM_DISABLE_LOG
 
 			_last_updating = false;
 		}
@@ -349,6 +345,7 @@ namespace _details
 			fflush(stdout);
 			SetConsoleTextAttribute(GetStdHandle( STD_OUTPUT_HANDLE ), color[2]);
 		}
+#endif // #ifndef PLATFORM_DISABLE_LOG
 	}
 }
 

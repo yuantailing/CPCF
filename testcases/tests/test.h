@@ -41,6 +41,8 @@ void test_ipp_major_color();
 void test_express_tk();
 void test_ipp_zip();
 
+void callback_to_member_function();
+
 void image_to_text();
 
 

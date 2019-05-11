@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		testing_rt();
+		callback_to_member_function();
 		return;
 	}
 	else
