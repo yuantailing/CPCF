@@ -23,7 +23,8 @@ struct vFun
 
 struct non_vFun
 {
-	__declspec(noinline) void func(){}
+	//__declspec(noinline) 
+	void func(){}
 };
 
 template<typename T>
@@ -47,7 +48,8 @@ void callback_to_member_function()
 	auto		funptr = &non_vFun::func;
 	LPVOID		memfunc = (LPVOID&)funptr;
 	struct CallWithSameFunctionSignature
-	{	__declspec(noinline) void func(){}
+	{	
+		void func(){}
 	};
 	typedef	void (__thiscall CallWithSameFunctionSignature::* t_func)();
 
@@ -60,6 +62,8 @@ void callback_to_member_function()
 	};
 	typedef	void (*t_callback_func)(LPVOID cookie);
 	t_callback_func cbfunc = &cb::func;
+	
+	_LOG(sizeof(t_func));
 
 
 	auto lambda = [&nvf]()
@@ -83,7 +87,7 @@ void callback_to_member_function()
 	tm.Restart();
 	for(size_t i=0; i<t; i++)
 	{
-		(((CallWithSameFunctionSignature*)obj)->*(t_func&)memfunc)();
+		(((CallWithSameFunctionSignature*&)obj)->*(t_func&)memfunc)();
 	}
 	_LOG("Member Function Pointer: "<<t*1000000/tm.TimeLapse()<<" cps");
 

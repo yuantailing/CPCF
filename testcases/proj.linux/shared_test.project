@@ -13,6 +13,7 @@
       <File Name="../tests/test_http.cpp"/>
       <File Name="../tests/test_ipp.cpp"/>
       <File Name="../tests/test_library.cpp"/>
+      <File Name="../tests/test_perf.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="CPCF">
       <File Name="../../essentials.cpp"/>
@@ -26,8 +27,6 @@
       <File Name="../../core/ext/lib_inc.c"/>
       <File Name="../../core/rt/xml_xhtml.cpp"/>
       <File Name="../../core/rt/xml_xhtml.h"/>
-      <File Name="../../core/inet/inet.cpp"/>
-      <File Name="../../core/inet/inet.h"/>
       <File Name="../../core/ext/ipp/ipp_core.cpp"/>
       <File Name="../../core/ext/ipp/ipp_core.h"/>
       <File Name="../../core/inet/http_client.cpp"/>
@@ -74,7 +73,7 @@
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(IntermediateDirectory)/$(ProjectName)" CommandArguments="/verify" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="." PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(IntermediateDirectory)/$(ProjectName)" CommandArguments="/veri" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="." PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
@@ -108,7 +107,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2;-Wall" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-O2;-w" C_Options="-O2;-w" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>

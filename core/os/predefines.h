@@ -114,7 +114,8 @@ typedef UINT            	  	SIZE_T;
 typedef INT             		SSIZE_T;
 #endif
 
-#define __FUNCTION__   __func__ 
+#define __FUNCTION__   	__func__ 
+#define __thiscall		__attribute__ ((thiscall))
 
 // on PLATFORM_WIN
 #else

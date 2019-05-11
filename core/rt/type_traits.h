@@ -424,13 +424,39 @@ struct NumericTraits
 	// non-num is rated as 0xffff
 };
 
+template<int len>
+struct IsZeroBits
+{	static bool IsZero(LPCBYTE p)
+	{	if(*(size_t*)p)return false; 
+		return IsZeroBits<len - sizeof(size_t)>::IsZero(p + sizeof(size_t));
+	}
+};
+	template<> struct IsZeroBits<1>{ static bool IsZero(LPCBYTE p){ return *p == 0;							    		  } };
+	template<> struct IsZeroBits<2>{ static bool IsZero(LPCBYTE p){ return 0 == *(WORD*)p;								  } };
+	template<> struct IsZeroBits<3>{ static bool IsZero(LPCBYTE p){ return 0 == *(WORD*)p  && p[2] == 0;				  } };
+	template<> struct IsZeroBits<4>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p;								  } };
+	template<> struct IsZeroBits<5>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<1>::IsZero(p+4); } };
+	template<> struct IsZeroBits<6>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<2>::IsZero(p+4); } };
+	template<> struct IsZeroBits<7>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<3>::IsZero(p+4); } };
+	template<> struct IsZeroBits<8>{ static bool IsZero(LPCBYTE p){ return 0 == *(size_t*)p; 							  } };
+	
+	
+	
+namespace _details
+{
+	template<typename T, bool is_int = NumericTraits<T>::IsInteger, bool is_float = NumericTraits<T>::IsFloat>
+	struct _IsZero
+	{	static bool Is(const T& v){ return IsZeroBits<sizeof(T)>::IsZero((LPCBYTE)&v); }
+	};
+		template<typename T> struct _IsZero<T, true, false>{ static bool Is(T v){ return v == 0; } };
+		template<typename T> struct _IsZero<T, false, true>{ static bool Is(T v){ return v<TypeTraits<T>::Epsilon() && v>-TypeTraits<T>::Epsilon(); } };
+}
+
 template<typename T>
 FORCEINL bool IsZero(T v)
 {
-	if(NumericTraits<T>::IsInteger)return v == 0;
-	return v<TypeTraits<T>::Epsilon() && v>-TypeTraits<T>::Epsilon();
+	return _details::_IsZero<T>::Is(v);
 }
-
 
 #ifdef PLATFORM_CPP11
 

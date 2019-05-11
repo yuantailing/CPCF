@@ -271,7 +271,7 @@ public:
 		const char* p = src.data();
 		const char* sep = strchr(p, separator);
 		if(sep)
-		{	return Slice(src.data(), (int)(sep - p));
+		{	return ::rocksdb::Slice(src.data(), (int)(sep - p));
 		}else return src;
 	}
 	virtual bool InDomain(const ::rocksdb::Slice& src) const override {

@@ -51,3 +51,5 @@ testcases/proj\.mac/tester\.xcodeproj/xcuserdata/
 testcases/proj\.win/data_define\.hpp
 
 testcases/proj\.linux/data_define\.hpp
+
+testcases/proj\.linux/Release/
