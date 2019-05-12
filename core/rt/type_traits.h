@@ -427,7 +427,7 @@ struct NumericTraits
 template<int len>
 struct IsZeroBits
 {	static bool IsZero(LPCBYTE p)
-	{	return 0 == *(size_t*) && IsZeroBits<len - sizeof(size_t)>::IsZero(p + sizeof(size_t));
+	{	return 0 == *(size_t*)p && IsZeroBits<len - sizeof(size_t)>::IsZero(p + sizeof(size_t));
 	}
 };
 	template<> struct IsZeroBits<1>{ static bool IsZero(LPCBYTE p){ return 0 == *p;							    		  } };
@@ -615,14 +615,14 @@ struct _InvokeThisCall
 {	template<typename... arg_types>
 	static typename ThisCallPoly::ReturnType Invoke(LPCVOID This, const __ThisCallMemberFunctionPointer& Func, arg_types&&... args)
 	{	
-		return (((ThisCallPoly*)This)->*((ThisCallPoly::FUNC_CALL&)Func))(std::forward<arg_types>(args)...);
+		return (((ThisCallPoly*)This)->*((typename ThisCallPoly::FUNC_CALL&)Func))(std::forward<arg_types>(args)...);
 	}
 };
 	template<class ThisCallPoly>
 	struct _InvokeThisCall<ThisCallPoly, true>
 	{	template<typename... arg_types>
 		static void Invoke(LPCVOID This, const __ThisCallMemberFunctionPointer& Func, arg_types&&... args)
-		{	(((ThisCallPoly*)This)->*((ThisCallPoly::FUNC_CALL&)Func))
+		{	(((ThisCallPoly*)This)->*((typename ThisCallPoly::FUNC_CALL&)Func))
 				(std::forward<arg_types>(args)...);
 		}
 	};
