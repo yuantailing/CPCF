@@ -427,20 +427,20 @@ struct NumericTraits
 template<int len>
 struct IsZeroBits
 {	static bool IsZero(LPCBYTE p)
-	{	if(*(size_t*)p)return false; 
-		return IsZeroBits<len - sizeof(size_t)>::IsZero(p + sizeof(size_t));
+	{	return 0 == *(size_t*) && IsZeroBits<len - sizeof(size_t)>::IsZero(p + sizeof(size_t));
 	}
 };
-	template<> struct IsZeroBits<1>{ static bool IsZero(LPCBYTE p){ return *p == 0;							    		  } };
+	template<> struct IsZeroBits<1>{ static bool IsZero(LPCBYTE p){ return 0 == *p;							    		  } };
 	template<> struct IsZeroBits<2>{ static bool IsZero(LPCBYTE p){ return 0 == *(WORD*)p;								  } };
 	template<> struct IsZeroBits<3>{ static bool IsZero(LPCBYTE p){ return 0 == *(WORD*)p  && p[2] == 0;				  } };
 	template<> struct IsZeroBits<4>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p;								  } };
 	template<> struct IsZeroBits<5>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<1>::IsZero(p+4); } };
 	template<> struct IsZeroBits<6>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<2>::IsZero(p+4); } };
 	template<> struct IsZeroBits<7>{ static bool IsZero(LPCBYTE p){ return 0 == *(DWORD*)p && IsZeroBits<3>::IsZero(p+4); } };
-	template<> struct IsZeroBits<8>{ static bool IsZero(LPCBYTE p){ return 0 == *(size_t*)p; 							  } };
-	
-	
+	template<> struct IsZeroBits<8>{ static bool IsZero(LPCBYTE p)
+	{
+		return 0 == *(size_t*)p; 							  
+	} };
 	
 namespace _details
 {
@@ -590,6 +590,53 @@ struct FunctionTraitsImpl: public FunctionTraitsImpl<decltype(&T::operator())>
 
 template <typename T>
 struct FunctionTraits : _details::FunctionTraitsImpl<T> {};
+
+
+/////////////////////////////////////////////////////
+// class-neutral member function invocation
+class __ThisCallMemberFunctionPointer
+{
+	typedef void (__thiscall __ThisCallMemberFunctionPointer::* __foo)();
+	size_t	Data[sizeof(__foo)/sizeof(size_t)];
+public:
+	template<typename T>
+	__ThisCallMemberFunctionPointer(const T& x){ ASSERT(sizeof(T) == sizeof(Data)); rt::Copy(Data, x); }
+	__ThisCallMemberFunctionPointer(){ Zero(); }
+	__ThisCallMemberFunctionPointer(const __ThisCallMemberFunctionPointer&x) = default;
+	bool	IsNull() const { return rt::IsZero(*this); }
+	void	Zero(){ rt::Zero(*this); }
+};
+
+namespace _details
+{
+
+template<class ThisCallPoly, bool is_void = rt::TypeTraits<typename ThisCallPoly::ReturnType>::Typeid == rt::_typeid_void>
+struct _InvokeThisCall
+{	template<typename... arg_types>
+	static typename ThisCallPoly::ReturnType Invoke(LPCVOID This, const __ThisCallMemberFunctionPointer& Func, arg_types&&... args)
+	{	
+		return (((ThisCallPoly*)This)->*((ThisCallPoly::FUNC_CALL&)Func))(std::forward<arg_types>(args)...);
+	}
+};
+	template<class ThisCallPoly>
+	struct _InvokeThisCall<ThisCallPoly, true>
+	{	template<typename... arg_types>
+		static void Invoke(LPCVOID This, const __ThisCallMemberFunctionPointer& Func, arg_types&&... args)
+		{	(((ThisCallPoly*)This)->*((ThisCallPoly::FUNC_CALL&)Func))
+				(std::forward<arg_types>(args)...);
+		}
+	};
+}
+
+#define THISCALL_POLYMORPHISM_DECLARE(return_type, name, ...)			\
+						struct __ThisCallPolymorphism_ ## name			\
+						{	typedef return_type ReturnType;				\
+							typedef bool (__thiscall __ThisCallPolymorphism_ ## name::* FUNC_CALL)(__VA_ARGS__); \
+							return_type ThisCallFunction(__VA_ARGS__);}	\
+
+#define THISCALL_POLYMORPHISM_INVOKE(name, This, Func, ...)	rt::_details::_InvokeThisCall<__ThisCallPolymorphism_ ## name>::Invoke(This, Func, __VA_ARGS__);
+#define THISCALL_MFPTR		rt::__ThisCallMemberFunctionPointer
+
 
 #endif // #ifdef PLATFORM_CPP11
 
