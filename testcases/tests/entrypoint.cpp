@@ -11,7 +11,8 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		callback_to_member_function();
+		hash_func();
+		//callback_to_member_function();
 		return;
 	}
 	else

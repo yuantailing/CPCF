@@ -42,6 +42,7 @@ void test_express_tk();
 void test_ipp_zip();
 
 void callback_to_member_function();
+void hash_func();
 
 void image_to_text();
 

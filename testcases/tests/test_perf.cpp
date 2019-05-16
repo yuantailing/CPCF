@@ -1,4 +1,5 @@
 #include "../../essentials.h"
+#include "../../core/ext/botan/botan.h"
 
 
 struct _test_section
@@ -104,5 +105,47 @@ void callback_to_member_function()
 		cbfunc_t(cookie_t);
 	}
 	_LOG("Callback Lambda Function: "<<t*1000000/tm.TimeLapse()<<" cps");
+
+}
+
+void hash_func()
+{
+	static const size_t t = 100000;
+
+	rt::Buffer<BYTE>	data;
+	data.SetSize(10*1024);
+	data.RandomBits();
+
+	BYTE h[64];
+
+	os::HighPerformanceCounter tm;
+
+	tm.Restart();
+	for(size_t i=0; i<t; i++)
+	{
+		sec::Hash<sec::HASH_SHA256>().Calculate(data, data.GetSize(), h);
+	}
+	_LOG("HASH_SHA256: "<<t*1000000/tm.TimeLapse()<<" cps");
+
+	tm.Restart();
+	for(size_t i=0; i<t; i++)
+	{
+		sec::Hash<sec::HASH_SHA256>().Calculate(data, 64, h);
+	}
+	_LOG("HASH_SHA256-64: "<<t*1000000/tm.TimeLapse()<<" cps");
+
+	tm.Restart();
+	for(size_t i=0; i<t; i++)
+	{
+		sec::Hash<sec::HASH_CRC32>().Calculate(data, data.GetSize(), h);
+	}
+	_LOG("HASH_CRC32: "<<t*1000000/tm.TimeLapse()<<" cps");
+
+	tm.Restart();
+	for(size_t i=0; i<t; i++)
+	{
+		sec::Hash<sec::HASH_CRC32>().Calculate(data, 8, h);
+	}
+	_LOG("HASH_CRC32-8: "<<t*1000000/tm.TimeLapse()<<" cps");
 
 }

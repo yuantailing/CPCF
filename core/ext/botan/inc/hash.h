@@ -151,6 +151,7 @@ public:
 	void Calculate(LPCVOID data, UINT size, LPVOID HashValue){ Reset(); Update(data, size); Finalize(HashValue); }
 	DWORD Calculate(LPCVOID data, UINT size){ DWORD a; Calculate(data,size,&a); return a; }
 };
+
 } // namespace sec
 
 #else
@@ -162,9 +163,9 @@ namespace _details
 {
 	template<int HASH_METHOD>
 	struct _HashTrait;
-		template<> struct _HashTrait<HASH_CRC32>{	typedef Botan::CRC32 type;	};
-		template<> struct _HashTrait<HASH_MD5>{		typedef Botan::MD5 type;	};
-		template<> struct _HashTrait<HASH_SHA1>{	typedef Botan::SHA_160 type;};
+		template<> struct _HashTrait<HASH_CRC32> {	typedef Botan::CRC32 type;	};
+		template<> struct _HashTrait<HASH_MD5>	 {	typedef Botan::MD5 type;	};
+		template<> struct _HashTrait<HASH_SHA1>	 {	typedef Botan::SHA_160 type;};
 		template<> struct _HashTrait<HASH_SHA224>{	typedef Botan::SHA_224 type;};
 		template<> struct _HashTrait<HASH_SHA256>{	typedef Botan::SHA_256 type;};
 		template<> struct _HashTrait<HASH_SHA384>{	typedef Botan::SHA_384 type;};
