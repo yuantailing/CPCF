@@ -605,6 +605,7 @@ public:
 	__ThisCallMemberFunctionPointer(const __ThisCallMemberFunctionPointer&x) = default;
 	bool	IsNull() const { return rt::IsZero(*this); }
 	void	Zero(){ rt::Zero(*this); }
+	operator bool() const { return !IsNull(); }
 };
 
 namespace _details
