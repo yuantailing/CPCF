@@ -68,6 +68,7 @@
 #pragma warning(disable: 4355) //warning C4355: 'this' used in ctor of base class
 #pragma warning(disable: 4197) //warning C4197: 'volatile int' : top-level volatile in cast is ignored
 #pragma warning(disable: 4800) // warning C4800: 'bool' : forcing value to bool 'true' or 'false' (performance warning)
+#pragma warning(disable: 4624) // warning C4624: 'xxx': destructor was implicitly defined as deleted
 #pragma warning(error : 4715 4700) //not all control paths return a value
 
 
