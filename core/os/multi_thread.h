@@ -192,7 +192,7 @@ protected:
 	CRITICAL_SECTION hCS;
 public:
 	FORCEINL void Lock()
-	{	EnterCriticalSection(rt::_CastToNonconst(&hCS));
+	{	EnterCriticalSection(&hCS);
 		if(_OwnerTID == os::Thread::GetCurrentId())
 		{	_Recurrence++;	}
 		else{ _OwnerTID = os::Thread::GetCurrentId(); _Recurrence = 1; }
@@ -200,10 +200,10 @@ public:
 	FORCEINL void Unlock()
 	{	_Recurrence--;
 		if(_Recurrence == 0)_OwnerTID = 0;
-		LeaveCriticalSection(rt::_CastToNonconst(&hCS)); 
+		LeaveCriticalSection(&hCS); 
 	}
 	FORCEINL bool TryLock()
-	{	if(TryEnterCriticalSection(rt::_CastToNonconst(&hCS)))
+	{	if(TryEnterCriticalSection(&hCS))
 		{	if(_OwnerTID == os::Thread::GetCurrentId())
 			{	_Recurrence++;	}
 			else{ _OwnerTID = os::Thread::GetCurrentId(); _Recurrence = 1; }
@@ -217,10 +217,10 @@ protected:
 	friend class Event;
 	pthread_mutex_t hCS;
 public:
-	FORCEINL void Lock(){ VERIFY(0 == pthread_mutex_lock(rt::_CastToNonconst(&hCS))); _OwnerTID = os::Thread::GetCurrentId(); }
+	FORCEINL void Lock(){ VERIFY(0 == pthread_mutex_lock(&hCS)); _OwnerTID = os::Thread::GetCurrentId(); }
 	FORCEINL void Unlock(){ _OwnerTID = 0; VERIFY(0 == pthread_mutex_unlock(rt::_CastToNonconst(&hCS))); }
 	FORCEINL bool TryLock()
-	{	if(0 == pthread_mutex_trylock(rt::_CastToNonconst(&hCS))){ _OwnerTID = os::Thread::GetCurrentId(); return true; }
+	{	if(0 == pthread_mutex_trylock(&hCS)){ _OwnerTID = os::Thread::GetCurrentId(); return true; }
 		return false;
 	}
 #endif
