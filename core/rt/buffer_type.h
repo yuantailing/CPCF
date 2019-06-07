@@ -629,6 +629,42 @@ t_Ostream& operator<<(t_Ostream& Ostream, const rt::Buffer_Ref<t_Ele> & vec)
 
 } // namespace rt
 
+namespace rt
+{
+
+template<UINT BIT_SIZE>
+class BooleanArray
+{
+	static const UINT	BLOCK_SIZE = sizeof(SIZE_T)*8;
+	SIZE_T				_Bits[(BIT_SIZE + BLOCK_SIZE - 1)/BLOCK_SIZE];
+	static SIZE_T		_BlockBitmask(SIZE_T idx){ return ((SIZE_T)1)<<(idx%BLOCK_SIZE); }
+public:
+	class Index
+	{	
+		UINT	BlockOffset;
+		SIZE_T	Bitmask;
+	public:
+		Index(UINT idx)
+		{	BlockOffset = idx/BLOCK_SIZE;
+			Bitmask = BooleanArray::_BlockBitmask(idx);
+		}
+	};
+
+	bool	Get(const Index& idx) const { return _Bits[idx.BlockOffset]&idx.Bitmask; }
+	void	Set(const Index& idx, bool v)
+			{	if(v)
+					_Bits[idx.BlockOffset] |= idx.Bitmask;
+				else
+					_Bits[idx.BlockOffset] &= ~idx.Bitmask;
+			}
+	void	False(){ memset(_Bits, 0, sizeof(_Bits)); }
+	void	True(){ memset(_Bits, 0xff, sizeof(_Bits)); }
+	void	operator ^= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] ^= x._Bits[i]; }
+	void	operator |= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] |= x._Bits[i]; }
+};
+
+
+} // namespace rt
 
 
 namespace rt
@@ -844,7 +880,10 @@ public:
 	void Clear(){ _used = 0; }
 	SortedArray(SIZE_T capacity = 0){ Clear(); SetCapacity(capacity); }
 	bool		SetCapacity(SIZE_T sz){ Clear(); return _q.ChangeSize(sz); }
+	bool		ChangeCapacity(SIZE_T sz){ _used = rt::min(_used, sz); return _q.ChangeSize(sz); }
+	SIZE_T		GetCapacity() const { return _q.GetSize(); }
 	SIZE_T		GetSize() const { return _used; }
+	bool		IsFull() const { return _used == _q.GetSize(); }
 	bool		WillBeDropped(const T& x) const 
 				{	if(_used < _q.GetSize())return false;
 					if((ASC && x >= _q.last()) || (!ASC && x <= _q.last()))return true;
