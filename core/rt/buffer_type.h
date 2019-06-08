@@ -640,7 +640,7 @@ class BooleanArray
 	static SIZE_T		_BlockBitmask(SIZE_T idx){ return ((SIZE_T)1)<<(idx%BLOCK_SIZE); }
 public:
 	class Index
-	{	
+	{	friend class BooleanArray;
 		UINT	BlockOffset;
 		SIZE_T	Bitmask;
 	public:
@@ -890,66 +890,72 @@ public:
 					return false;
 				}
 	INLFUNC bool Add(const T&x)
-	{
-		if(ASC)
-		{
-			if(_used==0 || _q[_used-1]<x)
-			{	if(_used == _q.GetSize())
-				{	return false;
-				}
-				else
-				{	_q[_used++] = x;
-					return true;
-				}
-			}
-			if(_used<_q.GetSize())_used++;
-			for(SIZE_T i = _used-1; i>0; i--)
-			{
-				if(x<_q[i-1])
-				{	_q[i] = _q[i-1];
-				}
-				else
-				{	_q[i] = x;
-					return true;
-				}
-			}
-		}
-		else
-		{
-			if(_used==0 || x<_q[_used-1])
-			{	if(_used == _q.GetSize())
-				{	return false;
-				}
-				else
-				{	_q[_used++] = x;
-					return true;
-				}
-			}
-			if(_used<_q.GetSize())_used++;
-			for(SIZE_T i = _used-1; i>0; i--)
-			{
-				if(_q[i-1]<x)
-				{	_q[i] = _q[i-1];
-				}
-				else
-				{	_q[i] = x;
-					return true;
-				}
-			}
-		}
+				{
+					if(ASC)
+					{
+						if(_used==0 || _q[_used-1]<x)
+						{	if(_used == _q.GetSize())
+							{	return false;
+							}
+							else
+							{	_q[_used++] = x;
+								return true;
+							}
+						}
+						if(_used<_q.GetSize())_used++;
+						for(SIZE_T i = _used-1; i>0; i--)
+						{
+							if(x<_q[i-1])
+							{	_q[i] = _q[i-1];
+							}
+							else
+							{	_q[i] = x;
+								return true;
+							}
+						}
+					}
+					else
+					{
+						if(_used==0 || x<_q[_used-1])
+						{	if(_used == _q.GetSize())
+							{	return false;
+							}
+							else
+							{	_q[_used++] = x;
+								return true;
+							}
+						}
+						if(_used<_q.GetSize())_used++;
+						for(SIZE_T i = _used-1; i>0; i--)
+						{
+							if(_q[i-1]<x)
+							{	_q[i] = _q[i-1];
+							}
+							else
+							{	_q[i] = x;
+								return true;
+							}
+						}
+					}
 
-		_q[0] = x;
-		return true;
-	}
+					_q[0] = x;
+					return true;
+				}
 	const T& operator[](SIZE_T idx) const { return _q[idx]; }
 	T& operator[](SIZE_T idx) { return _q[idx]; } // don't modify members while sorting is in-progress
 	template<typename t_Accum>
 	t_Accum GetAverage() const
-	{	t_Accum ret = 0;
-		for(UINT i=0;i<_used;i++)
-			ret += _q[i];
-		return ret/_used;
-	}
+				{	t_Accum ret = 0;
+					for(UINT i=0;i<_used;i++)
+						ret += _q[i];
+					return ret/_used;
+				}
+	const SortedArray& operator = (const SortedArray& a)
+				{	SetCapacity(a.GetCapacity());
+					_used = a._used;
+					memcpy(_q.Begin(), a._q.begin(), sizeof(_q[0])*_used);
+					return a;
+				}
 };
 
 

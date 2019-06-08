@@ -27,10 +27,11 @@ struct void_bits
 
 } // namespace _details
 
-
-typedef decltype(NULL)  HASHKEY_CTOR_TYPE;
-static const  HASHKEY_CTOR_TYPE CTOR_ZERO = 0;
-static const  HASHKEY_CTOR_TYPE CTOR_VOID = -1;
+enum HASHKEY_CTOR_TYPE
+{
+	CTOR_ZERO = 0,
+	CTOR_VOID = -1
+};
 
 template<typename T, bool is_pod = rt::TypeTraits<T>::IsPOD>
 struct key_traits;
