@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		hash_func();
+		test_sortedpush();
 		//callback_to_member_function();
 		return;
 	}
@@ -37,44 +37,45 @@ void TestMain()
 		os::File::GetCurrentDirectory(dir);
 		_LOGC(dir);
 
-		testing_rt();
-		testing_buffer();
-		testing_string_conv();
-		testing_string();
-		testing_json();
+		test_rt();
+		test_buffer();
+		test_sortedpush();
+		test_string_conv();
+		test_string();
+		test_json();
 		test_express_tk();
-		testing_xml();
-		testing_html();
-		testing_file();
+		test_xml();
+		test_html();
+		test_file();
 		test_Precompiler();
-		testing_vm();
-		testing_timedate();
+		test_vm();
+		test_timedate();
 		test_smallmath();
 		test_filelist();
-		testing_multithread();
-		testing_inet_encoding();
-		testing_inet_encoding_custom();
-		testing_sysinfo();
+		test_multithread();
+		test_inet_encoding();
+		test_inet_encoding_custom();
+		test_sysinfo();
 		test_BinarySearch();
 		test_botan_cipher();
 		test_botan_hash();
 	
 		if(0) // non-static test
 		{
-			testing_pfw();
-			testing_plog();
-			testing_pcqueue();
-			//testing_commandline();
-			//testing_socket();
-			//testing_sockettimed();
-			//testing_delayed_deletion();
-			//testing_socket_io(1);
+			test_pfw();
+			test_plog();
+			test_pcqueue();
+			//test_commandline();
+			//test_socket();
+			//test_sockettimed();
+			//test_delayed_deletion();
+			//test_socket_io(1);
 
-			//testing_Httpclient();
-			//testing_download();
+			//test_Httpclient();
+			//test_download();
 
-			//testing_HttpNav();
-			//testing_httpd();
+			//test_HttpNav();
+			//test_httpd();
 	
 			//for(int i=0; i<21; i++)
 			//	test_ipp_Saliency(rt::String_Ref("sai/img") + i + ".jpg");

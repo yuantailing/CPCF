@@ -573,8 +573,8 @@ template<int Size, SIZE_T set> struct _PodFill
 
 template<typename T> FORCEINL void Zero(T& obj){ _details::_PodFill<sizeof(T), 0>::Fill((LPBYTE)&obj); }
 template<typename T> FORCEINL void Void(T& obj){ _details::_PodFill<sizeof(T), (SIZE_T)-1>::Fill((LPBYTE)&obj); }
-template<UINT LEN> FORCEINL void Zero(LPVOID obj){ _details::_PodFill<LEN, 0>::Fill((LPBYTE)&obj); }
-template<UINT LEN> FORCEINL void Void(LPVOID obj){ _details::_PodFill<LEN, (SIZE_T)-1>::Fill((LPBYTE)&obj); }
+template<UINT LEN> FORCEINL void Zero(LPVOID obj){ _details::_PodFill<LEN, 0>::Fill((LPBYTE)obj); }
+template<UINT LEN> FORCEINL void Void(LPVOID obj){ _details::_PodFill<LEN, (SIZE_T)-1>::Fill((LPBYTE)obj); }
 
 FORCEINL void Zero(LPVOID obj, SIZE_T size)
 {	SIZE_T* p = (SIZE_T*)obj;
@@ -612,10 +612,31 @@ FORCEINL void Void(LPVOID obj, SIZE_T size)
 	}
 }
 
+namespace _details
+{
 
+template<int Size> struct _PodCopy
+{	static FORCEINL void Fill(LPBYTE p, LPCBYTE s)
+	{	*(SIZE_T*)p = *(SIZE_T*)s;
+		_PodCopy<Size-sizeof(SIZE_T)>::Fill(p+sizeof(SIZE_T), s+sizeof(SIZE_T));
+}	};
+	template<> struct _PodCopy<0>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){}};
+	template<> struct _PodCopy<1>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *p = *s; }};
+	template<> struct _PodCopy<2>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(WORD*)p = *(WORD*)s; }};
+	template<> struct _PodCopy<3>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(WORD*)p = *(WORD*)s; p[2] = s[2]; }};
+#if defined(PLATFORM_64BIT)
+	template<> struct _PodCopy<4>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(DWORD*)p = *(DWORD*)s; }};
+	template<> struct _PodCopy<5>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(DWORD*)p = *(DWORD*)s; _PodCopy<1>::Fill(p+4, s+4); }};
+	template<> struct _PodCopy<6>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(DWORD*)p = *(DWORD*)s; _PodCopy<2>::Fill(p+4, s+4); }};
+	template<> struct _PodCopy<7>{ static FORCEINL void Fill(LPBYTE p, LPCBYTE s){ *(DWORD*)p = *(DWORD*)s; _PodCopy<3>::Fill(p+4, s+4); }};
+#endif
+
+} // namespace _details
+
+template<UINT LEN>
+FORCEINL void Copy(LPVOID obj, LPCVOID from){ _details::_PodCopy<LEN>::Fill((LPBYTE)obj, (LPCBYTE)from); }
 template<typename T1, typename T2>
-FORCEINL void Copy(T1& obj, const T2& from){ ASSERT(sizeof(T1) == sizeof(T2)); memcpy(&obj, &from, sizeof(T1)); }
-
+FORCEINL void Copy(T1& obj, const T2& from){ ASSERT_STATIC(sizeof(T1) == sizeof(T2)); Copy<sizeof(T1)>((LPBYTE)&obj, (LPCBYTE)&from); }
 
 namespace _details
 {
@@ -848,7 +869,7 @@ INLFUNC static void Free32AL(LPCVOID ptr_in)
 
 			if( !Prefix_Err_Detected && !Suffix_Err_Detected )
 			{	
-				//ensure heap integration 
+				//ensure heap correctness 
 				//_CheckHeap;
 			
 #ifdef CPF_SECURE_MEMORY_RELEASE

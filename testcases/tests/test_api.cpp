@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-void testing_json()
+void test_json()
 {
 	{
 		rt::String str =
@@ -189,7 +189,7 @@ void testing_json()
 	}
 }
 
-void testing_xml()
+void test_xml()
 {
 	DEF_TEST_SECTION;
 
@@ -245,7 +245,7 @@ void testing_xml()
 	xmlp.TextDump();
 }
 
-void testing_html()
+void test_html()
 {
 	os::FileRead<char>	file("category_page.htm");
 	rt::XMLParser	html;
@@ -264,11 +264,11 @@ void testing_html()
 	}
 }
 
-os::CriticalSection	testing_multithread_ccs;
-os::Event testing_multithread_event;
+os::CriticalSection	test_multithread_ccs;
+os::Event test_multithread_event;
 
 
-void testing_multithread()
+void test_multithread()
 {
 	DEF_TEST_SECTION;
 
@@ -312,7 +312,7 @@ void testing_multithread()
 		static DWORD _ccs_inc(LPVOID pi)
 		{	volatile int *p = (volatile int *)pi;
 			for(int i=0;i<LOOPCOUNT/10;i++)
-			{	EnterCSBlock(testing_multithread_ccs);
+			{	EnterCSBlock(test_multithread_ccs);
 				(*p)++;
 			}
 			return 0;
@@ -320,7 +320,7 @@ void testing_multithread()
 		static DWORD _ccs_dec(LPVOID pi)
 		{	volatile int *p = (volatile int *)pi;
 			for(int i=0;i<LOOPCOUNT/10;i++)
-			{	EnterCSBlock(testing_multithread_ccs);
+			{	EnterCSBlock(test_multithread_ccs);
 				(*p)--;
 			}
 			return 0;
@@ -384,11 +384,11 @@ void testing_multithread()
 		t.LoadCurrentTick();
 		for(int i=0;i<LOOPCOUNT;i++)
 		{	
-			{	EnterCSBlock(testing_multithread_ccs);	counter++; }
-			{	EnterCSBlock(testing_multithread_ccs);	counter++; }
-			{	EnterCSBlock(testing_multithread_ccs);	counter++; }
-			{	EnterCSBlock(testing_multithread_ccs);	counter++; }
-			{	EnterCSBlock(testing_multithread_ccs);	counter++; }
+			{	EnterCSBlock(test_multithread_ccs);	counter++; }
+			{	EnterCSBlock(test_multithread_ccs);	counter++; }
+			{	EnterCSBlock(test_multithread_ccs);	counter++; }
+			{	EnterCSBlock(test_multithread_ccs);	counter++; }
+			{	EnterCSBlock(test_multithread_ccs);	counter++; }
 		}
 		int cost = t.TimeLapse();
 		ops_ccs = (5.0*LOOPCOUNT)/cost;
@@ -424,30 +424,30 @@ void testing_multithread()
 	_LOGC("// Nosync         : "<<ops_nosync<<" kop/s");//rt::tos::Number((float)10*LOOPCOUNT/cost)<<" kop/s");
 	
 
-	testing_multithread_event.Reset();
-	_LOG("Event Set: "<<testing_multithread_event.IsSignaled());
-	testing_multithread_event.Set();
-	_LOG("Event Set: "<<testing_multithread_event.IsSignaled());
+	test_multithread_event.Reset();
+	_LOG("Event Set: "<<test_multithread_event.IsSignaled());
+	test_multithread_event.Set();
+	_LOG("Event Set: "<<test_multithread_event.IsSignaled());
 
 	struct _call_event
 	{	static DWORD _wait_thread(LPVOID pi)
 		{	
 			os::TickCount t;
 			t.LoadCurrentTick();
-			testing_multithread_event.WaitSignal(2000);
+			test_multithread_event.WaitSignal(2000);
 			_LOG("Event Timeout: "<<1000*((200 + t.TimeLapse())/1000));
-			testing_multithread_event.Reset();
+			test_multithread_event.Reset();
 			
 			t.LoadCurrentTick();
-			testing_multithread_event.WaitSignal();
-			testing_multithread_event.WaitSignal();
-			_LOG("Thread Waited: "<<1000*((200 + t.TimeLapse())/1000)<<", "<<testing_multithread_event.IsSignaled());
+			test_multithread_event.WaitSignal();
+			test_multithread_event.WaitSignal();
+			_LOG("Thread Waited: "<<1000*((200 + t.TimeLapse())/1000)<<", "<<test_multithread_event.IsSignaled());
 
 			return 0;
 		}
 	};
 
-	{	testing_multithread_event.Reset();
+	{	test_multithread_event.Reset();
 
 		os::Thread	th;
 		th.Create(_call_event::_wait_thread,NULL);
@@ -455,7 +455,7 @@ void testing_multithread()
 		os::Sleep(4000);
 		
 		_LOG("Event Set");
-		testing_multithread_event.Set();
+		test_multithread_event.Set();
 
 		th.WaitForEnding();
 		_LOG("Thread Ended");
@@ -506,7 +506,7 @@ void test_BinarySearch()
 }
 
 
-void testing_string_conv()
+void test_string_conv()
 {
 	DEF_TEST_SECTION;
 
@@ -525,7 +525,7 @@ void testing_string_conv()
 }
 
 
-void testing_string()
+void test_string()
 {
 	DEF_TEST_SECTION;
 
@@ -1053,7 +1053,7 @@ void test_Precompiler()
 }
 
 
-void testing_buffer()
+void test_buffer()
 {
 	DEF_TEST_SECTION;
 
@@ -1143,7 +1143,7 @@ void testing_buffer()
 	_LOG("Strings copied: "<<non_pod_copy);
 }
 
-void testing_pcqueue()
+void test_pcqueue()
 {
 	DEF_TEST_SECTION;
 
@@ -1242,7 +1242,7 @@ void testing_pcqueue()
 	};
 #pragma pack()
 
-void testing_rt()
+void test_rt()
 {
 	DEF_TEST_SECTION;
 
@@ -1319,7 +1319,7 @@ void testing_rt()
 }
 
 
-void testing_timedate()
+void test_timedate()
 {
 	DEF_TEST_SECTION;
 
@@ -1422,7 +1422,7 @@ void testing_timedate()
 	}
 }
 
-void testing_commandline()
+void test_commandline()
 {
 	DEF_TEST_SECTION;
 
@@ -1436,7 +1436,7 @@ void testing_commandline()
 	_LOG(text);
 }
 
-void testing_file()
+void test_file()
 {
 	DEF_TEST_SECTION;
 
@@ -1484,7 +1484,7 @@ void testing_file()
 			os::File::Remove(fl.GetFilename(i).Begin() + 1);
 	}
 
-	LPCSTR fn = "testing_\xe4\xbd\xa0\xe5\xa5\xbd.txt";
+	LPCSTR fn = "test_\xe4\xbd\xa0\xe5\xa5\xbd.txt";
 	
 	os::File	file;
 	if(file.Open(fn, os::File::Normal_Write))
@@ -1533,7 +1533,7 @@ void testing_file()
 	}
 }
 
-void testing_pfw()
+void test_pfw()
 {
 	DEF_TEST_SECTION;
 
@@ -1613,7 +1613,7 @@ void testing_pfw()
 	}
 }
 
-void testing_plog()
+void test_plog()
 {
 	DEF_TEST_SECTION;
 
@@ -1647,7 +1647,7 @@ void test_ipp_zip()
 }
 */
 
-void testing_inet_encoding()
+void test_inet_encoding()
 {
 	DEF_TEST_SECTION;
 
@@ -1715,7 +1715,7 @@ void testing_inet_encoding()
      */
 }
 
-void testing_inet_encoding_custom()
+void test_inet_encoding_custom()
 {
 	DEF_TEST_SECTION;
 
@@ -1748,7 +1748,7 @@ void testing_inet_encoding_custom()
 
 inet::Socket	a,b,c;
 
-void testing_socket()
+void test_socket()
 {
 	DEF_TEST_SECTION;
 
@@ -1840,7 +1840,7 @@ struct A
 	}
 };
 
-void testing_delayed_deletion()
+void test_delayed_deletion()
 {
 	DEF_TEST_SECTION;
 
@@ -1852,7 +1852,7 @@ void testing_delayed_deletion()
 	os::Sleep(9000);
 }
 
-void testing_sysinfo()
+void test_sysinfo()
 {
 	DEF_TEST_SECTION;
 
@@ -1897,7 +1897,7 @@ void testing_sysinfo()
 }
 
 
-void testing_socket_io(bool recv)
+void test_socket_io(bool recv)
 {
 	DEF_TEST_SECTION;
 
@@ -1968,7 +1968,7 @@ void test_filelist()
 	}
 }
 
-void testing_sockettimed()
+void test_sockettimed()
 {
 	DEF_TEST_SECTION;
 
@@ -2032,7 +2032,7 @@ void test_smallmath()
 }
 
 
-void testing_vm()
+void test_vm()
 {
 	DEF_TEST_SECTION;
 
@@ -2057,4 +2057,33 @@ void testing_vm()
 	os::File::Remove("filemapping.data");
 }
 
+void test_sortedpush()
+{
+	DEF_TEST_SECTION;
 
+	rt::Randomizer a(100);
+
+	{	_LOG("BufferEx::SortedPush");
+		rt::BufferEx<WORD>	sorted;
+
+		for(UINT i=0; i<20; i++)
+		{
+			WORD new_v = (BYTE)a.GetNext();
+			SSIZE_T pos = sorted.SortedPush(new_v);
+			_LOG(sorted << " Add:" <<new_v<<" at "<<pos);
+		}
+	}
+
+	{	_LOG("Buffer::SortedPush");
+		rt::Buffer<WORD>	sorted;
+		sorted.SetSize(8);
+		sorted.Void();
+
+		for(UINT i=0; i<20; i++)
+		{
+			WORD new_v = (BYTE)a.GetNext();
+			SSIZE_T pos = sorted.SortedPush(new_v);
+			_LOG(sorted << " Add:" <<new_v<<" at "<<pos);
+		}
+	}
+}

@@ -63,7 +63,7 @@ bool http_cb(LPVOID param, UINT msg, LPVOID cookie)
 	return true;
 }
 
-void testing_download()
+void test_download()
 {
 	DEF_TEST_SECTION;
 
@@ -91,7 +91,7 @@ int http_data_cb(LPCBYTE data, UINT data_len, UINT start_pos, bool fin, LPVOID c
 	return 0;
 }
 
-void testing_Httpclient()
+void test_Httpclient()
 {
 	DEF_TEST_SECTION;
 
@@ -209,7 +209,7 @@ void testing_Httpclient()
 	}
 }
 
-void testing_HttpNav()
+void test_HttpNav()
 {
 	DEF_TEST_SECTION;
 
@@ -222,7 +222,7 @@ void testing_HttpNav()
 }
 
 
-void testing_httpd()
+void test_httpd()
 {
 	struct _obj
 	{

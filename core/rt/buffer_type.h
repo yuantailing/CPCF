@@ -61,9 +61,11 @@ namespace _details
 template<typename t_Val, typename t_Index = SIZE_T>
 class Buffer_Ref
 {
+protected:
+	typedef _details::_xtor<!rt::TypeTraits<t_Val>::IsPOD, t_Val>	_xt;
 	typedef int (* _PtFuncCompare)(const void *, const void *);
 	typedef typename rt::TypeTraits<t_Index>::t_Signed	t_SignedIndex;
-protected:
+
 	t_Val*	_p;
 	t_Index	_len;
 public:
@@ -153,6 +155,7 @@ public:
 	{	return std::lower_bound(Begin(), End(), x) - Begin();
 	}
 	INLFUNC void Zero(){ memset((LPVOID)_p, 0, _len*sizeof(t_Val)); }
+	INLFUNC void Void(){ memset((LPVOID)_p, 0xff, _len*sizeof(t_Val)); }
 	template<typename T>
 	INLFUNC void CopyFrom(const Buffer_Ref<T>& x)
 	{	ASSERT(GetSize() == x.GetSize());
@@ -198,6 +201,19 @@ public:
 			for(t_Index i=0;i<GetSize()-1;i++)
 				rt::Swap((*this)[i], (*this)[i+ rng%(GetSize()-i)]);
 		}
+	}
+	INLFUNC SSIZE_T SortedPush(const t_Val& x) // last item will be dropped
+	{
+		if(GetSize() == 0 || Last() < x)return -1;
+		_xt::dtor(Last());
+		auto* p = &Last();
+		for(p--;p>=Begin();p--)
+		{	if(x < *p){ rt::Copy(p[1], *p); }
+			else break;
+		}
+		p++;
+		_xt::ctor(p, x);
+		return p - Begin();
 	}
 	INLFUNC void RandomBits(DWORD seed = rand())
 	{	Randomizer rng(seed);
@@ -248,7 +264,6 @@ class Buffer:public Buffer_Ref<t_Val>
 {	typedef Buffer_Ref<t_Val> _SC;
 protected:
 	static const bool IsElementNotPOD = !rt::TypeTraits<t_Val>::IsPOD;
-	typedef _details::_xtor<!rt::TypeTraits<t_Val>::IsPOD, t_Val>	_xt;
 	INLFUNC void __SafeFree()
 	{	if(!_SC::_p)return;
 		_xt::dtor(_SC::_p, _SC::_p+_SC::_len);
@@ -525,18 +540,22 @@ public:
 		return false;
 	}
 	INLFUNC SSIZE_T SortedPush(const t_Val& x)
-	{	if(GetSize() == 0 || x<first()){ push_front(x); return GetSize()-1; }
-		if(reserve(Buffer<t_Val>::GetSize() + 1))
-		{
-			Buffer<t_Val>::_len++;
-			auto* p = &_SC::Last();
-			for(p--;;p--)
-			{	if(*p < x){ p[1] = *p; }
-				else break;
-			}
-			_SC::_xt::ctor(p, x);
-			return p - _SC::Begin();
-		}else return -1;
+	{
+		if(GetSize() == 0 || x<first()){ push_front(x); return 0; }
+		if(	_len_reserved == Buffer<t_Val>::GetSize() &&
+			!reserve(Buffer<t_Val>::GetSize()*2 + 1)
+		)
+		{	return -1;
+		}
+		Buffer<t_Val>::_len++;
+		auto* p = &_SC::Last();
+		for(p--;;p--)
+		{	if(x < *p){ rt::Copy(p[1], *p); }
+			else break;
+		}
+		p++;
+		_SC::_xt::ctor(p, x);
+		return p - _SC::Begin();
 	}
 	INLFUNC bool Include(const t_Val& x) // newly included item is at the end
 	{	if(_SC::Find(x) == -1){	push_back(x); return true; }
