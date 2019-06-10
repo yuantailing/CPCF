@@ -484,25 +484,6 @@ void test_BinarySearch()
 
 	_LOG(a[a.GetSize()-1]<<" is at "<<rt::LowerBound(a,a.GetSize(),a[a.GetSize()-1])<<"/"<<rt::BinarySearch(a,a.GetSize(),a[a.GetSize()-1]));
 	_LOG(a[a.GetSize()-1]+1<<" is at "<<rt::LowerBound(a,a.GetSize(),a[a.GetSize()-1]+1)<<"/"<<rt::BinarySearch(a,a.GetSize(),a[a.GetSize()-1]+1));
-
-	rt::SortedArray<TT> s(10);
-	a.Shuffle(1);
-	_LOG(a);
-	for(SIZE_T i=0;i<a.GetSize();i++)
-		s.Add(a[i]);
-	for(SIZE_T i=0;i<a.GetSize();i++)
-		a[i] = s[i];
-	_LOG(a);
-
-	_LOG("rt::SortedQueue<int>");
-	rt::SortedArray<int>	q(4);
-	int v[] = { 1,4643,234,56,345,43,342,234,4,34652,545454,5454544 };//,5,465,6,66,5,74,65,5465,346524,34525,24,3,452,4,34,3 };
-	for(int i=0;i<sizeofArray(v);i++)
-	{
-		q.Add(v[i]);
-	}
-	for(UINT i=0;i<q.GetSize();i++)
-		_LOG(q[i]);
 }
 
 
