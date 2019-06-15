@@ -266,7 +266,7 @@ protected:
 	static const bool IsElementNotPOD = !rt::TypeTraits<t_Val>::IsPOD;
 	INLFUNC void __SafeFree()
 	{	if(!_SC::_p)return;
-		_xt::dtor(_SC::_p, _SC::_p+_SC::_len);
+		_SC::_xt::dtor(_SC::_p, _SC::_p+_SC::_len);
 		_SafeFree32AL(((LPVOID&)_SC::_p));
 	}
 public:
@@ -283,7 +283,7 @@ public:
 	INLFUNC const Buffer_Ref<t_Val>& operator = (const Buffer<t_Val> &x){ *this = (Buffer_Ref<t_Val>&)x; return *this; }
 	INLFUNC const Buffer_Ref<t_Val>& operator = (const Buffer_Ref<t_Val> &x)
     {	for(SIZE_T i=0;i<_SC::_len;i++)
-			_xt::dtor(_SC::_p[i]);
+			_SC::_xt::dtor(_SC::_p[i]);
         if(_SC::_len >= x.GetSize()){ _SC::_len = x.GetSize(); }
 		else
 		{	_SafeFree32AL(((LPVOID&)_SC::_p));
@@ -291,7 +291,7 @@ public:
 			ASSERT(_SC::_p);
 		}
 		for(SIZE_T i=0;i<_SC::_len;i++)
-			_xt::ctor(&_SC::_p[i], x[i]);
+			_SC::_xt::ctor(&_SC::_p[i], x[i]);
 		return x;
 	}
 	INLFUNC ~Buffer(){ __SafeFree(); }
@@ -305,7 +305,7 @@ public:
 			{	_SC::_p = _Malloc32AL(t_Val,co);
 				if( _SC::_p )
 				{	
-					_xt::ctor(_SC::_p, _SC::_p+_SC::_len);
+					_SC::_xt::ctor(_SC::_p, _SC::_p+_SC::_len);
 				}
 				else
 				{	_SC::_len = 0; return false; }
@@ -318,7 +318,7 @@ public:
 		if( new_size == _SC::_len )return true;
 		if( new_size<_SC::_len )
 		{	
-			for(SIZE_T i=new_size;i<_SC::_len;i++)_xt::dtor(_SC::_p[i]);	//call dtor for unwanted instances at back
+			for(SIZE_T i=new_size;i<_SC::_len;i++)_SC::_xt::dtor(_SC::_p[i]);	//call dtor for unwanted instances at back
 			_SC::_len = new_size;
 			return true;
 		}
@@ -329,7 +329,7 @@ public:
 				_SafeFree32AL(_SC::_p);
 				_SC::_p = new_p;
 			
-				for(SIZE_T i=_SC::_len;i<new_size;i++)_xt::ctor(&_SC::_p[i]); //call ctor for additional instances at back
+				for(SIZE_T i=_SC::_len;i<new_size;i++)_SC::_xt::ctor(&_SC::_p[i]); //call ctor for additional instances at back
 				_SC::_len = new_size;
 				return true;
 			}
