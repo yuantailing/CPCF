@@ -897,6 +897,11 @@ public:
 		}
 		return *this;
 	}
+	FORCEINL String_Ref Flip()
+	{	for(SIZE_T i=0; i<GetLength()/2; i++)
+			rt::Swap(_SC::_p[i], _SC::_p[GetLength() - i - 1]);
+		return *this;
+	}
 };
 template<class t_Ostream, typename t_StringStore, class t_String_Ref>
 FORCEINL t_Ostream& operator << (t_Ostream& Ostream, const String_Base<t_StringStore, t_String_Ref> & vec)

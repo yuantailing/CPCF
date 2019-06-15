@@ -426,6 +426,21 @@ public:
 		Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[0],x);
 		return Buffer<t_Val>::_p[0];
 	}
+	template<typename T>
+	INLFUNC void push_front(const T* x, SIZE_T count)
+	{	
+		VERIFY(_add_entry(count));
+		memmove(&Buffer<t_Val>::_p[count],&Buffer<t_Val>::_p[0],sizeof(t_Val)*(Buffer<t_Val>::_len-count));
+		for(SIZE_T sz = 0;sz<count;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], *x++); }
+	}
+	template<typename T>
+	INLFUNC void push_front(const T& x, SIZE_T count)
+	{	
+		SIZE_T sz = _SC::GetSize();
+		VERIFY(_add_entry(count));
+		memmove(&Buffer<t_Val>::_p[count],&Buffer<t_Val>::_p[0],sizeof(t_Val)*(Buffer<t_Val>::_len-count));
+		for(SIZE_T sz = 0;sz<count;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], x); }
+	}
 	INLFUNC t_Val& push_back()
 	{	VERIFY(_add_entry());
 		Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[Buffer<t_Val>::_len-1]);
@@ -442,6 +457,13 @@ public:
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(_add_entry(count));
 		for(;sz<Buffer<t_Val>::_len;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], *x++); }
+	}
+	template<typename T>
+	INLFUNC void push_back(const T& x, SIZE_T count)
+	{	
+		SIZE_T sz = _SC::GetSize();
+		VERIFY(_add_entry(count));
+		for(;sz<Buffer<t_Val>::_len;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], x); }
 	}
 	INLFUNC t_Val* push_back_n(SIZE_T count)
 	{	
