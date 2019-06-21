@@ -59,8 +59,7 @@ void _translate_code(const rt::String_Ref& code, std::string& out)
 
 void _translate_symbol(const rt::String_Ref& code, std::string& out)
 {
-	STACK_STRING_BEGIN(x) = code;
-	STACK_STRING_END;
+	rt::String_Ref x = ALLOCA_C_STRING(code);
 
 	x.Replace('.', '_');
 	out = x.GetString();

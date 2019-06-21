@@ -68,11 +68,11 @@ bool HttpSession::Request_Post(LPCSTR pURL, const HttpSession::DataBuf* pBufs, U
 	for(UINT i=0;i<BufCount;i++)
 		tot_len += pBufs[i].Length;
 
-	STACK_STRING_BEGIN(header) = 
+	auto x = 
 		rt::SS("Content-Type: ") + data_type + rt::SS("; charset=\"") + charset + rt::SS("\"\r\n") + 
 		rt::SS("Content-Length: ") + tot_len + rt::SS("\r\n");
 	
-	STACK_STRING_END;
+	rt::String_Ref header = ALLOCA_C_STRING(x);
 
 	if( SendRequest(pURL, HTTP_VERB_POST, header.Begin(), (UINT)header.GetLength()))
 	{
@@ -97,11 +97,11 @@ bool HttpSession::Request_PostFile(LPCSTR pURL, LPCBYTE data, UINT sz, LPCSTR lo
 {
 	DataBuf bufs[3];
 	
-	STACK_STRING_BEGIN(head) = 
+	auto x = 
 		rt::SS("----WebFormBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"") + 
 		local_filename + rt::SS("\"\r\nContent-Type: application/octet-stream\r\n\r\n");
 
-	STACK_STRING_END;
+	rt::String_Ref head = ALLOCA_C_STRING(x);
 
 	bufs[0].Data = head.Begin();
 	bufs[0].Length = (UINT)head.GetLength();

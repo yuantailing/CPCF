@@ -1978,6 +1978,7 @@ void test_smallmath()
 		c.x = 1e-100;
 		c.y = 1e100;
 		c.z = 100.4;
+		c.w = 0;
 		_LOG(c);
 	}
 

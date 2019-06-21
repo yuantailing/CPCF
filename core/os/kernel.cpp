@@ -1460,12 +1460,12 @@ bool os::OpenDefaultBrowser(LPCSTR url)
 		static DWORD _call(LPVOID p)
 		{	
 			::ShellExecuteW(NULL,L"open",((_open_url*)p)->url,NULL,NULL,SW_SHOW);
-			delete ((_open_url*)p);
+			_SafeDel_Const((_open_url*)p);
 			return os::Thread::THREAD_OBJECT_DELETED_ON_RETURN;
 		};
 	};
 
-	_open_url* p = new _open_url;
+	_open_url* p = _New(_open_url);
 	p->url = url;
 	p->Create(_open_url::_call, p);
 
@@ -1615,9 +1615,7 @@ bool SavePreferenceString(const rt::String_Ref& keyname, const rt::String_Ref& v
 	return 0;
 #endif
 }
-
 } // namespace os
-
 
 namespace os
 {
@@ -2579,7 +2577,7 @@ void os::SetDebugTextBox(const rt::String_Ref& x)
     if(x.IsEmpty())_set_debug_textbox("");
     else if(x.IsZeroTerminated())_set_debug_textbox(x.Begin());
     else
-    {   _set_debug_textbox(rt::String(x));
+    {   _set_debug_textbox(ALLOCA_C_STRING(x));
     }
 }
 void os::SetupDebugTextBox(LPVOID param){ _setup_debug_textbox(param); }

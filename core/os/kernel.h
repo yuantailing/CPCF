@@ -258,7 +258,6 @@ extern int		GetProcessId();
 extern bool		TerminateProcess(int process_id);
 extern void		SetAppTitle(LPCSTR title);
 
-
 namespace _details
 {
 	void __ConsoleLogWrite(LPCSTR log, int type);

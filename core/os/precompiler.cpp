@@ -502,7 +502,7 @@ void Precompiler::AddIncludeSearchDirectory(const rt::String_Ref& dir)
 	ASSERT(!dir.IsEmpty());
 
 	rt::String out;
-	os::File::ResolveRelativePath(rt::String(dir), out);
+	os::File::ResolveRelativePath(ALLOCA_C_STRING(dir), out);
 
 	out.NormalizePathSeparator('/');
 	if(out.Last() != '/')out += '/';
@@ -730,6 +730,15 @@ int Precompiler::_MergeIncludedFile(const rt::String& import_filename, rt::Strin
 	}
 }
 
+void Precompiler::Empty()
+{
+	ClearMacros();
+	for(auto it = _Compiled.begin(); it != _Compiled.end(); it++)
+		_SafeDel(it->second);
+
+	_Compiled.clear();
+}
+
 const rt::String_Ref& Precompiler::_Compile(const rt::String_Ref& filename, const rt::String_Ref& source_in)
 {
 	static rt::CharacterSet sep(rt::SS("<>\""));
@@ -737,7 +746,7 @@ const rt::String_Ref& Precompiler::_Compile(const rt::String_Ref& filename, cons
 
 	ASSERT(_Compiled.find(filename) == _Compiled.end());
 
-	Code& code = *(new Code);
+	Code& code = *(_New(Code));
 	code.Filename = filename;
 	code.State = 0;
 

@@ -733,10 +733,7 @@ namespace _details
 
 ///////////////////////////////////////////////////////
 // Safe delete Objects
-#define _SafeDel(x)			{ if(x){delete x; x=NULL;} }
-#define _SafeDelArray(x)	{ if(x){delete [] x; x=NULL;} }
 #define _SafeRelease(x)		{ if(x){x->Release(); x=NULL;} }
-#define _SafeFree(x)		{ if(x){::free(x); x=NULL;} }
 
 #if defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
 #define _SafeCFRelease(x)	{ if(x){::CFRelease(x); x=NULL;} }
@@ -771,8 +768,75 @@ namespace _details
 ////    no boundary memory written occurred (buffer overflow)
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define _Malloc32AL(type, co)	((type*)rt::mem32AL::Malloc32AL(sizeof(type)*(co), true))
-#define _SafeFree32AL(ptr)		{ rt::mem32AL::Free32AL(ptr); ptr=0; }
+namespace rt
+{
+namespace _details
+{
+template<typename T>
+LPSTR __alloca_string(LPSTR p, T& x)
+{	p[x.CopyTo(p)] = 0;
+	return p;
+}
+}} // namespace rt::_details
+
+#define ALLOCA_C_STRING(x)	(rt::_details::__alloca_string((LPSTR)alloca(x.GetLength() + 1), x))	// x should be something like: auto x = string + expression
+
+
+#ifdef PLATFORM_DEBUG_BUILD
+namespace os
+{
+namespace _details
+{
+
+extern LPVOID	TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UINT co, LPCSTR fn, LPCSTR func, UINT line);
+extern void		UntrackMemoryAllocation(LPCVOID p);
+extern void		DumpTrackedMemoryAllocation(bool verbose = false);
+template<typename T>
+T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line)
+				{	rt::String_Ref x = rt::String_Ref(type).TrimAfter('(');
+					TrackMemoryAllocation(p, sizeof(T), false, ALLOCA_C_STRING(x), 1, fn, func, line);
+					return p;
+				}
+}} // namespace os::_details
+#endif
+
+#ifdef PLATFORM_DEBUG_BUILD
+
+#define _Malloc8AL(type, co)		_Malloc32AL(type, co)
+#define _Malloc32AL(type, co)		((type*)os::_details::TrackMemoryAllocation(rt::mem32AL::Malloc32AL(sizeof(type)*(co), true), sizeof(type)*(co), true, #type , (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
+
+#define _SafeFree8AL_Const(ptr)		_SafeFree32AL_Const(ptr)
+#define _SafeFree32AL_Const(ptr)	{ os::_details::UntrackMemoryAllocation(ptr); rt::mem32AL::Free32AL(ptr); }
+#define _SafeDel_Const(x)			{ if(x){ os::_details::UntrackMemoryAllocation(x); delete x; } }
+#define _SafeDelArray_Const(x)		{ if(x){ os::_details::UntrackMemoryAllocation(x); delete [] x; } }
+
+#define _New(...)					(os::_details::TrackMemoryNew(new (std::nothrow) __VA_ARGS__, #__VA_ARGS__, __FILE__, __FUNCTION__, __LINE__))
+#define _NewArray(type, co)			((type*)os::_details::TrackMemoryAllocation(new (std::nothrow) type[co], sizeof(type)*co, false, #type, (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
+
+#define _DumpMemoryAllocations		{ os::_details::DumpTrackedMemoryAllocation(true); }
+
+#else
+
+#define _Malloc8AL(type, co)		((type*)new (std::nothrow) BYTE[sizeof(type)*co])
+#define _Malloc32AL(type, co)		((type*)rt::mem32AL::Malloc32AL(sizeof(type)*(co), true))
+
+#define _SafeFree8AL_Const(ptr)		{ delete [] (LPBYTE)ptr; }
+#define _SafeFree32AL_Const(ptr)	{ rt::mem32AL::Free32AL(ptr); }
+#define _SafeDel_Const(x)			{ if(x){delete x; } }
+#define _SafeDelArray_Const(x)		{ if(x){delete [] x; } }
+
+#define _New(...)					(new (std::nothrow) __VA_ARGS__)
+#define _NewArray(type, co)			(new (std::nothrow) type[co])
+
+#define _DumpMemoryAllocations		{}
+
+#endif
+
+#define _SafeFree8AL(ptr)			{ _SafeFree8AL_Const(ptr); ptr = NULL; }
+#define _SafeFree32AL(ptr)			{ _SafeFree32AL_Const(ptr); ptr = NULL; }
+#define _SafeDel(ptr)				{ _SafeDel_Const(ptr); ptr = NULL; }
+#define _SafeDelArray(ptr)			{ _SafeDelArray_Const(ptr); ptr = NULL; }
+
 
 namespace rt
 {
@@ -788,7 +852,7 @@ FORCEINL SIZE_T EnlargeTo32AL(SIZE_T num){ return (((num) + 0x7)&(~((SIZE_T)0x7)
 
 struct mem32AL
 {
-INLFUNC static LPVOID Malloc32AL(size_t size, bool allow_fail = false)   //size in byte
+INLFUNC static LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
 {
 #pragma warning(disable:4244 4127)	// conversion from 'int' to 'BYTE', possible loss of data
 									// conditional expression is constant
@@ -827,6 +891,7 @@ INLFUNC static LPVOID Malloc32AL(size_t size, bool allow_fail = false)   //size 
 #ifdef CPF_REPORT_MEMORY_ACTIVITY
 		_LOG("User block [0x"<<((LPVOID)&p[offset])<<"] allocated.\n");
 #endif
+
 		return &p[offset];
 	}
 	else  //Allocation failed

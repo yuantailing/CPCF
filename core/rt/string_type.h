@@ -1514,9 +1514,6 @@ public:
 
 }
 
-#define ALLOCA_STRING(name, size)		rt::String_Ref name((LPSTR)alloca(size), size);
-
-
 
 namespace rt
 {
@@ -1857,22 +1854,4 @@ typedef tos::DataAsString DS;
 
 } // namespace rt
 
-#if !defined(PLATFORM_ANDROID)
-
-#define STACK_STRING_BEGIN(x)	rt::String_Ref x; \
-								{	rt::String_Ref& _ASSIGNTO = x;	\
-									auto ___SSTemp
-
-#define STACK_STRING_END			LPSTR p = (LPSTR)alloca(___SSTemp.GetLength()+1); \
-									UINT  len = (UINT)___SSTemp.CopyTo(p); \
-									ASSERT(len == ___SSTemp.GetLength()); \
-									_ASSIGNTO = rt::String_Ref(p,len); p[len] = '\0'; }
-
-#else
-
-#define STACK_STRING_BEGIN(x)  rt::String x 
-#define STACK_STRING_END
-
-#endif
-
-#define __SS(...)		(rt::SS(#__VA_ARGS__))
+#define __SS(...)			(rt::SS(#__VA_ARGS__))

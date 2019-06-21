@@ -252,7 +252,8 @@ LogPrefix& LogPrefix::operator << (char c)
     }
     else
     {   _item& it = items.push_back();
-        it.string = rt::String(c, 1);
+		auto x = rt::String_Ref(&c, 1);
+        it.string = ALLOCA_C_STRING(x);
     }
     return *this;
 }
@@ -524,7 +525,7 @@ void LogWriteDefault(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int typ
             {   _LogFile.Write(item.string);
             }
         }
-		_LogFile.Write(rt::String(log));
+		_LogFile.Write(rt::String_Ref(log));
 		_LogFile.Write('\n');
 		_LogFile.Flush();
 	}

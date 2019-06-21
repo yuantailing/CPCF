@@ -230,7 +230,7 @@ void inet::TinyHttpd::ReplaceEndpoint(LPHTTPENDPOINT ep)
 bool inet::TinyHttpd::SetEndpoints(LPHTTPENDPOINT* ep, UINT count)
 {
 	//_LOG("BEING SetEndpoints");
-	t_EndPoints* neweps = new t_EndPoints;
+	t_EndPoints* neweps = _New(t_EndPoints);
 	for(UINT i=0;i<count;i++)
 	{
 		auto it = neweps->find(ep[i]->GetEndPoint());

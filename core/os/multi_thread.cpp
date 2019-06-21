@@ -26,7 +26,8 @@ namespace _details
 		rt::BufferEx<_GarbagItem>		_PendingGarbag;
 		os::CriticalSection				_PendingGarbagCCS;
 		os::Thread						_GarbagDeletionThread;
-		~_GarbagBin()
+		~_GarbagBin(){ Exit(); }
+		void Exit()
 		{
 			if(_GarbagDeletionThread.IsRunning())
 			{
@@ -38,6 +39,11 @@ namespace _details
 	_GarbagBin				g_GCB;
 }
 } // namespace os
+
+void os::GarbageCollection::Exit()
+{
+	_details::g_GCB.Exit();
+}
 
 DWORD os::GarbageCollection::_DeletionThread(LPVOID)
 {
@@ -125,6 +131,116 @@ bool os::Thread::WaitForEnding(UINT time_wait_ms, bool terminate_if_timeout)
 	return false;
 }
 
+#ifdef PLATFORM_DEBUG_BUILD
+namespace os
+{
+namespace _details
+{
+
+bool _TMA_Exit = false;
+
+struct _TMA
+{
+	struct MemBlock
+	{
+		SIZE_T		Size;
+		char		Memo[1];
+	};
+
+	os::CriticalSection _CS;
+	rt::hash_map<SIZE_T, MemBlock*>	_TrackedMemory;
+	~_TMA(){ _TMA_Exit = true; }
+};
+
+_TMA& _GetTMA()
+{
+	static _TMA _;
+	return _;
+}
+
+LPVOID TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UINT co, LPCSTR fn, LPCSTR func, UINT line)
+{
+	if(_TMA_Exit)return p;
+
+	EnterCSBlock(_GetTMA()._CS);
+	ASSERT(_GetTMA()._TrackedMemory.find((SIZE_T&)p) == _GetTMA()._TrackedMemory.end());
+
+	// make sure zero memory footprint on heap
+	LPCSTR s1 = no_ctor?"Malloc ":"New ";
+	LPCSTR s2, s3;
+
+	if(co>1)
+	{	auto x = rt::String_Ref(type) + '[' + co + ']';
+		s2 = ALLOCA_C_STRING(x);
+	}
+	else
+	{	s2 = type;
+	}
+
+	{	auto x = rt::SS(" in ") + rt::String_Ref(fn).GetFilename() + rt::SS(":L") + line + "\n    by " + func + "()";
+		s3 = ALLOCA_C_STRING(x);
+	}
+
+	auto s = rt::SS() + s1 + s2 + s3;
+	_TMA::MemBlock* n = (_TMA::MemBlock*) new (std::nothrow) BYTE[s.GetLength() + sizeof(SIZE_T) + 1];
+	ASSERT(n);
+
+	n->Size = sz;
+	n->Memo[s.CopyTo(n->Memo)] = 0;
+
+	_GetTMA()._TrackedMemory[(SIZE_T&)p] = n;
+	return p;
+}
+
+void UntrackMemoryAllocation(LPCVOID p)
+{
+	if(_TMA_Exit)return;
+
+	if(p)
+	{
+		EnterCSBlock(_GetTMA()._CS);
+		auto it = _GetTMA()._TrackedMemory.find((SIZE_T&)p);
+		ASSERT(it != _GetTMA()._TrackedMemory.end());
+
+		delete [] (LPBYTE)it->second;
+		_GetTMA()._TrackedMemory.erase(it);
+	}
+}
+
+void DumpTrackedMemoryAllocation(bool verbose)
+{
+	if(_TMA_Exit)return;
+
+	if(verbose)_LOG(" ");
+
+	EnterCSBlock(_GetTMA()._CS);
+	SIZE_T tot = 0;
+	if(_GetTMA()._TrackedMemory.size())
+	{
+		if(verbose)_LOG("Dump Tracked Memory Blocks ("<<_GetTMA()._TrackedMemory.size()<<"):");
+		for(auto it = _GetTMA()._TrackedMemory.begin(); it != _GetTMA()._TrackedMemory.end(); it++)
+		{
+			_LOG("[0x"<<it->first<<"] "<<it->second->Size<<"B "<<it->second->Memo);
+			if(verbose)
+			{
+				auto x = rt::String_Ref((LPCSTR)it->first, rt::min(72, (int)it->second->Size));
+				LPSTR d = ALLOCA_C_STRING(x);
+				for(int i=0; d[i]; i++)
+					if(d[i]<' ')d[i] = ' ';
+				_LOG("    = \""<<d<<'"');
+			}
+			tot += it->second->Size;
+		}
+		if(verbose)_LOG("Tracked memory blocks take "<<rt::tos::FileSize<>(tot));
+	}
+	else
+	{	if(verbose)_LOG("No tracked memory blocks");
+	}
+}
+
+}} // namespace os::_details
+#endif
+
 namespace os
 {
 namespace _details
@@ -160,7 +276,7 @@ namespace _details
 			DWORD ret = x(thread_cookie);
 			if(ret != os::Thread::THREAD_OBJECT_DELETED_ON_RETURN)
 				((_thread_class*)pThis)->__clear_after_run(ret);
-			delete this;		
+			_SafeDel_Const(this);
 			return ret;
 		}
 		_thread_call(FUNC_THREAD_ROUTE xi, LPVOID thread_cookiei, Thread* pThisi)
@@ -192,7 +308,7 @@ bool os::Thread::Create(os::FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stac
 	{	static DWORD WINAPI _func(LPVOID p)
 		{	return ((os::_details::_thread_call*)p)->run();
 	}	};
-	hThread = ::CreateThread(NULL, stack_size, _call::_func, new os::_details::_thread_call(x,thread_cookie,this), 0, &ThreadId);
+	hThread = ::CreateThread(NULL, stack_size, _call::_func, _New(os::_details::_thread_call(x,thread_cookie,this)), 0, &ThreadId);
 	return hThread != NULL;
 }
 
@@ -288,7 +404,7 @@ bool os::Thread::Create(os::FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stac
 		set_attr = &attr;
 	}
 
-	if(0 == pthread_create((pthread_t*)&hThread, set_attr, _call::_func, new os::_details::_thread_call(x,thread_cookie,this)))
+	if(0 == pthread_create((pthread_t*)&hThread, set_attr, _call::_func, _New(os::_details::_thread_call(x,thread_cookie,this))))
 		return true;
 	hThread = NULL;
 	return false;

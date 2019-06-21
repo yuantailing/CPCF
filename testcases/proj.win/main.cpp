@@ -7,13 +7,14 @@
 
 void TestMain();
 
-os::CommandLine	g_Cmdline;
-
 int _tmain(int argc, _TCHAR* argv[])
 {
-	g_Cmdline.Parse(argc, argv);
+	os::CommandLine Cmdline;
+	Cmdline.Parse(argc, argv);
 	TestMain();
-
+	
+	
+	// _DumpMemoryAllocations;
 	return 0;
 }
 

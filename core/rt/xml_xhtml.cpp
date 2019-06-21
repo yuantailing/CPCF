@@ -199,7 +199,7 @@ void XMLComposer::AddXML(const XMLComposer& another)
 		}
 
 		Linebreak();
-		Output(rt::String(p, q));
+		Output(ALLOCA_C_STRING(rt::String_Ref(p, q)));
 
 		p = nextp;
 	}

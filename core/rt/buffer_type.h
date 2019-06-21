@@ -267,7 +267,7 @@ protected:
 	INLFUNC void __SafeFree()
 	{	if(!_SC::_p)return;
 		_SC::_xt::dtor(_SC::_p, _SC::_p+_SC::_len);
-		_SafeFree32AL(((LPVOID&)_SC::_p));
+		_SafeFree32AL((LPCVOID&)_SC::_p);
 	}
 public:
 	// allow for(iterator : Buffer) syntax (C++ 11)
@@ -297,7 +297,10 @@ public:
 	INLFUNC ~Buffer(){ __SafeFree(); }
 	INLFUNC bool SetSize(SIZE_T co=0) //zero for clear
 	{	
-		if(co == _SC::_len){ return true; }
+		if(co == _SC::_len)
+		{	if(co == 0)__SafeFree();
+			return true; 
+		}
 		else
 		{	__SafeFree();
 			_SC::_len = co;
@@ -394,7 +397,7 @@ public:
 		else 
 		{	if(new_size <= _len_reserved){} // expand elements only
 			else // expand buffer
-			{	_len_reserved = rt::max(rt::max((SIZE_T)16,new_size),_len_reserved*2);
+			{	_len_reserved = rt::max(new_size, _len_reserved*2);
 				LPBYTE pNewBuffer = (LPBYTE)_Malloc32AL(t_Val,_len_reserved);
 				if(pNewBuffer){}else
 				{	_len_reserved = new_size;

@@ -110,8 +110,8 @@ public:
 #ifdef PLATFORM_CPP11
 	template<typename T>
 	INLFUNC bool	Create(T threadroute, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
-	{	T* p = new T(threadroute);	ASSERT(p);
-		struct _call { static DWORD c(LPVOID p){ (*((T*)p))(); delete (T*)p; return 0; }};
+	{	T* p = _New(T(threadroute));	ASSERT(p);
+		struct _call { static DWORD c(LPVOID p){ (*((T*)p))(); _SafeDel_Const((T*)p); return 0; }};
 		return Create(_call::c, p, stack_size);
 	}
 #endif
@@ -540,7 +540,7 @@ protected:
 public:
 	template<typename OBJ>
 	static void DeleteObj(OBJ * ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ delete ((OBJ *)x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeDel_Const((OBJ *)x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	template<typename OBJ>
@@ -550,16 +550,17 @@ public:
 	}
 	template<typename OBJ>
 	static void DeleteArray(OBJ * ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ delete [] ((OBJ *)x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeDelArray_Const((OBJ *)x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	static void Delete32AL(LPVOID ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ rt::mem32AL::Free32AL(x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeFree32AL_Const(x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	static void Delete(LPVOID ptr, int TTL_msec, LPFUNC_DELETION dfunc )
 	{	DeleteObject(ptr,TTL_msec,dfunc);
 	}
+	static void Exit();
 };
 
 #define _SafeDel_Delayed(x, TTL_msec)		{ if(x){ os::GarbageCollection::DeleteObj(x,TTL_msec); x=NULL; } }
@@ -771,8 +772,8 @@ public:
 
 	INLFUNC const T&	Get() const { static T _t; return _p?*_p:_t; }
 	INLFUNC const T*	operator -> () const { return &Get(); }
-	INLFUNC T*			Clone() const { return _p?new T(*_p):new T; }
-	INLFUNC T*			New() const { return new T; }
+	INLFUNC T*			Clone() const { return _p?_New(T(*_p)):_New(T); }
+	INLFUNC T*			New() const { return _New(T); }
 	INLFUNC void		Clear(){ _cs.Lock(); _SafeDel(_p); _cs.Unlock(); }
 	
 	//unsafe in multi-thread
@@ -807,7 +808,7 @@ protected:
 	{	for(UINT i=0;i<_MaxSize;i++)
 			if(_pObjs[i])
 			{	_pObjectFactory->Term(_pObjs[i]);
-				delete (LPBYTE)_pObjs[i];
+				_SafeDelArray_Const((LPBYTE)_pObjs[i]);
 			}
 	}
 public:
@@ -817,7 +818,7 @@ public:
 		if(f){ _pObjectFactory = f; _ObjectFactoryIsOwned = false; }
 		else
 		{	_ObjectFactoryIsOwned = true;
-			_pObjectFactory = new t_ObjFactory;
+			_pObjectFactory = _New(t_ObjFactory);
 		}
 	}
 	INLFUNC ~ThreadObjectPool(){ _del(); if(_ObjectFactoryIsOwned)_SafeDel(_pObjectFactory); }
@@ -883,14 +884,14 @@ PREPARE_RETURN:
 		{	ASSERT(_MaxSlotAllocatedPlus1 > slot);
 		}
 		else
-		{	_pObjs[slot] = (ProtectedObject*) new BYTE[sizeof(ProtectedObject)];
+		{	_pObjs[slot] = (ProtectedObject*) _NewArray(BYTE, sizeof(ProtectedObject));
 			if(_pObjectFactory->Init(_pObjs[slot]))
 			{	_pObjs[slot]->slot = slot;
 				if(_MaxSlotAllocatedPlus1 <= slot)
 					_MaxSlotAllocatedPlus1 = slot + 1;
 			}
 			else
-			{	delete (LPBYTE) _pObjs[slot];
+			{	_SafeDelArray((LPBYTE) _pObjs[slot]);
 				_pObjs[slot] = NULL;
 				_ObjsInUse[slot].Unlock();
 				return NULL;
