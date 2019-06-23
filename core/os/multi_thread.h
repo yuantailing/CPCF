@@ -32,6 +32,7 @@
 
 #include "predefines.h"
 #include "../rt/runtime_base.h"
+#include "../rt/type_traits.h"
 #include "kernel.h"
 
 #if defined(PLATFORM_WIN)
@@ -61,6 +62,16 @@ typedef DWORD	(*FUNC_THREAD_ROUTE)(LPVOID x);
 
 class Thread
 {
+	LPVOID			__CB_Param;
+
+	// callback by THISCALL_MFPTR
+	THISCALL_POLYMORPHISM_DECLARE(DWORD, OnRun, LPVOID param);
+	LPVOID			__MFPTR_Obj;
+	THISCALL_MFPTR	__MFPTR_Func;
+
+	// callback by FUNC_THREAD_ROUTE
+	FUNC_THREAD_ROUTE	__CB_Func;
+	
 public:
 #if defined(PLATFORM_WIN)
 	enum _tagThreadPriority
@@ -80,25 +91,29 @@ public:
 	};
 #endif
 protected:
+
 #if defined(PLATFORM_WIN)
-	DWORD	ThreadId;
+	DWORD			_ThreadId;
 #endif
-	HANDLE	hThread;
-	bool	bWantExit;
-	DWORD	ExitCode;
-	static void	__release_handle(HANDLE hThread);
+	HANDLE			_hThread;
+	bool			_bWantExit;
+	DWORD			_ExitCode;
+	DWORD			_Run();
+	bool			_Create(UINT stack_size);
+	static void		__release_handle(HANDLE hThread);
+
 public:
 	static const int THREAD_OBJECT_DELETED_ON_RETURN = 0xfeed9038;	// the thread route return to skip clean up
-	~Thread(){ if(hThread)__release_handle(hThread); }
-	Thread(){ hThread = NULL; ExitCode = INFINITE; }
+
+	Thread();
+	~Thread();
 
 	bool	WaitForEnding(UINT time_wait_ms = INFINITE, bool terminate_if_timeout = false);
-	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, UINT stack_size = 0);
-	DWORD	GetExitCode() const { return ExitCode; }
-	bool	IsRunning() const { return hThread != NULL; }
-	bool&	WantExit(){ return bWantExit; }
+	DWORD	GetExitCode() const { return _ExitCode; }
+	bool	IsRunning() const { return _hThread != NULL; }
+	bool&	WantExit(){ return _bWantExit; }
 	void	TerminateForcely();
-	void	DetachThread(){ if(hThread){ __release_handle(hThread); hThread = NULL; } }
+	void	DetachThread(){ if(_hThread){ __release_handle(_hThread); _hThread = NULL; } }
 	void	SetPriority(UINT p = PRIORITY_HIGH);
 	void	Suspend();
 	void	Resume();
@@ -107,14 +122,26 @@ public:
 
 	static	SIZE_T	GetCurrentId();
 
-#ifdef PLATFORM_CPP11
+	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, UINT stack_size = 0);
+	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, UINT stack_size = 0);
+
 	template<typename T>
-	INLFUNC bool	Create(T threadroute, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
-	{	T* p = _New(T(threadroute));	ASSERT(p);
-		struct _call { static DWORD c(LPVOID p){ (*((T*)p))(); _SafeDel_Const((T*)p); return 0; }};
-		return Create(_call::c, p, stack_size);
+	bool	Create(T threadroute, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
+	{	__MFPTR_Obj = NULL;
+		ASSERT(_hThread == NULL);
+		struct _call { 
+			static DWORD _func(LPVOID p)
+			{	(*((T*)p))();
+				_SafeDel_Const((T*)p);
+				return 0;
+			}};
+		__CB_Func = _call::_func;
+		__CB_Param = _New(T(threadroute));
+		ASSERT(__CB_Param);		
+		if(_Create(stack_size))return true;
+		_SafeDel_Const((T*)__CB_Param);
+		return false;
 	}
-#endif
 };
 
 // All Atomic operation return the value after operation, EXCEPT AtomicOr

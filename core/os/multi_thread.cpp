@@ -85,7 +85,6 @@ DELETION_EXITING:
 	return 0;
 }
 
-
 void os::GarbageCollection::DeleteObject(LPVOID x, DWORD TTL_msec, os::GarbageCollection::LPFUNC_DELETION delete_func)
 {
 	ASSERT(delete_func);
@@ -113,22 +112,6 @@ void os::GarbageCollection::DeleteObject(LPVOID x, DWORD TTL_msec, os::GarbageCo
 		n.pDeletionFunction = delete_func;
 		n.TTL = (TTL_msec+999)/1000;
 	}
-}
-
-bool os::Thread::WaitForEnding(UINT time_wait_ms, bool terminate_if_timeout)
-{
-	Sleep(0);
-	while(time_wait_ms > (UINT)100)
-	{	
-		if(!IsRunning())return true;
-		Sleep(100);
-		if(time_wait_ms!=INFINITE)time_wait_ms -= 100;
-	}
-
-#if !defined(PLATFORM_DEBUG_BUILD)
-	if(terminate_if_timeout)TerminateForcely();
-#endif
-	return false;
 }
 
 #ifdef PLATFORM_DEBUG_BUILD
@@ -241,54 +224,99 @@ void DumpTrackedMemoryAllocation(bool verbose)
 }} // namespace os::_details
 #endif
 
-namespace os
+bool os::Thread::WaitForEnding(UINT time_wait_ms, bool terminate_if_timeout)
 {
-namespace _details
-{
-	struct _thread_call
+	Sleep(0);
+	while(time_wait_ms > (UINT)100)
 	{	
-#if defined(PLATFORM_ANDROID)
-		static void thread_exit_handler(int sig)
-		{ 	pthread_exit(0);
-		}
+		if(!IsRunning())return true;
+		Sleep(100);
+		if(time_wait_ms!=INFINITE)time_wait_ms -= 100;
+	}
+
+#if !defined(PLATFORM_DEBUG_BUILD)
+	if(terminate_if_timeout)TerminateForcely();
 #endif
-		struct _thread_class:public os::Thread
-		{	void __clear_after_run(DWORD exitcode)
-			{	ExitCode = exitcode;
-                while(!hThread)os::Sleep(10); // creator thread is blocked
-				__release_handle(hThread);
-				hThread = NULL;
-			}
-		};
-		FUNC_THREAD_ROUTE	x;
-		LPVOID				thread_cookie;
-		Thread*				pThis;
-		INLFUNC	DWORD run()
-		{	
-#if defined(PLATFORM_ANDROID)
-			struct sigaction actions;
-			memset(&actions, 0, sizeof(actions)); 
-			sigemptyset(&actions.sa_mask);
-			actions.sa_flags = 0; 
-			actions.sa_handler = thread_exit_handler;
-			sigaction(SIGUSR2,&actions,NULL);
-#endif
-			DWORD ret = x(thread_cookie);
-			if(ret != os::Thread::THREAD_OBJECT_DELETED_ON_RETURN)
-				((_thread_class*)pThis)->__clear_after_run(ret);
-			_SafeDel_Const(this);
-			return ret;
-		}
-		_thread_call(FUNC_THREAD_ROUTE xi, LPVOID thread_cookiei, Thread* pThisi)
-		{	x = xi;
-			thread_cookie = thread_cookiei;
-			pThis = pThisi;
-		}
-	};
+	return false;
 }
 
+os::Thread::Thread()
+{
+	__MFPTR_Obj = NULL;
+	__CB_Func = NULL;
+	_hThread = NULL;
+	_ExitCode = INFINITE;
+}
 
-} // namespace os
+os::Thread::~Thread()
+{
+	if(_hThread)
+		__release_handle(_hThread);
+}
+
+bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, UINT stack_size)
+{
+	ASSERT(_hThread == NULL);
+
+	__CB_Func = NULL;
+	__MFPTR_Obj = obj;
+	__MFPTR_Func = on_run;
+	__CB_Param = param;
+
+	return _Create(stack_size);
+}
+
+bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stack_size)
+{
+	ASSERT(_hThread == NULL);
+
+	__CB_Func = x;
+	__CB_Param = thread_cookie;
+	__MFPTR_Obj = NULL;
+	__MFPTR_Func.Zero();
+
+	return _Create(stack_size);
+}
+
+DWORD os::Thread::_Run()
+{
+#if defined(PLATFORM_ANDROID)
+	struct _thread_call
+	{	static void thread_exit_handler(int sig)
+		{ 	pthread_exit(0);
+	}	};
+
+	struct sigaction actions;
+	memset(&actions, 0, sizeof(actions)); 
+	sigemptyset(&actions.sa_mask);
+	actions.sa_flags = 0; 
+	actions.sa_handler = thread_exit_handler;
+	sigaction(SIGUSR2,&actions,NULL);
+#endif
+
+	while(!_hThread)os::Sleep(10);
+	os::Sleep(10);
+
+	DWORD ret;
+	if(__MFPTR_Obj)
+	{
+		ret = THISCALL_POLYMORPHISM_INVOKE(OnRun, __MFPTR_Obj, __MFPTR_Func, __CB_Param);
+	}
+	else
+	{	
+		ASSERT(__CB_Func);
+		ret = __CB_Func(__CB_Param);
+	}
+
+	if(ret != THREAD_OBJECT_DELETED_ON_RETURN)
+	{
+		_ExitCode = ret;
+		__release_handle(_hThread);
+		_hThread = NULL;
+	} // else never touch this again.
+
+	return ret;
+}
 
 //////////////////////////////////////////////////////////
 // All Windows implementations
@@ -299,36 +327,36 @@ void os::Thread::__release_handle(HANDLE hThread)
 	::CloseHandle(hThread);
 }
 
-bool os::Thread::Create(os::FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stack_size)
+bool os::Thread::_Create(UINT stack_size)
 {
-	ASSERT(hThread == NULL);
-	bWantExit = false;
+	ASSERT(_hThread == NULL);
+	_bWantExit = false;
 
 	struct _call
-	{	static DWORD WINAPI _func(LPVOID p)
-		{	return ((os::_details::_thread_call*)p)->run();
+	{	static DWORD _func(LPVOID p)
+		{	return ((Thread*)p)->_Run();
 	}	};
-	hThread = ::CreateThread(NULL, stack_size, _call::_func, _New(os::_details::_thread_call(x,thread_cookie,this)), 0, &ThreadId);
-	return hThread != NULL;
+
+	_hThread = ::CreateThread(NULL, stack_size, _call::_func, this, 0, &_ThreadId);
+	return _hThread != NULL;
 }
 
 SIZE_T os::Thread::GetId()
 {
-	return ThreadId;
+	return _ThreadId;
 }
 
 void os::Thread::Suspend()
 {
-	ASSERT(hThread != NULL);
-	::SuspendThread(hThread);
+	ASSERT(_hThread != NULL);
+	::SuspendThread(_hThread);
 }
 
 void os::Thread::Resume()
 {
-	ASSERT(hThread != NULL);
-	::ResumeThread(hThread);
+	ASSERT(_hThread != NULL);
+	::ResumeThread(_hThread);
 }
-
 
 SIZE_T os::Thread::GetCurrentId()
 {
@@ -337,22 +365,22 @@ SIZE_T os::Thread::GetCurrentId()
 
 void os::Thread::SetPriority(UINT p)
 {
-	SetThreadPriority(hThread, p);
+	SetThreadPriority(_hThread, p);
 }
 
 void os::Thread::TerminateForcely()
 {
-	if(hThread)
+	if(_hThread)
 	{
-		::TerminateThread(hThread, -1);
-		__release_handle(hThread);
-		hThread = NULL;
+		::TerminateThread(_hThread, -1);
+		__release_handle(_hThread);
+		_hThread = NULL;
 	}
 }
 
 bool os::Thread::SetAffinityMask(SIZE_T x)
 {
-	return 0 != SetThreadAffinityMask(hThread, ((DWORD_PTR&)x));
+	return 0 != SetThreadAffinityMask(_hThread, ((DWORD_PTR&)x));
 }
 
 
@@ -385,15 +413,10 @@ os::Event::~Event()
 // All linux/BSD implementations
 #include <pthread.h>
 
-bool os::Thread::Create(os::FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stack_size)
+bool os::Thread::_Create(UINT stack_size)
 {
 	ASSERT(hThread == NULL);
 	bWantExit = false;
-
-	struct _call
-	{	static LPVOID _func(LPVOID p)
-		{	return (LPVOID)(SIZE_T)((os::_details::_thread_call*)p)->run();
-	}	};
 
 	pthread_attr_t attr;
 	pthread_attr_t* set_attr = NULL;
@@ -404,13 +427,17 @@ bool os::Thread::Create(os::FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stac
 		set_attr = &attr;
 	}
 
-	if(0 == pthread_create((pthread_t*)&hThread, set_attr, _call::_func, _New(os::_details::_thread_call(x,thread_cookie,this))))
+	struct _call
+	{	static DWORD _func(LPVOID p)
+		{	return ((Thread*)p)->_Run();
+	}	};
+
+	if(0 == pthread_create((pthread_t*)&hThread, set_attr, _call::_func, this)))
 		return true;
+
 	hThread = NULL;
 	return false;
 }
-
-
 
 SIZE_T os::Thread::GetCurrentId()
 {

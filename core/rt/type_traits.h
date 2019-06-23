@@ -162,8 +162,6 @@ static const int _typeid_vec			=0x300;	// small vec, fixed size
 static const int _typeid_buffer			=0x400;	// rt::Buffer/BufferEx
 static const int _typeid_string			=0x500;	// rt::String/String_Ref
 
-#ifdef PLATFORM_CPP11
-
 namespace _details
 {
     #define __TypeTraitsSubstituteType(varname, t_default)						\
@@ -205,12 +203,6 @@ namespace _details
 #define TYPETRAITS_DECLARE_POD	public: static const bool __IsPOD = true;
 #define TYPETRAITS_DECLARE_VARSIZE_POD	public: static const bool __IsVarSizePOD = true;
 
-#else
-
-#define TYPETRAITS_DECLARE_POD
-
-#endif
-
 
 ////////////////////////////////////////////////////////////////////////////
 // TypeTraits
@@ -218,7 +210,6 @@ template<typename T>
 class TypeTraits
 {
 public:
-#ifdef PLATFORM_CPP11
 	typedef typename _details::_SubstituteType_t_Val<T>::t_Result       t_Val;
 	typedef typename _details::_SubstituteType_t_Element<T>::t_Result	t_Element;
 	typedef typename _details::_SubstituteType_t_Signed<T>::t_Result	t_Signed;
@@ -227,16 +218,6 @@ public:
 	static const int Typeid			= _details::_SubstituteConst_Typeid<T>::Result;
 	static const bool IsPOD			= _details::_SubstituteConst_IsPOD<T>::Result;
 	static const bool IsNumeric		= _details::_SubstituteConst_IsNumeric<T>::Result;
-#else
-	typedef typename T      t_Val;
-	typedef typename T		t_Element;
-	typedef typename T		t_Signed;
-	typedef typename T		t_Unsigned;
-
-	static const int Typeid			= _typeid_unknown;
-	static const bool IsPOD			= false;
-	static const bool IsNumeric		= false;
-#endif
 };
 
 // make sure it is declared in namespace rt
@@ -458,7 +439,6 @@ FORCEINL bool IsZero(T v)
 	return _details::_IsZero<T>::Is(v);
 }
 
-#ifdef PLATFORM_CPP11
 
 ///////////////////////////////////////////////////////////
 // Call bool/void Lambda function
@@ -638,8 +618,6 @@ struct _InvokeThisCall
 #define THISCALL_POLYMORPHISM_INVOKE(name, This, Func, ...)	rt::_details::_InvokeThisCall<__ThisCallPolymorphism_ ## name>::Invoke(This, Func, __VA_ARGS__);
 #define THISCALL_MFPTR		rt::__ThisCallMemberFunctionPointer
 
-
-#endif // #ifdef PLATFORM_CPP11
 
 
 } // namespace rt

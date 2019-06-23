@@ -1439,7 +1439,6 @@ bool os::OpenDefaultBrowser(LPCSTR url)
 		{	str = cmdline + ' ' + url;
 		}
 
-
 		STARTUPINFOW si;
 		ZeroMemory(&si,sizeof(si));
 		si.cb = sizeof(si);
@@ -1467,8 +1466,11 @@ bool os::OpenDefaultBrowser(LPCSTR url)
 
 	_open_url* p = _New(_open_url);
 	p->url = url;
-	p->Create(_open_url::_call, p);
-
+	p->Create([p](){
+		::ShellExecuteW(NULL,L"open", p->url, NULL, NULL, SW_SHOW);
+		_SafeDel_Const(p);
+		return os::Thread::THREAD_OBJECT_DELETED_ON_RETURN;
+	});
 	return true;
 }
 
