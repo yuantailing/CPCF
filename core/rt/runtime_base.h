@@ -782,22 +782,23 @@ LPSTR __alloca_string(LPSTR p, const T& x)
 #define ALLOCA_C_STRING(x)	(rt::_details::__alloca_string((LPSTR)alloca(x.GetLength() + 1), x))	// x should be something like: auto x = string + expression
 
 
-#ifdef PLATFORM_DEBUG_BUILD
 namespace os
 {
 namespace _details
 {
+#ifdef PLATFORM_DEBUG_BUILD	
 extern LPVOID	TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UINT co, LPCSTR fn, LPCSTR func, UINT line);
 extern void		UntrackMemoryAllocation(LPCVOID p);
 extern void		DumpTrackedMemoryAllocation(bool verbose = false);
 template<typename T>
 T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line){ TrackMemoryAllocation(p, sizeof(T), false, type, 1, fn, func, line); return p; }
+#endif
 
 extern LPVOID	Malloc32AL(size_t size, bool allow_fail);   //size in byte
 extern void		Free32AL(LPCVOID ptr_in);
 
 }} // namespace os::_details
-#endif
+
 
 #ifdef PLATFORM_DEBUG_BUILD
 
