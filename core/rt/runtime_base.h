@@ -773,7 +773,7 @@ namespace rt
 namespace _details
 {
 template<typename T>
-LPSTR __alloca_string(LPSTR p, T& x)
+LPSTR __alloca_string(LPSTR p, const T& x)
 {	p[x.CopyTo(p)] = 0;
 	return p;
 }
@@ -792,11 +792,7 @@ extern LPVOID	TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR ty
 extern void		UntrackMemoryAllocation(LPCVOID p);
 extern void		DumpTrackedMemoryAllocation(bool verbose = false);
 template<typename T>
-T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line)
-				{	rt::String_Ref x = rt::String_Ref(type).TrimAfter('(');
-					TrackMemoryAllocation(p, sizeof(T), false, ALLOCA_C_STRING(x), 1, fn, func, line);
-					return p;
-				}
+T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line){ TrackMemoryAllocation(p, sizeof(T), false, type, 1, fn, func, line); return p; }
 }} // namespace os::_details
 #endif
 

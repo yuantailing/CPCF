@@ -152,12 +152,14 @@ LPVOID TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UIN
 	LPCSTR s1 = no_ctor?"Malloc ":"New ";
 	LPCSTR s2, s3;
 
+	rt::String_Ref type_trim = rt::String_Ref(type).TrimAfter('(');  // remove ctor arguments
+
 	if(co>1)
-	{	auto x = rt::String_Ref(type) + '[' + co + ']';
+	{	auto x = type_trim + '[' + co + ']';
 		s2 = ALLOCA_C_STRING(x);
 	}
 	else
-	{	s2 = type;
+	{	s2 = ALLOCA_C_STRING(type_trim);
 	}
 
 	{	auto x = rt::SS(" in ") + rt::String_Ref(fn).GetFilename() + rt::SS(":L") + line + "\n    by " + func + "()";
@@ -415,8 +417,8 @@ os::Event::~Event()
 
 bool os::Thread::_Create(UINT stack_size)
 {
-	ASSERT(hThread == NULL);
-	bWantExit = false;
+	ASSERT(_hThread == NULL);
+	_bWantExit = false;
 
 	pthread_attr_t attr;
 	pthread_attr_t* set_attr = NULL;
@@ -428,14 +430,14 @@ bool os::Thread::_Create(UINT stack_size)
 	}
 
 	struct _call
-	{	static DWORD _func(LPVOID p)
-		{	return ((Thread*)p)->_Run();
+	{	static LPVOID _func(LPVOID p)
+		{	return (LPVOID)((Thread*)p)->_Run();
 	}	};
 
-	if(0 == pthread_create((pthread_t*)&hThread, set_attr, _call::_func, this)))
+	if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
 		return true;
 
-	hThread = NULL;
+	_hThread = NULL;
 	return false;
 }
 
@@ -451,9 +453,9 @@ SIZE_T os::Thread::GetCurrentId()
 SIZE_T os::Thread::GetId()
 {
 #if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
-	return (SIZE_T)pthread_mach_thread_np(*(pthread_t*)&hThread);
+	return (SIZE_T)pthread_mach_thread_np(*(pthread_t*)&_hThread);
 #else
-	return *(SIZE_T*)&hThread;
+	return *(SIZE_T*)&_hThread;
 #endif
 }
 
@@ -461,32 +463,32 @@ void os::Thread::SetPriority(UINT p)
 {
 	struct sched_param sp;
 	sp.sched_priority = p;
-	pthread_setschedparam(*(pthread_t*)&hThread, SCHED_OTHER, &sp);
+	pthread_setschedparam(*(pthread_t*)&_hThread, SCHED_OTHER, &sp);
 }
 
 void os::Thread::Suspend()
 {
-	ASSERT(hThread == NULL);
+	ASSERT(_hThread == NULL);
 	ASSERT(0); // not implemented
 }
 
 void os::Thread::Resume()
 {
-	ASSERT(hThread == NULL);
+	ASSERT(_hThread == NULL);
 	ASSERT(0); // not implemented
 }
 
 
 void os::Thread::TerminateForcely()
 {
-	if(hThread)
+	if(_hThread)
 	{
 #if defined(PLATFORM_ANDROID)
-		pthread_kill(*(pthread_t*)&hThread, SIGUSR2);
+		pthread_kill(*(pthread_t*)&_hThread, SIGUSR2);
 #else
-		pthread_cancel(*(pthread_t*)&hThread);
+		pthread_cancel(*(pthread_t*)&_hThread);
 #endif
-		hThread = NULL;
+		_hThread = NULL;
 	}
 }
 
