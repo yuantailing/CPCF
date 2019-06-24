@@ -44,7 +44,6 @@
 #if		defined(__ANDROID__)
 		#define PLATFORM_ANDRIOD
 		#define PLATFORM_RECOGNIZED
-		#define PLATFORM_CPP11
 #elif	defined(__APPLE__)
 		#include "TargetConditionals.h"
 		#if TARGET_OS_IPHONE
@@ -55,17 +54,14 @@
 		    #define PLATFORM_MAC
 		#endif
 		#define PLATFORM_RECOGNIZED
-		#define PLATFORM_CPP11
 #elif	defined(_WIN32)
 		#define PLATFORM_WIN
 		#define PLATFORM_RECOGNIZED
 	#if _MSC_VER >= 1900  // Visual Studio 2015
-		#define PLATFORM_CPP11
 	#endif
 #elif	defined(__linux__) || defined(__linux)
 		#define PLATFORM_LINUX
 		#define PLATFORM_RECOGNIZED
-		#define PLATFORM_CPP11
 #else
 		#error Unrecognized Platform
 #endif
