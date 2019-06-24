@@ -918,7 +918,7 @@ PREPARE_RETURN:
 					_MaxSlotAllocatedPlus1 = slot + 1;
 			}
 			else
-			{	_SafeDelArray((LPBYTE) _pObjs[slot]);
+			{	_SafeDelArray_Const((LPBYTE)_pObjs[slot]);
 				_pObjs[slot] = NULL;
 				_ObjsInUse[slot].Unlock();
 				return NULL;

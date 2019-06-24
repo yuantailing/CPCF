@@ -1546,9 +1546,7 @@ INT LoadPreference(const rt::String_Ref& keyname, INT   default_value)
 	return LoadRegKeyInt(HKEY_CURRENT_USER, os::__UTF16(_RegAppRegKey), os::__UTF16(keyname), default_value);
 #elif	defined(PLATFORM_MAC)
 	char out[1024];
-	STACK_STRING_BEGIN(sskey) = keyname;
-	STACK_STRING_END
-	rt::String_Ref ret(out, _objc_preference_load_string(sskey.Begin(), out, sizeof(out)));
+	rt::String_Ref ret(out, _objc_preference_load_string(ALLOCA_C_STRING(keyname), out, sizeof(out)));
 	if(!ret.IsEmpty())ret.ToNumber(default_value);
 	return default_value;
 #else
@@ -1563,9 +1561,7 @@ bool SavePreference(const rt::String_Ref& keyname, INT value)
 	ASSERT(!_RegAppRegKey.IsEmpty());	// call SetPreferenceLocation first
 	return SaveRegKeyInt(HKEY_CURRENT_USER, os::__UTF16(_RegAppRegKey), os::__UTF16(keyname), value);
 #elif	defined(PLATFORM_MAC)
-	STACK_STRING_BEGIN(sskey) = keyname;
-	STACK_STRING_END
-	_objc_preference_save_string(sskey.Begin(), rt::tos::Number(value).Begin());
+	_objc_preference_save_string(ALLOCA_C_STRING(keyname), rt::tos::Number(value).Begin());
 	return true;
 #else
 	ASSERT(0);
@@ -1586,10 +1582,12 @@ bool LoadPreferenceString(const rt::String_Ref& keyname, rt::String& out_val, co
 	return false;
 #elif	defined(PLATFORM_MAC)
 	char out[1024];
-	STACK_STRING_BEGIN(sskey) = keyname;
-	STACK_STRING_END
-	rt::String_Ref ret(out, _objc_preference_load_string(sskey.Begin(), out, sizeof(out)));
-	if(ret.IsEmpty()){ out_val = default_value; return false; }
+	rt::String_Ref ret(out, _objc_preference_load_string(ALLOCA_C_STRING(keyname), out, sizeof(out)));
+	if(ret.IsEmpty())
+    {
+        out_val = default_value;
+        return false;
+    }
 	else
 	{	out_val = ret;
 		return true;
@@ -1606,11 +1604,7 @@ bool SavePreferenceString(const rt::String_Ref& keyname, const rt::String_Ref& v
 	ASSERT(!_RegAppRegKey.IsEmpty());	// call SetPreferenceLocation first
 	return SaveRegKeyString(HKEY_CURRENT_USER, os::__UTF16(_RegAppRegKey), os::__UTF16(keyname), os::__UTF16(value));
 #elif	defined(PLATFORM_MAC)
-	STACK_STRING_BEGIN(sskey) = keyname;
-	STACK_STRING_END
-	STACK_STRING_BEGIN(ssval) = value;
-	STACK_STRING_END
-	_objc_preference_save_string(sskey.Begin(), ssval.Begin());
+	_objc_preference_save_string(ALLOCA_C_STRING(keyname), ALLOCA_C_STRING(value));
 	return true;
 #else
 	ASSERT(0);

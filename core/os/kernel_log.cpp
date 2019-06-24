@@ -382,7 +382,14 @@ namespace _details
 {
 	void __ConsoleLogWriteDefault(LPCSTR log, int type, LPVOID)
 	{	
-		puts(log);
+        static os::CriticalSection _LogCS;
+        static rt::String _prev;
+        
+        rt::String_Ref logstr(log);
+        EnterCSBlock(_LogCS);
+        if(_prev == logstr)return;
+        puts(log);
+        _prev = logstr;
 	}
 }} //  namespace os::_details
 
@@ -438,6 +445,16 @@ namespace _details
     
     void __ConsoleLogWriteDebugger(LPCSTR log, int type, LPVOID)
     {
+        static os::CriticalSection _LogCS;
+        static rt::String _prev;
+        
+        rt::String_Ref logstr(log);
+        if(logstr.Last() == '\r')
+        {   EnterCSBlock(_LogCS);
+            if(_prev == logstr)return;
+            _prev = logstr;
+        }
+        
         puts(log);
     }
     
@@ -580,7 +597,7 @@ bool LogIsDisplayInConsole()
 }
 
 void LogWrite(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int type)
-{	
+{
 	if(_details::__LogWrtieNoConsoleDisplay)type = type&(~rt::LOGTYPE_IN_CONSOLE);
 	_details::__LogWrtieFunc(log, file, line_num, func, type, _details::__LogWrtieFuncCookie);
 }

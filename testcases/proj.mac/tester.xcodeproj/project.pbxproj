@@ -51,6 +51,7 @@
 		941D3E97213073CD00F97118 /* xml_xhtml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E94213073CD00F97118 /* xml_xhtml.cpp */; };
 		941D3E9A213073E000F97118 /* botan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E98213073E000F97118 /* botan.cpp */; };
 		941D3E9D2130779000F97118 /* exprtk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 941D3E9B2130779000F97118 /* exprtk.cpp */; };
+		94A69E9022C0840A00757781 /* test_perf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94A69E8F22C0840A00757781 /* test_perf.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -138,6 +139,7 @@
 		941D3E99213073E000F97118 /* botan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = botan.h; path = ../../../core/ext/botan/botan.h; sourceTree = "<group>"; };
 		941D3E9B2130779000F97118 /* exprtk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exprtk.cpp; path = ../../../core/ext/exprtk/exprtk.cpp; sourceTree = "<group>"; };
 		941D3E9C2130779000F97118 /* exprtk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exprtk.h; path = ../../../core/ext/exprtk/exprtk.h; sourceTree = "<group>"; };
+		94A69E8F22C0840A00757781 /* test_perf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_perf.cpp; path = ../../tests/test_perf.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +229,7 @@
 		93C4A231169FEC7A00D3C820 /* tester */ = {
 			isa = PBXGroup;
 			children = (
+				94A69E8F22C0840A00757781 /* test_perf.cpp */,
 				941D3E3E2130735D00F97118 /* lib_inc.c */,
 				941D3E362130734E00F97118 /* entrypoint.cpp */,
 				941D3E332130734E00F97118 /* test_api.cpp */,
@@ -367,6 +370,7 @@
 				941D3E652130738800F97118 /* kernel.cpp in Sources */,
 				941D3E372130734F00F97118 /* test_botan.cpp in Sources */,
 				941D3E9A213073E000F97118 /* botan.cpp in Sources */,
+				94A69E9022C0840A00757781 /* test_perf.cpp in Sources */,
 				941D3E612130738800F97118 /* kernel_log.cpp in Sources */,
 				941D3E3C2130734F00F97118 /* test_library.cpp in Sources */,
 				941D3E632130738800F97118 /* file_dir.cpp in Sources */,
