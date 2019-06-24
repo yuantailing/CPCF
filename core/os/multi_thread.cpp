@@ -114,6 +114,125 @@ void os::GarbageCollection::DeleteObject(LPVOID x, DWORD TTL_msec, os::GarbageCo
 	}
 }
 
+namespace os
+{
+namespace _details
+{
+
+LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
+{
+#pragma warning(disable:4244 4127)	// conversion from 'int' to 'BYTE', possible loss of data
+									// conditional expression is constant
+	LPBYTE p;
+	//32 for alignment, 1 for suffix, 4(or 8) for LEN-BYTE
+	ASSERT(size < size+32+1+sizeof(size_t));
+	p = new(std::nothrow) BYTE[size+32+1+sizeof(size_t)]; 
+
+#if defined CPF_MEMORY_LEAK_ADDRESS
+	if( p == (LPBYTE)CPF_MEMORY_LEAK_ADDRESS )
+	{	ASSERT(0);
+		//Leaked memory block is located, check [Call Stack] for high-level code
+	}
+#endif
+
+	if(p)
+	{	//Record user block size for determining the high boundary of the memory block
+		*((size_t*)p) = size; //size of User block
+		p += sizeof(size_t);
+		int offset;
+		offset = 32 - (int)( ((size_t)p) & 0x1f);	// align to 32
+		p[offset-1] = offset;	//Store offset
+
+#if defined CPF_MEMORY_LEAK_ADDRESS
+	if( &p[offset] == (LPBYTE)CPF_MEMORY_LEAK_ADDRESS )
+	{	ASSERT(0);
+		//abnormal used memory block is located, check [Call Stack] for high-level code
+	}
+#endif
+		//Additional guard bytes is set for detecting broundry-overwriting, 
+		//which will be checked when memory free. 
+		int i;
+		for(i=0;i<offset-1;i++)p[i] = 0x61+i;				//Set prefix bytes to 0x61+i = "abcde..."
+		for(i=0;i<33-offset;i++)p[offset+size+i] = 0x41+i;	//Set suffix bytes to 0x41+i = "ABCDE..."
+
+#ifdef CPF_REPORT_MEMORY_ACTIVITY
+		_LOG("User block [0x"<<((LPVOID)&p[offset])<<"] allocated.\n");
+#endif
+
+		return &p[offset];
+	}
+	else  //Allocation failed
+	{	
+#ifdef CPF_REPORT_MEMORY_ACTIVITY
+		_LOG("\n\nOut of memory: Failed to allocate "<<((size+41)/1024)<<"KB memory block!\7\n");
+#endif
+		ASSERT(0);
+		return NULL;
+	}
+}
+
+void Free32AL(LPCVOID ptr_in)
+{
+	if( ptr_in ) //NULL pointer is allowed but take no effect
+	{	
+#ifdef CPF_REPORT_MEMORY_ACTIVITY
+		_LOG(_T("User block [0x")<<ptr_in<<_T("] try to free.\n"));
+#endif
+		LPCBYTE ptr = reinterpret_cast<LPCBYTE>(ptr_in);
+
+		bool Prefix_Err_Detected = false; 
+		bool Suffix_Err_Detected = false;
+		size_t user_block_size = ((size_t)(-1));
+		int offset = ptr[-1];
+		if( offset <=32 && offset>0 )
+		{	//Detect buffer overrun
+			user_block_size = *((size_t*)&ptr[-offset-sizeof(size_t)]);
+
+			int i; 
+			for(i=0;i<offset-1;i++)
+			{// check prefix bytes
+				if( ptr[-(offset-i)] == 0x61+i ){}
+				else{ Prefix_Err_Detected = true; break; }
+			}
+			for(i=0;i<33-offset;i++)
+			{// check suffix bytes
+				if( ptr[user_block_size+i] == 0x41+i ){}
+				else{ Suffix_Err_Detected = true; break; }
+			}
+
+			if( !Prefix_Err_Detected && !Suffix_Err_Detected )
+			{	
+				//ensure heap correctness 
+				//_CheckHeap;
+			
+#ifdef CPF_SECURE_MEMORY_RELEASE
+				rt::Zero((LPVOID)ptr_in, user_block_size);	// security enforcement
+#endif
+				delete [] (&ptr[-offset-sizeof(size_t)]);
+				return;
+			}
+		}
+		else{ Prefix_Err_Detected = true; }
+
+		LPCSTR emsg = NULL;
+		if(Prefix_Err_Detected && Suffix_Err_Detected)
+		{	emsg = ("Both low and high");	}
+		else if( Prefix_Err_Detected )
+		{	emsg = ("Low");	}
+		else if( Suffix_Err_Detected )
+		{	emsg = ("High");	}
+		else{ ASSERT(0); }
+
+		_LOG("Abnormal block at 0x"<<((LPVOID)ptr)<<", "<<emsg<<" boundry was overwritten.");
+
+		ASSERT(0);
+	}
+}
+#pragma warning(default:4244 4127)
+
+}} // namespace os::_details
+
+
 #ifdef PLATFORM_DEBUG_BUILD
 namespace os
 {

@@ -240,7 +240,7 @@ public:
 			_SC::Width = _SC::Height = _SC::Depth = 0;
 			if(w && h && d)
 			{	
-				int step_h = rt::EnlargeTo32AL(sizeof(t_Value)*Channel*w);
+				int step_h = _EnlargeTo32AL(sizeof(t_Value)*Channel*w);
 				_SC::_p = (_Malloc32AL(BYTE, step_h*h*d));
 				if(_SC::_p)
 				{	_SC::Width = d; _SC::Height = h; _SC::Depth = d;
@@ -2139,7 +2139,7 @@ public:
 					ASSERT(0); //unsupported pixel format
 				}
 #else	// PLATFORM_INTEL_IPP_SUPPORT
-				step_size = (int)rt::EnlargeTo32AL(sizeof(t_Value)*Channel*w);
+				step_size = (int)_EnlargeTo32AL(sizeof(t_Value)*Channel*w);
 				Ref::lpData = (typename Ref::t_Val*)rt::mem32AL::Malloc32AL(step_size*h, true);
 #endif  // PLATFORM_INTEL_IPP_SUPPORT
 				if(Ref::lpData == NULL)

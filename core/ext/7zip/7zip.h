@@ -23,8 +23,8 @@ namespace _details
 {
 	struct lamz_alloc:public ISzAlloc
 	{
-		static void *SzAlloc(void *p, size_t size) { (void)(p); return rt::mem32AL::Malloc32AL(size,true); }
-		static void SzFree(void *p, void *address) { (void)(p); if(address)rt::mem32AL::Free32AL(address); }
+		static void *SzAlloc(void *p, size_t size) { (void)(p); return _Malloc32AL(BYTE, size); }
+		static void SzFree(void *p, void *address) { (void)(p); _SafeFree32AL(address); }
 		lamz_alloc()
 		{	Alloc = SzAlloc;
 			Free = SzFree;

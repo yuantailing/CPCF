@@ -425,63 +425,63 @@ public:
 	template<typename T>
 	INLFUNC t_Val& push_front(const T& x)
 	{	VERIFY(_add_entry());
-		memmove(&_SC::_p[1],&Buffer<t_Val>::_p[0],sizeof(t_Val)*(Buffer<t_Val>::_len-1));
-		Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[0],x);
-		return Buffer<t_Val>::_p[0];
+		memmove(&_SC::_p[1],&_SC::_p[0],sizeof(t_Val)*(_SC::_len-1));
+		_SC::_xt::ctor(&_SC::_p[0],x);
+		return _SC::_p[0];
 	}
 	template<typename T>
 	INLFUNC void push_front(const T* x, SIZE_T count)
 	{	if(count == 0)return;
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(_add_entry(count));
-		memmove(&Buffer<t_Val>::_p[count],&Buffer<t_Val>::_p[0],sizeof(t_Val)*sz);
-		for(SIZE_T sz = 0;sz<count;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], *x++); }
+		memmove(&_SC::_p[count],&_SC::_p[0],sizeof(t_Val)*sz);
+		for(SIZE_T sz = 0;sz<count;sz++){ _SC::_xt::ctor(&_SC::_p[sz], *x++); }
 	}
 	template<typename T>
 	INLFUNC void push_front(const T& x, SIZE_T count)
 	{	if(count == 0)return;
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(_add_entry(count));
-		memmove(&Buffer<t_Val>::_p[count],&Buffer<t_Val>::_p[0],sizeof(t_Val)*sz);
-		for(SIZE_T i = 0;i<count;i++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[i], x); }
+		memmove(&_SC::_p[count],&_SC::_p[0],sizeof(t_Val)*sz);
+		for(SIZE_T i = 0;i<count;i++){ _SC::_xt::ctor(&_SC::_p[i], x); }
 	}
 	template<typename T>
 	INLFUNC void push_both(const T& x, SIZE_T front_count, SIZE_T back_count)
 	{	if(front_count + back_count == 0)return;
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(ChangeSize(sz + front_count + back_count));
-		memmove(&Buffer<t_Val>::_p[front_count],&Buffer<t_Val>::_p[0],sizeof(t_Val)*sz);
-		for(SIZE_T i = 0;i<front_count;i++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[i], x); }
-		for(SIZE_T i = sz+front_count;i<_SC::_len;i++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[i], x); }
+		memmove(&_SC::_p[front_count],&_SC::_p[0],sizeof(t_Val)*sz);
+		for(SIZE_T i = 0;i<front_count;i++){ _SC::_xt::ctor(&_SC::_p[i], x); }
+		for(SIZE_T i = sz+front_count;i<_SC::_len;i++){ _SC::_xt::ctor(&_SC::_p[i], x); }
 	}
 	INLFUNC t_Val& push_back()
 	{	VERIFY(_add_entry());
-		Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[Buffer<t_Val>::_len-1]);
-		return Buffer<t_Val>::_p[Buffer<t_Val>::_len-1];
+		_SC::_xt::ctor(&_SC::_p[_SC::_len-1]);
+		return _SC::_p[_SC::_len-1];
 	}
 	INLFUNC t_Val& push_back(const t_Val& x)
 	{	VERIFY(_add_entry());
-		Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[Buffer<t_Val>::_len-1],x);
-		return Buffer<t_Val>::_p[Buffer<t_Val>::_len-1];
+		_SC::_xt::ctor(&_SC::_p[_SC::_len-1],x);
+		return _SC::_p[_SC::_len-1];
 	}
 	template<typename T>
 	INLFUNC void push_back(const T* x, SIZE_T count)
 	{	
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(_add_entry(count));
-		for(;sz<Buffer<t_Val>::_len;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], *x++); }
+		for(;sz<_SC::_len;sz++){ _SC::_xt::ctor(&_SC::_p[sz], *x++); }
 	}
 	template<typename T>
 	INLFUNC void push_back(const T& x, SIZE_T count)
 	{	
 		SIZE_T sz = _SC::GetSize();
 		VERIFY(_add_entry(count));
-		for(;sz<Buffer<t_Val>::_len;sz++){ Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[sz], x); }
+		for(;sz<_SC::_len;sz++){ _SC::_xt::ctor(&_SC::_p[sz], x); }
 	}
 	INLFUNC t_Val* push_back_n(SIZE_T count)
 	{	
 		SIZE_T sz = _SC::GetSize();
-		return ChangeSize(sz + count)?&Buffer<t_Val>::_p[sz]:NULL;
+		return ChangeSize(sz + count)?&_SC::_p[sz]:NULL;
 	}
 	INLFUNC void erase(const t_Val* p)
 	{	ASSERT(p < _SC::End());
@@ -492,38 +492,38 @@ public:
 	{	erase(begin - _SC::Begin(), end - _SC::Begin());
 	}
 	INLFUNC void erase(SIZE_T index)
-	{	ASSERT(index<Buffer<t_Val>::_len);
+	{	ASSERT(index<_SC::_len);
 		// call dtor for removed items
-		Buffer<t_Val>::_xt::dtor(Buffer<t_Val>::_p[index]);
-		Buffer<t_Val>::_len--;
-		memmove(&Buffer<t_Val>::_p[index],&Buffer<t_Val>::_p[index+1],sizeof(t_Val)*(Buffer<t_Val>::_len-index));
+		_SC::_xt::dtor(_SC::_p[index]);
+		_SC::_len--;
+		memmove(&_SC::_p[index],&_SC::_p[index+1],sizeof(t_Val)*(_SC::_len-index));
 	}
 	INLFUNC void erase(SIZE_T index_begin, SIZE_T index_end)
 	{	ASSERT(index_begin<=index_end);
-		ASSERT(index_end<Buffer<t_Val>::_len);
+		ASSERT(index_end<_SC::_len);
 		index_end++;
 		// call dtor for removed items
-		for(SIZE_T i=index_begin;i<index_end;i++)Buffer<t_Val>::_xt::dtor(Buffer<t_Val>::_p[i]);
-		memmove(&Buffer<t_Val>::_p[index_begin],&Buffer<t_Val>::_p[index_end],sizeof(t_Val)*(Buffer<t_Val>::_len-index_end));
-		Buffer<t_Val>::_len-=(index_end-index_begin);
+		for(SIZE_T i=index_begin;i<index_end;i++)_SC::_xt::dtor(_SC::_p[i]);
+		memmove(&_SC::_p[index_begin],&_SC::_p[index_end],sizeof(t_Val)*(_SC::_len-index_end));
+		_SC::_len-=(index_end-index_begin);
 	}
 	INLFUNC void pop_back()
-	{	ASSERT(Buffer<t_Val>::_len); 	Buffer<t_Val>::_len--;
-		Buffer<t_Val>::_xt::dtor(Buffer<t_Val>::_p[Buffer<t_Val>::_len]);
+	{	ASSERT(_SC::_len); 	_SC::_len--;
+		_SC::_xt::dtor(_SC::_p[_SC::_len]);
 	}
 	INLFUNC void pop_front()
-	{	ASSERT(Buffer<t_Val>::_len); 	Buffer<t_Val>::_len--;
-		Buffer<t_Val>::_xt::dtor(Buffer<t_Val>::_p[0]);
-		memmove(&Buffer<t_Val>::_p[0],&Buffer<t_Val>::_p[1],sizeof(t_Val)*Buffer<t_Val>::_len);
+	{	ASSERT(_SC::_len); 	_SC::_len--;
+		_SC::_xt::dtor(_SC::_p[0]);
+		memmove(&_SC::_p[0],&_SC::_p[1],sizeof(t_Val)*_SC::_len);
 	}
 	INLFUNC void compact_memory()
-	{	if(Buffer<t_Val>::_len < _len_reserved)
-		{	LPBYTE pNew = (LPBYTE)_Malloc32AL(t_Val,Buffer<t_Val>::_len);
+	{	if(_SC::_len < _len_reserved)
+		{	LPBYTE pNew = (LPBYTE)_Malloc32AL(t_Val,_SC::_len);
 			if(pNew)
-			{	memcpy(pNew,Buffer<t_Val>::_p,sizeof(t_Val)*Buffer<t_Val>::_len);
-				_SafeFree32AL(Buffer<t_Val>::_p);
-				Buffer<t_Val>::_p = pNew;
-				_len_reserved = Buffer<t_Val>::_len;
+			{	memcpy(pNew,_SC::_p,sizeof(t_Val)*_SC::_len);
+				_SafeFree32AL(_SC::_p);
+				_SC::_p = pNew;
+				_len_reserved = _SC::_len;
 			}
 		}
 	};
@@ -531,9 +531,9 @@ public:
 	{	if(co>_len_reserved)
 		{	LPBYTE pNew = (LPBYTE)_Malloc32AL(t_Val,co);
 			if(pNew)
-			{	memcpy(pNew,Buffer<t_Val>::_p,sizeof(t_Val)*Buffer<t_Val>::_len);
-				_SafeFree32AL(Buffer<t_Val>::_p);
-				Buffer<t_Val>::_p = (t_Val*)pNew;
+			{	memcpy(pNew,_SC::_p,sizeof(t_Val)*_SC::_len);
+				_SafeFree32AL(_SC::_p);
+				_SC::_p = (t_Val*)pNew;
 				_len_reserved = co;
 			}
 			return (bool)(pNew!=NULL);
@@ -541,35 +541,35 @@ public:
 		return true;
 	}
 
-	INLFUNC t_Val& first(){ ASSERT(Buffer<t_Val>::_len); return Buffer<t_Val>::_p[0]; }
-	INLFUNC const t_Val& first()const{  ASSERT(Buffer<t_Val>::_len); return Buffer<t_Val>::_p[0]; }
-	INLFUNC t_Val& last(){  ASSERT(Buffer<t_Val>::_len); return Buffer<t_Val>::_p[Buffer<t_Val>::_len-1]; }
-	INLFUNC const t_Val& last()const{  ASSERT(Buffer<t_Val>::_len); return Buffer<t_Val>::_p[Buffer<t_Val>::_len-1]; }
+	INLFUNC t_Val& first(){ ASSERT(_SC::_len); return _SC::_p[0]; }
+	INLFUNC const t_Val& first()const{  ASSERT(_SC::_len); return _SC::_p[0]; }
+	INLFUNC t_Val& last(){  ASSERT(_SC::_len); return _SC::_p[_SC::_len-1]; }
+	INLFUNC const t_Val& last()const{  ASSERT(_SC::_len); return _SC::_p[_SC::_len-1]; }
 
 	INLFUNC t_Val& insert(SIZE_T index)
 	{	VERIFY(_add_entry());
-		if(index<Buffer<t_Val>::_len-1)	
-		{	memmove(&Buffer<t_Val>::_p[index+1],&Buffer<t_Val>::_p[index],(Buffer<t_Val>::_len-index-1)*sizeof(t_Val));
-			Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[index]);
+		if(index<_SC::_len-1)	
+		{	memmove(&_SC::_p[index+1],&_SC::_p[index],(_SC::_len-index-1)*sizeof(t_Val));
+			_SC::_xt::ctor(&_SC::_p[index]);
 		}
-		return Buffer<t_Val>::_p[index];
+		return _SC::_p[index];
 	}
 	INLFUNC bool insert(SIZE_T index,SIZE_T count)
 	{
-		if(reserve(Buffer<t_Val>::GetSize() + count))
-		{	memmove(&Buffer<t_Val>::_p[index+count], &Buffer<t_Val>::_p[index], (Buffer<t_Val>::GetSize() - index)*sizeof(t_Val));
-			for(SIZE_T i = index;i<index+count;i++)Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[i]);
-			Buffer<t_Val>::_len += count;
+		if(reserve(_SC::GetSize() + count))
+		{	memmove(&_SC::_p[index+count], &_SC::_p[index], (_SC::GetSize() - index)*sizeof(t_Val));
+			for(SIZE_T i = index;i<index+count;i++)_SC::_xt::ctor(&_SC::_p[i]);
+			_SC::_len += count;
 			return true;
 		}	
 		return false;
 	}
 	INLFUNC bool insert(SIZE_T index,SIZE_T count,const t_Val& x)
 	{
-		if(reserve(Buffer<t_Val>::GetSize() + count))
-		{	memmove(&Buffer<t_Val>::_p[index+count], &Buffer<t_Val>::_p[index], (Buffer<t_Val>::GetSize() - index)*sizeof(t_Val));
-			for(SIZE_T i = index;i<index+count;i++)Buffer<t_Val>::_xt::ctor(&Buffer<t_Val>::_p[i], x);
-			Buffer<t_Val>::_len += count;
+		if(reserve(_SC::GetSize() + count))
+		{	memmove(&_SC::_p[index+count], &_SC::_p[index], (_SC::GetSize() - index)*sizeof(t_Val));
+			for(SIZE_T i = index;i<index+count;i++)_SC::_xt::ctor(&_SC::_p[i], x);
+			_SC::_len += count;
 			return true;
 		}	
 		return false;
@@ -577,12 +577,12 @@ public:
 	INLFUNC SSIZE_T SortedPush(const t_Val& x)
 	{
 		if(GetSize() == 0 || x<first()){ push_front(x); return 0; }
-		if(	_len_reserved == Buffer<t_Val>::GetSize() &&
-			!reserve(Buffer<t_Val>::GetSize()*2 + 1)
+		if(	_len_reserved == _SC::GetSize() &&
+			!reserve(_SC::GetSize()*2 + 1)
 		)
 		{	return -1;
 		}
-		Buffer<t_Val>::_len++;
+		_SC::_len++;
 		auto* p = &_SC::Last();
 		for(p--;;p--)
 		{	if(x < *p){ rt::Copy(p[1], *p); }
@@ -867,7 +867,7 @@ public:
 		pLastBlock = NULL;
 	}
 	LPBYTE Push(SIZE_T size_max)
-	{	size_max = rt::EnlargeTo32AL(size_max);
+	{	size_max = _EnlargeTo32AL(size_max);
 		SIZE_T	block_size = size_max + sizeof(_BlockHeader);
 		_Block*	p;
 		if(	(block_size + NewBlock < _BufferSize && NewBlock >= Back) ||

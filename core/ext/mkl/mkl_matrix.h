@@ -709,7 +709,7 @@ public:
 		{	__SafeFree();
 			if(row&&col)
 			{
-				LeadingDimen = (MKL_INT)rt::EnlargeTo32AL(row);
+				LeadingDimen = (MKL_INT)_EnlargeTo32AL(row);
 				lpData = _Malloc32AL(t_Val,LeadingDimen*col);
 			}
 			if(lpData)
