@@ -773,8 +773,12 @@ T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line){ Trac
 // 2. Add prefix and suffix bytes to allocated memory block to detect buffer overflow
 extern LPVOID	Malloc32AL(size_t size, bool allow_fail);   //size in byte
 extern void		Free32AL(LPCVOID ptr_in);
+}
 
-}} // namespace os::_details
+extern void EnableMemoryExceptionInThread(bool throw_e);  // default is disabled
+extern bool IsMemoryExceptionEnabledInThread();
+
+} // namespace os::_details
 
 
 #ifdef PLATFORM_DEBUG_BUILD
