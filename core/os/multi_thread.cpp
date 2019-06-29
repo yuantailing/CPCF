@@ -118,6 +118,45 @@ namespace os
 {
 namespace _details
 {
+thread_local bool g_IsMemoryExceptionEnabled = false;
+} // namespace _details
+
+bool IsMemoryExceptionEnabledInThread()
+{
+	return _details::g_IsMemoryExceptionEnabled;
+}
+
+void EnableMemoryExceptionInThread(bool y)
+{
+	_details::g_IsMemoryExceptionEnabled = y;
+}
+} // namespace os
+
+
+namespace os
+{
+namespace _details
+{
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//// 32byte Aligned Memory allocation layout
+//// additional 32+1+4 bytes (or 32+1+8 bytes in Win64) is added to every memory block
+//// 
+////                 |----  Offset  ----|
+//// /-- LEN-BYTE --\/-- Prefix bytes -\#/---------- User block -----------\/-- Suffix bytes --\
+//// UUUUUUUUUUUUUUUUU ......... UUUUUUUUUUUUUUUUUUUUUUUUUU .... UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+//// ^                                  ^^
+//// |Original                          ||
+//// \ allocated           Saved Offset /\ First aligned address after LEN-BYTE, the return 
+////
+//// 1. LEN-BYTE (size_t) indicates the size of User block
+//// 
+//// 2. If the p is returned by malloc and subtracted by 8, then &p[32-p%32] is the output address
+////    and the offset=32-p%32 is saved at p[offset-1] as one byte the legal range of offset is from
+////    1 to 32, and this value will be checked when free and used to calculate the original address
+//// 
+//// 3. The Prefix bytes (size=offset-1) and Suffix bytes (size=33-offset) will be check to ensure 
+////    no boundary memory written occurred (buffer overflow)
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
 {
@@ -125,8 +164,20 @@ LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
 									// conditional expression is constant
 	LPBYTE p;
 	//32 for alignment, 1 for suffix, 4(or 8) for LEN-BYTE
-	ASSERT(size < size+32+1+sizeof(size_t));
-	p = new(std::nothrow) BYTE[size+32+1+sizeof(size_t)]; 
+	if(g_IsMemoryExceptionEnabled)
+	{
+		if(size >= size+32+1+sizeof(size_t))
+			throw std::bad_alloc();
+
+		p = new BYTE[size+32+1+sizeof(size_t)]; 
+	}
+	else
+	{
+		if(size >= size+32+1+sizeof(size_t))
+			return NULL;
+
+		p = new(std::nothrow) BYTE[size+32+1+sizeof(size_t)];
+	}
 
 #if defined CPF_MEMORY_LEAK_ADDRESS
 	if( p == (LPBYTE)CPF_MEMORY_LEAK_ADDRESS )
@@ -262,7 +313,7 @@ _TMA& _GetTMA()
 
 LPVOID TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UINT co, LPCSTR fn, LPCSTR func, UINT line)
 {
-	if(_TMA_Exit)return p;
+	if(_TMA_Exit || p == NULL)return p;
 
 	EnterCSBlock(_GetTMA()._CS);
 	ASSERT(_GetTMA()._TrackedMemory.find((SIZE_T&)p) == _GetTMA()._TrackedMemory.end());
@@ -286,7 +337,13 @@ LPVOID TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UIN
 	}
 
 	auto s = rt::SS() + s1 + s2 + s3;
-	_TMA::MemBlock* n = (_TMA::MemBlock*) new (std::nothrow) BYTE[s.GetLength() + sizeof(SIZE_T) + 1];
+
+	_TMA::MemBlock* n;
+	if(g_IsMemoryExceptionEnabled)
+		n = (_TMA::MemBlock*) new BYTE[s.GetLength() + sizeof(SIZE_T) + 1];
+	else
+		n = (_TMA::MemBlock*) new (std::nothrow) BYTE[s.GetLength() + sizeof(SIZE_T) + 1];
+
 	ASSERT(n);
 
 	n->Size = sz;

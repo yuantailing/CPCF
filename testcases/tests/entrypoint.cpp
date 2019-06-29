@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		test_sortedpush();
+		test_rt();
 		//callback_to_member_function();
 		return;
 	}

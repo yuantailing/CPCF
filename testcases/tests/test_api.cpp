@@ -1296,7 +1296,22 @@ void test_rt()
 		_LOG("rt::NumericTraits<float>::IsUnsigned: "<<ret);
 	}
 
+	{	try
+		{
+			LPCVOID p;
+			os::EnableMemoryExceptionInThread(false);
+			p = _Malloc32AL(BYTE, -1);
+			_LOG("Allocate: "<<p);
 
+			os::EnableMemoryExceptionInThread(true);
+			p = _Malloc32AL(BYTE, -1);
+			_LOG(p);
+		}
+		catch(std::bad_alloc x)
+		{
+			_LOG("catch std::bad_alloc");
+		};
+	}
 }
 
 

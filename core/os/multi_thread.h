@@ -268,6 +268,8 @@ public:
 	INLFUNC bool IsLocked() const { return _bEntered; }
 };
 
+extern void EnableMemoryExceptionInThread(bool throw_e);  // default is disabled
+extern bool IsMemoryExceptionEnabledInThread();
 
 /*
 #define EnterRWLBlockShared(x) os::ReaderWriterLock::_RWL_Holder MARCO_JOIN(_RWL_Holder_,__COUNTER__)(x, true);

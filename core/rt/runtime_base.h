@@ -740,34 +740,6 @@ namespace _details
 #endif
 ///////////////////////////////////////////////////////
 
-
-//////////////////////////////////////////////////////////
-// 32byte Aligned Memory allocation and free 
-//
-// 1. use 32byte-Aligned Memory is optimized for cache hitting rate on CPUs of PIII and above
-// 2. Add prefix and suffix bytes to allocated memory block to detect buffer overflow
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//// 32byte Aligned Memory allocation layout
-//// additional 32+1+4 bytes (or 32+1+8 bytes in Win64) is added to every memory block
-//// 
-////                 |----  Offset  ----|
-//// /-- LEN-BYTE --\/-- Prefix bytes -\#/---------- User block -----------\/-- Suffix bytes --\
-//// UUUUUUUUUUUUUUUUU ......... UUUUUUUUUUUUUUUUUUUUUUUUUU .... UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-//// ^                                  ^^
-//// |Original                          ||
-//// \ allocated           Saved Offset /\ First aligned address after LEN-BYTE, the return 
-////
-//// 1. LEN-BYTE (size_t) indicates the size of User block
-//// 
-//// 2. If the p is returned by malloc and subtracted by 8, then &p[32-p%32] is the output address
-////    and the offset=32-p%32 is saved at p[offset-1] as one byte the legal range of offset is from
-////    1 to 32, and this value will be checked when free and used to calculate the original address
-//// 
-//// 3. The Prefix bytes (size=offset-1) and Suffix bytes (size=33-offset) will be check to ensure 
-////    no boundary memory written occurred (buffer overflow)
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
 namespace rt
 {
 namespace _details
@@ -794,6 +766,11 @@ template<typename T>
 T*				TrackMemoryNew(T* p, LPCSTR type, LPCSTR fn, LPCSTR func, UINT line){ TrackMemoryAllocation(p, sizeof(T), false, type, 1, fn, func, line); return p; }
 #endif
 
+//////////////////////////////////////////////////////////
+// 32byte Aligned Memory allocation and free 
+//
+// 1. use 32byte-Aligned Memory is optimized for cache hitting rate on CPUs of PIII and above
+// 2. Add prefix and suffix bytes to allocated memory block to detect buffer overflow
 extern LPVOID	Malloc32AL(size_t size, bool allow_fail);   //size in byte
 extern void		Free32AL(LPCVOID ptr_in);
 
@@ -810,14 +787,14 @@ extern void		Free32AL(LPCVOID ptr_in);
 #define _SafeDel_Const(x)			{ if(x){ os::_details::UntrackMemoryAllocation(x); delete x; } }
 #define _SafeDelArray_Const(x)		{ if(x){ os::_details::UntrackMemoryAllocation(x); delete [] x; } }
 
-#define _New(...)					(os::_details::TrackMemoryNew(new (std::nothrow) __VA_ARGS__, #__VA_ARGS__, __FILE__, __FUNCTION__, __LINE__))
-#define _NewArray(type, co)			((type*)os::_details::TrackMemoryAllocation(new (std::nothrow) type[co], sizeof(type)*co, false, #type, (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
+#define _New(...)					(os::_details::TrackMemoryNew(os::IsMemoryExceptionEnabledInThread()? new __VA_ARGS__ : new (std::nothrow) __VA_ARGS__, #__VA_ARGS__, __FILE__, __FUNCTION__, __LINE__))
+#define _NewArray(type, co)			((type*)os::_details::TrackMemoryAllocation(os::IsMemoryExceptionEnabledInThread()? new type[co] : new (std::nothrow) type[co], sizeof(type)*co, false, #type, (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
 
 #define _DumpMemoryAllocations		{ os::_details::DumpTrackedMemoryAllocation(true); }
 
 #else
 
-#define _Malloc8AL(type, co)		((type*)new (std::nothrow) BYTE[sizeof(type)*co])
+#define _Malloc8AL(type, co)		((type*) os::IsMemoryExceptionEnabledInThread()? new BYTE[sizeof(type)*co] : new (std::nothrow) BYTE[sizeof(type)*co])
 #define _Malloc32AL(type, co)		((type*)os::_details::Malloc32AL(sizeof(type)*(co), true))
 
 #define _SafeFree8AL_Const(ptr)		{ delete [] (LPBYTE)ptr; }
@@ -825,8 +802,8 @@ extern void		Free32AL(LPCVOID ptr_in);
 #define _SafeDel_Const(x)			{ if(x){delete x; } }
 #define _SafeDelArray_Const(x)		{ if(x){delete [] x; } }
 
-#define _New(...)					(new (std::nothrow) __VA_ARGS__)
-#define _NewArray(type, co)			(new (std::nothrow) type[co])
+#define _New(...)					(os::IsMemoryExceptionEnabledInThread()? new __VA_ARGS__ : new (std::nothrow) __VA_ARGS__)
+#define _NewArray(type, co)			(os::IsMemoryExceptionEnabledInThread()? new type[co] : new (std::nothrow) type[co])
 
 #define _DumpMemoryAllocations		{}
 
