@@ -142,6 +142,9 @@ public:
 		_SafeDel_Const((T*)__CB_Param);
 		return false;
 	}
+
+	static void SetLabel(UINT thread_label);
+	static UINT GetLabel();
 };
 
 // All Atomic operation return the value after operation, EXCEPT AtomicOr

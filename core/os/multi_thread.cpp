@@ -496,6 +496,28 @@ DWORD os::Thread::_Run()
 	return ret;
 }
 
+namespace os
+{
+
+namespace _details
+{
+thread_local UINT __Thread_Label = 0;
+} // namespace _details
+
+
+void Thread::SetLabel(UINT thread_label)
+{
+	_details::__Thread_Label = thread_label;
+}
+
+UINT Thread::GetLabel()
+{
+	return _details::__Thread_Label;
+}
+
+} // namespace os
+
+
 //////////////////////////////////////////////////////////
 // All Windows implementations
 #if defined(PLATFORM_WIN)
