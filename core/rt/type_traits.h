@@ -619,6 +619,34 @@ struct _InvokeThisCall
 #define THISCALL_POLYMORPHISM_INVOKE(name, This, Func, ...)	rt::_details::_InvokeThisCall<__ThisCallPolymorphism_ ## name>::Invoke(This, Func, __VA_ARGS__);
 #define THISCALL_MFPTR		rt::__ThisCallMemberFunctionPointer
 
+//////////////////////////////////////////////////////
+// Stringify Enum
+template<typename T>
+struct Stringify;
 
+// Must be defined in global scope !!!
+#define STRINGIFY_ENUM_BEGIN(type, ns)	namespace rt { \
+										using namespace ns; \
+										template<> \
+										struct Stringify<type>	\
+										{	LPCSTR _str;		\
+											Stringify(type x){	\
+												switch(x){		\
+
+#define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; break;
+
+#define STRINGIFY_ENUM_END(type, ns)			default: _str = NULL; \
+												};} \
+											operator LPCSTR() const { return _str; }	\
+										};}	\
+										namespace oxd { \
+										template<class t_Ostream> \
+										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x) \
+										{	LPCSTR str = rt::Stringify<type>(x); \
+											if(str)return Ostream<<str; \
+											else return Ostream<< #type "("<<(int)x<<')'; \
+										}}
+									
+									
 
 } // namespace rt
