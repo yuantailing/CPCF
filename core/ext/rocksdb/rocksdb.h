@@ -129,7 +129,7 @@ public:
 	INLFUNC bool Set(const SliceValue& k, const SliceValue& val, ::rocksdb::WriteOptions* opt = NULL){ ASSERT(_pDB); return _pDB->Put(opt?*opt:__DefaultWriteOpt, k, val).ok(); }
 	INLFUNC bool Merge(const SliceValue& k, const SliceValue& val, ::rocksdb::WriteOptions* opt = NULL){ ASSERT(_pDB); return _pDB->Merge(opt?*opt:__DefaultWriteOpt, k, val).ok(); }
 	INLFUNC bool Get(const SliceValue& k, std::string& str, ::rocksdb::ReadOptions* opt = NULL){ ASSERT(_pDB); return _pDB->Get(opt?*opt:__DefaultReadOpt, k, &str).ok(); }
-	INLFUNC bool Has(const SliceValue& k, ::rocksdb::ReadOptions* opt = NULL){ thread_local std::string t; return Get(k, t, opt); }
+	INLFUNC bool Has(const SliceValue& k, ::rocksdb::ReadOptions* opt = NULL) const { thread_local std::string t; return Get(k, t, opt); }
 	template<typename t_POD>
 	INLFUNC bool Get(const SliceValue& k, t_POD* valout, ::rocksdb::ReadOptions* opt = NULL) const
 	{	ASSERT_NONRECURSIVE;
