@@ -1,21 +1,5 @@
 #include "ipp_core.h"
 
-#include "../zlib/zlib.h"
-
-#define PNG_USE_GLOBAL_ARRAYS
-#define PNG_NO_SETJMP_SUPPORTED
-#include "png/png.h"
-#include "png/pngstruct.h"
-#include "png/pnginfo.h"
-
-#ifdef PLATFORM_INTEL_IPP_SUPPORT
-#include "ipp_ijl/ijl.h"
-#else
-#include "jpg/cdjpeg.h"
-#include "jpg/jversion.h"
-#endif // PLATFORM_INTEL_IPP_SUPPORT
-
-#include "gif/gif_lib.h"
 
 ipp::IppiEnvParam	ipp::IppiEnvParam::g_IppEnv;
 
@@ -69,1019 +53,107 @@ void ipp::IppiEnvParam::Pop()
 }
 #undef EnvParamSize
 
-
-
 namespace ipp
 {
-namespace ipp_cpp
+namespace _details
 {
 
-IppStatus ippiHaarWTInv_C1R(LPCIpp8u pSrc,int srcStep,LPIpp8u pDst,int dstStep, IppiSize roi)
+struct __crc64_init
+{	
+	ULONGLONG __crc64_table[256];
+
+	__crc64_init()
+	{
+		ULONGLONG poly = 0xC96C5795D7870F42ULL;
+
+		for(INT i=0; i<256; ++i)
+		{
+    		ULONGLONG crc = i;
+
+    		for(UINT j=0; j<8; ++j)
+    		{
+				// is current coefficient set?
+    			if(crc & 1)
+				{
+					// yes, then assume it gets zero'd (by implied x^64 coefficient of dividend)
+					crc >>= 1;
+    
+					// and add rest of the divisor
+    				crc ^= poly;
+				}
+    			else
+    			{
+    				// no? then move to next coefficient
+    				crc >>= 1;
+				}
+    		}
+    
+			__crc64_table[i] = crc;
+		}
+	}
+};
+
+} // namespace _details
+
+
+ULONGLONG crc64(LPCVOID stream_in, SIZE_T n, ULONGLONG crc)
 {
-	if((!pSrc)||(!pDst))return ippStsNullPtrErr;
-	if(roi.height<=0 || roi.width<=0)return ippStsSizeErr;
-	if(roi.height&1 || roi.width&1)return ippStsSizeErr;
+	static _details::__crc64_init _crc64_init_run;
 
-	int Offset_HL,Offset_LH,Offset_HH;
-	Offset_HL = roi.width>>1;
-	Offset_LH = (roi.height>>1)*dstStep;
-	Offset_HH = Offset_HL+Offset_LH;
+	LPCBYTE stream = (LPCBYTE)stream_in;
+	LPCBYTE end = stream + n;
+    while(stream < end)
+    {
+        BYTE index = (BYTE)((*stream) ^ crc);
+        ULONGLONG lookup = _crc64_init_run.__crc64_table[index];
 
-	struct _threshold8u
-	{	static INLFUNC int call(int x){ return (x>=0?(x<=255?(x):255):0); }
+        crc >>= 8;
+        crc ^= lookup;
+		stream ++;
+    }
+
+    return crc;
+}
+
+#ifndef PLATFORM_INTEL_IPP_SUPPORT
+
+DWORD crc32c(LPCVOID data_in, SIZE_T length, DWORD crc)
+{
+	static const DWORD crc32c_table[256] = {
+		0x00000000L, 0xF26B8303L, 0xE13B70F7L, 0x1350F3F4L,	0xC79A971FL, 0x35F1141CL, 0x26A1E7E8L, 0xD4CA64EBL,	0x8AD958CFL, 0x78B2DBCCL, 0x6BE22838L, 0x9989AB3BL,
+		0x4D43CFD0L, 0xBF284CD3L, 0xAC78BF27L, 0x5E133C24L,	0x105EC76FL, 0xE235446CL, 0xF165B798L, 0x030E349BL,	0xD7C45070L, 0x25AFD373L, 0x36FF2087L, 0xC494A384L,
+		0x9A879FA0L, 0x68EC1CA3L, 0x7BBCEF57L, 0x89D76C54L,	0x5D1D08BFL, 0xAF768BBCL, 0xBC267848L, 0x4E4DFB4BL,	0x20BD8EDEL, 0xD2D60DDDL, 0xC186FE29L, 0x33ED7D2AL,
+		0xE72719C1L, 0x154C9AC2L, 0x061C6936L, 0xF477EA35L,	0xAA64D611L, 0x580F5512L, 0x4B5FA6E6L, 0xB93425E5L,	0x6DFE410EL, 0x9F95C20DL, 0x8CC531F9L, 0x7EAEB2FAL,
+		0x30E349B1L, 0xC288CAB2L, 0xD1D83946L, 0x23B3BA45L,	0xF779DEAEL, 0x05125DADL, 0x1642AE59L, 0xE4292D5AL,	0xBA3A117EL, 0x4851927DL, 0x5B016189L, 0xA96AE28AL,
+		0x7DA08661L, 0x8FCB0562L, 0x9C9BF696L, 0x6EF07595L,	0x417B1DBCL, 0xB3109EBFL, 0xA0406D4BL, 0x522BEE48L,	0x86E18AA3L, 0x748A09A0L, 0x67DAFA54L, 0x95B17957L,
+		0xCBA24573L, 0x39C9C670L, 0x2A993584L, 0xD8F2B687L,	0x0C38D26CL, 0xFE53516FL, 0xED03A29BL, 0x1F682198L,	0x5125DAD3L, 0xA34E59D0L, 0xB01EAA24L, 0x42752927L,
+		0x96BF4DCCL, 0x64D4CECFL, 0x77843D3BL, 0x85EFBE38L,	0xDBFC821CL, 0x2997011FL, 0x3AC7F2EBL, 0xC8AC71E8L,	0x1C661503L, 0xEE0D9600L, 0xFD5D65F4L, 0x0F36E6F7L,
+		0x61C69362L, 0x93AD1061L, 0x80FDE395L, 0x72966096L,	0xA65C047DL, 0x5437877EL, 0x4767748AL, 0xB50CF789L,	0xEB1FCBADL, 0x197448AEL, 0x0A24BB5AL, 0xF84F3859L,
+		0x2C855CB2L, 0xDEEEDFB1L, 0xCDBE2C45L, 0x3FD5AF46L,	0x7198540DL, 0x83F3D70EL, 0x90A324FAL, 0x62C8A7F9L,	0xB602C312L, 0x44694011L, 0x5739B3E5L, 0xA55230E6L,
+		0xFB410CC2L, 0x092A8FC1L, 0x1A7A7C35L, 0xE811FF36L,	0x3CDB9BDDL, 0xCEB018DEL, 0xDDE0EB2AL, 0x2F8B6829L,	0x82F63B78L, 0x709DB87BL, 0x63CD4B8FL, 0x91A6C88CL,
+		0x456CAC67L, 0xB7072F64L, 0xA457DC90L, 0x563C5F93L,	0x082F63B7L, 0xFA44E0B4L, 0xE9141340L, 0x1B7F9043L,	0xCFB5F4A8L, 0x3DDE77ABL, 0x2E8E845FL, 0xDCE5075CL,
+		0x92A8FC17L, 0x60C37F14L, 0x73938CE0L, 0x81F80FE3L,	0x55326B08L, 0xA759E80BL, 0xB4091BFFL, 0x466298FCL,	0x1871A4D8L, 0xEA1A27DBL, 0xF94AD42FL, 0x0B21572CL,
+		0xDFEB33C7L, 0x2D80B0C4L, 0x3ED04330L, 0xCCBBC033L,	0xA24BB5A6L, 0x502036A5L, 0x4370C551L, 0xB11B4652L,	0x65D122B9L, 0x97BAA1BAL, 0x84EA524EL, 0x7681D14DL,
+		0x2892ED69L, 0xDAF96E6AL, 0xC9A99D9EL, 0x3BC21E9DL,	0xEF087A76L, 0x1D63F975L, 0x0E330A81L, 0xFC588982L,	0xB21572C9L, 0x407EF1CAL, 0x532E023EL, 0xA145813DL,
+		0x758FE5D6L, 0x87E466D5L, 0x94B49521L, 0x66DF1622L,	0x38CC2A06L, 0xCAA7A905L, 0xD9F75AF1L, 0x2B9CD9F2L,	0xFF56BD19L, 0x0D3D3E1AL, 0x1E6DCDEEL, 0xEC064EEDL,
+		0xC38D26C4L, 0x31E6A5C7L, 0x22B65633L, 0xD0DDD530L,	0x0417B1DBL, 0xF67C32D8L, 0xE52CC12CL, 0x1747422FL,	0x49547E0BL, 0xBB3FFD08L, 0xA86F0EFCL, 0x5A048DFFL,
+		0x8ECEE914L, 0x7CA56A17L, 0x6FF599E3L, 0x9D9E1AE0L,	0xD3D3E1ABL, 0x21B862A8L, 0x32E8915CL, 0xC083125FL,	0x144976B4L, 0xE622F5B7L, 0xF5720643L, 0x07198540L,
+		0x590AB964L, 0xAB613A67L, 0xB831C993L, 0x4A5A4A90L,	0x9E902E7BL, 0x6CFBAD78L, 0x7FAB5E8CL, 0x8DC0DD8FL,	0xE330A81AL, 0x115B2B19L, 0x020BD8EDL, 0xF0605BEEL,
+		0x24AA3F05L, 0xD6C1BC06L, 0xC5914FF2L, 0x37FACCF1L,	0x69E9F0D5L, 0x9B8273D6L, 0x88D28022L, 0x7AB90321L,	0xAE7367CAL, 0x5C18E4C9L, 0x4F48173DL, 0xBD23943EL,
+		0xF36E6F75L, 0x0105EC76L, 0x12551F82L, 0xE03E9C81L,	0x34F4F86AL, 0xC69F7B69L, 0xD5CF889DL, 0x27A40B9EL,	0x79B737BAL, 0x8BDCB4B9L, 0x988C474DL, 0x6AE7C44EL,
+		0xBE2DA0A5L, 0x4C4623A6L, 0x5F16D052L, 0xAD7D5351L
 	};
 
-	const Ipp8u * pS;
-	int DoubleStep = dstStep<<1;
-	for(pS=pSrc;pS<&pSrc[Offset_LH];pDst+=DoubleStep,pS+=srcStep)
-	{
-		const Ipp8u * pLL=pS;
-		Ipp8u *p=pDst;
-		for(;pLL<&pS[Offset_HL];pLL++,p+=2)
-		{
-			int va,ha,aa;
-			va = pLL[0]+pLL[Offset_HL] - 128;
-			ha = pLL[0]+pLL[Offset_LH] - 128;
-			aa = va-pLL[0]+pLL[Offset_HH] - 128 +ha;
+	// fomulated as in http://www.rasterbar.com/products/libtorrent/dht_sec.html
+	LPBYTE data = (LPBYTE)data_in;
 
-			p[1] = _threshold8u::call((ha<<1) - aa);
-			*p = _threshold8u::call(aa);
-			p[srcStep] = _threshold8u::call((va<<1) - aa);
-			p[srcStep+1] = _threshold8u::call(aa-((va+ha - (pLL[0]<<1))<<1));
-		}
-	}
+	crc = ~crc;
+    while (length--)
+         crc = crc32c_table[(crc ^ *data++) & 0xFFL] ^ (crc >> 8);
 
-	return ippStsNoErr;
+    return ~crc;
 }
+#endif
 
-
-IppStatus ippiHaarWTFwd_C1R(LPCIpp8u pSrc,int srcStep, LPIpp8u pDst,int dstStep, IppiSize roi)
-{
-	if((!pSrc)||(!pDst))return ippStsNullPtrErr;
-	if(roi.height<=0 || roi.width<=0)return ippStsSizeErr;
-	if(roi.height&1 || roi.width&1)return ippStsSizeErr;
-
-	int Offset_HL,Offset_LH,Offset_HH;
-	Offset_HL = roi.width>>1;
-	Offset_LH = (roi.height>>1)*dstStep;
-	Offset_HH = Offset_HL+Offset_LH;
-
-	Ipp8u * pD;
-	int DoubleStep = srcStep<<1;
-	for(pD=pDst;pD<&pDst[Offset_LH];pD+=dstStep,pSrc+=DoubleStep)
-	{
-		Ipp8u * pLL=pD;
-		const Ipp8u *p=pSrc;
-		for(;pLL<&pD[Offset_HL];pLL++,p+=2)
-		{
-			int ha0 = ((int)p[0]+(int)p[1])>>1;
-			int ha1 = (((int)p[srcStep]+(int)p[srcStep+1])>>1);
-			int avg = (ha0+ha1)>>1;
-			int va0 = ((int)p[0]+(int)p[srcStep])>>1;
-
-			*pLL = avg;
-
-			//ASSERT((va0 - avg)+128>=0);
-			//ASSERT((va0 - avg)+128<=255);
-			pLL[Offset_HL] = (va0 - avg)+128;
-
-			//ASSERT((ha0 - avg)+128>=0);
-			//ASSERT((ha0 - avg)+128<=255);
-			pLL[Offset_LH] = (ha0 - avg)+128;
-
-			//ASSERT(((((int)p[0] - ha0) - ((int)p[srcStep] - ha1))>>1)+128>=0);
-			//ASSERT(((((int)p[0] - ha0) - ((int)p[srcStep] - ha1))>>1)+128<=255);
-			pLL[Offset_HH] = ((((int)p[0] - ha0) - ((int)p[srcStep] - ha1))>>1)+128;
-		}
-	}
-
-	return ippStsNoErr;
-}
-
-IppStatus ippiHaarWTInv_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi)
-{
-	if((!pSrc)||(!pDst))return ippStsNullPtrErr;
-	if(roi.height<=0 || roi.width<=0)return ippStsSizeErr;
-	if(roi.height&1 || roi.width&1)return ippStsSizeErr;
-
-	ASSERT((srcStep&3) == 0);
-	ASSERT((dstStep&3) == 0);
-
-	srcStep>>=2;
-	dstStep>>=2;
-
-	int Offset_HL,Offset_LH,Offset_HH;
-	Offset_HL = roi.width>>1;
-	Offset_LH = (roi.height>>1)*dstStep;
-	Offset_HH = Offset_HL+Offset_LH;
-
-	LPCIpp32f pS;
-	int DoubleStep = dstStep<<1;
-	for(pS=pSrc;pS<&pSrc[Offset_LH];pDst+=DoubleStep,pS+=srcStep)
-	{
-		LPCIpp32f pLL=pS;
-		LPIpp32f p=pDst;
-		for(;pLL<&pS[Offset_HL];pLL++,p+=2)
-		{
-			float va,ha,aa;
-			va = pLL[0]+pLL[Offset_HL];
-			ha = pLL[0]+pLL[Offset_LH];
-			aa = va-pLL[0]+pLL[Offset_HH]+ha;
-
-			p[1] = ((ha*2) - aa);
-			*p = (aa);
-			p[srcStep] = ((va*2) - aa);
-			p[srcStep+1] = (aa-((va+ha - (pLL[0]*2))*2));
-		}
-	}
-
-	return ippStsNoErr;
-}
-
-
-IppStatus ippiHaarWTFwd_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi)
-{
-	if((!pSrc)||(!pDst))return ippStsNullPtrErr;
-	if(roi.height<=0 || roi.width<=0)return ippStsSizeErr;
-	if(roi.height&1 || roi.width&1)return ippStsSizeErr;
-
-	ASSERT((srcStep&3) == 0);
-	ASSERT((dstStep&3) == 0);
-
-	srcStep>>=2;
-	dstStep>>=2;
-
-	int Offset_HL,Offset_LH,Offset_HH;
-	Offset_HL = roi.width>>1;
-	Offset_LH = (roi.height>>1)*dstStep;
-	Offset_HH = Offset_HL+Offset_LH;
-
-	LPIpp32f  pD;
-	int DoubleStep = srcStep<<1;
-	for(pD=pDst;pD<&pDst[Offset_LH];pD+=dstStep,pSrc+=DoubleStep)
-	{
-		LPIpp32f  pLL=pD;
-		LPCIpp32f p=pSrc;
-		for(;pLL<&pD[Offset_HL];pLL++,p+=2)
-		{
-			float ha0 = (p[0]+p[1])/2;
-			float ha1 = ((p[srcStep]+p[srcStep+1])/2);
-			float avg = (ha0+ha1)/2;
-			float va0 = (p[0]+p[srcStep])/2;
-
-			*pLL = avg;
-			pLL[Offset_HL] = (va0 - avg);
-			pLL[Offset_LH] = (ha0 - avg);
-			pLL[Offset_HH] = (((p[0] - ha0) - (p[srcStep] - ha1))/2);
-		}
-	}
-
-	return ippStsNoErr;
-}
-
-
-} // namespace ipp_cpp
 } // namespace ipp
 
-
-namespace ipp
-{
-
-namespace image_codec   // access to PFM
-{
-	bool _Write_PFM(LPCSTR fn,LPCFLOAT pData,UINT ch,UINT w,UINT h,UINT step)
-	{
-		ASSERT(ch==1 || ch==3);
-		CHAR Header[512];
-		UINT header_len = (UINT)sprintf(Header,"P%c\x0a%d %d\x0a-1.000000\x0a",(ch==1)?'f':'F',w,h);
-		os::File file;
-		if(file.Open(fn,os::File::Normal_Write, true))
-		{
-			// write header
-			if(file.Write(Header,header_len) == header_len)
-			{	LPCBYTE p=(LPBYTE)pData;
-				p+=step*(h-1); //in reversed order, to compatible with HDRShop
-				for(UINT y=0;y<h;y++,p-=step)
-					file.Write(p,sizeof(float)*ch*w);
-
-				return !file.ErrorOccured();
-			}
-		}
-		return false;
-	}
-	bool _Open_PFM(LPCSTR fn,_PFM_Header* pHeader)
-	{
-		ASSERT(pHeader);
-		char Header[1025];
-		pHeader->file.Close();
-		if(pHeader->file.Open(fn))
-		{
-			DWORD len = (DWORD)pHeader->file.Read(Header,1024);
-			Header[len] = 0;
-			if(len>3)
-			{	Header[len-1] = 0;
-				if( Header[0] == 'P' && ( Header[1] == 'F' || Header[1] == 'f' ) )		// "PF" or "Pf"
-				{	pHeader->ch = (Header[1] == 'F')?3:1;
-					LPSTR p = strchr(Header,0xa);
-					if(p)
-					{	LPSTR end;
-						p++;
-						end = strchr(p,0xa);
-						if(end)
-						{	end[0] = 0;
-							if(sscanf(p,"%d %d",&pHeader->width,&pHeader->height) == 2)	// width height
-							{	
-								p = &end[1];
-								while(*p == '#')
-								{	// skip comments, compatible to IST's Data
-									end = strchr(p,0xa);
-									p = &end[1];
-								}
-								end = strchr(p,0xa);									// "-1.0000"
-							
-								if(end)
-								{	pHeader->file.Seek(((UINT)(end-Header))+1);
-									return !pHeader->file.ErrorOccured();
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	bool _Read_PFM(const _PFM_Header* pHeader,LPFLOAT pData,UINT ch,UINT step)
-	{
-		if( ch==pHeader->ch )
-		{	LPBYTE p=&((LPBYTE)pData)[step*(pHeader->height-1)];
-			for(UINT y=0;y<pHeader->height;y++,p-=step) //in reversed order, to compatible with HDRShop
-			{
-				rt::_CastToNonconst(&pHeader->file)->Read(p,sizeof(float)*ch*pHeader->width);
-			}
-			return !rt::_CastToNonconst(&pHeader->file)->ErrorOccured();
-		}
-		else
-		{	
-			if(ch==1 && pHeader->ch==3) //color->grayscale
-			{	rt::Buffer<rt::Vec3f> buf;
-				buf.SetSize(pHeader->width);
-				LPBYTE p = (LPBYTE)pData;
-				p+=step*(pHeader->height-1); //in reversed order, to compatible with HDRShop
-				for(UINT y=0;y<pHeader->height;y++,p-=step)
-				{
-					rt::_CastToNonconst(&pHeader->file)->Read(buf,sizeof(rt::Vec3f)*pHeader->width);
-					if(rt::_CastToNonconst(&pHeader->file)->ErrorOccured())return false;
-					memcpy(p, buf, pHeader->width*sizeof(rt::Vec1f));
-				}
-				return true;
-			}
-			else if(ch==3 && pHeader->ch==1) //grayscale->color
-			{	rt::Buffer<rt::Vec1f> buf;
-				buf.SetSize(pHeader->width);
-				LPBYTE p = (LPBYTE)pData;
-				p+=step*(pHeader->height-1); //in reversed order, to compatible with HDRShop
-				for(UINT y=0;y<pHeader->height;y++,p-=step)
-				{
-					rt::_CastToNonconst(&pHeader->file)->Read(buf,sizeof(rt::Vec1f)*pHeader->width);
-					if(rt::_CastToNonconst(&pHeader->file)->ErrorOccured())return false;
-					memcpy(p, buf, sizeof(rt::Vec3f)*pHeader->width);
-				}
-				return true;
-			}
-		
-		}
-
-		return false;
-	}
-} // namespace image_codec
-
-
-
-
-/*
-bool ImageDecoder::DecodeHeader(LPCBYTE pData, UINT DataLen, DWORD image_codec)
-{
-	m_DecodedImageWidth = m_DecodedImageHeight = m_DecodedImageStep = m_DecodedImageChannel = 0;
-	m_ImageCodec = ImageCodec_Auto;
-
-	if(image_codec == ImageCodec_Auto)
-	{
-		if(	*((DWORD*)pData) == 0xe0ffd8ff && *((DWORD*)(6 + pData)) == 0x4649464a && pData[10] == 0)
-		{	image_codec = ImageCodec_JPG;
-		}
-		else
-		if( *((ULONGLONG*)pData) == 0x0a1a0a0d474e5089	)
-		{	image_codec = ImageCodec_PNG;
-		}
-		else return false;
-	}
-
-	m_ImageCodec = image_codec;
-
-	if(m_ImageCodec == ImageCodec_JPG)
-	{
-		JPEG_CORE_PROPERTIES	m_JcProps;
-		VERIFY(ijlInit(&m_JcProps) == IJL_OK);
-
-		m_DecodedImageStep = 0;
-		m_BufferUsedLen = 0;
-
-		m_JcProps.JPGFile = NULL;
-		m_JcProps.JPGBytes = rt::_CastToNonconst(pData);
-		m_JcProps.JPGSizeBytes = DataLen;
-		if(ijlRead(&m_JcProps, IJL_JBUFF_READPARAMS)!=IJL_OK)
-		{
-			ijlFree(&m_JcProps);
-			return false;
-		}
-
-		m_DecodedImageWidth = m_JcProps.JPGWidth;
-		m_DecodedImageHeight = m_JcProps.JPGHeight;
-		m_DecodedImageChannel = m_JcProps.JPGChannels;
-		m_DecodedImageStep = m_DecodedImageWidth*m_DecodedImageChannel;
-		if( m_DecodedImageStep%4 )m_DecodedImageStep = ((m_DecodedImageStep>>2)+1)<<2;
-
-		ijlFree(&m_JcProps);
-	}
-	else if(m_ImageCodec == ImageCodec_PNG)
-	{
-		UINT datasize = DataLen;
-		LPCBYTE p=&pData[8];
-		for(;;)
-		{	// Read png
-			const _details::png_chunk* chunk = (_details::png_chunk*)p;
-			UINT chunk_len = chunk->length;
-			rt::SwitchByteOrder(chunk_len);
-			UINT total_size = chunk_len + sizeof(_details::png_chunk);
-			if(total_size > datasize)return false;
-
-			if(chunk->id == _details::png_hdrchunk)
-			{
-				const _details::png_header* hdr = (const _details::png_header*)(chunk->data);
-				m_DecodedImageWidth = hdr->Width;
-				m_DecodedImageHeight = hdr->Height;
-				rt::SwitchByteOrder(m_DecodedImageWidth);
-				rt::SwitchByteOrder(m_DecodedImageHeight);
-				if(m_DecodedImageWidth == 0 || m_DecodedImageHeight == 0)return false;
-
-				if(	hdr->ColorType == 3 && 
-					(	hdr->BitDepth == 1 ||
-						hdr->BitDepth == 2 ||
-						hdr->BitDepth == 4 ||
-						hdr->BitDepth == 8
-					)
-				)
-				{	m_DecodedImageChannel = 3;
-				}
-				else
-				{
-					if(hdr->BitDepth != 8)return false;
-
-					switch(hdr->ColorType)
-					{
-					case 0:	m_DecodedImageChannel = 1;	break;
-					case 2:	m_DecodedImageChannel = 3;	break;
-					case 4: m_DecodedImageChannel = 2;  break;
-					case 6: m_DecodedImageChannel = 4;  break;
-					default:
-						return false;
-					}
-				}
-				//w = ntohl(hdr->Width);
-				//h = ntohl(hdr->Height);
-				//step = w*image_size/8 + 1;	// weird padding, 1 byte, tested on 32BPP images with CgBI
-				//image_size = step*h;
-				//interlace = hdr->InterlaceMethod;
-			}
-		}
-	}
-	
-	return true;
-}
-*/
-
-_tagImageCodec ImageDecoder::DecodeFormat(LPCBYTE pData, UINT DataLen)
-{
-	if(DataLen < 16)return ImageCodec_Unk;
-
-	if(	(*((WORD*)pData)) == 0xd8ff && pData[2] == 0xff)	// Exif header FF D8 FF ...
-	{	return ImageCodec_JPG;
-	}
-	else
-	if( *((ULONGLONG*)pData) == 0x0a1a0a0d474e5089	)
-	{	return ImageCodec_PNG;
-	}
-	else
-	if( pData[0] == 'P' && 
-		(pData[1] == 'f' || pData[1] == 'F') && 
-		pData[2] == '\x0a'
-	)
-	{	return ImageCodec_PFM;
-	}
-	else
-	if(	pData[0] == 'G' && pData[1] == 'I' && pData[2] == 'F' &&
-		pData[3] == '8' &&					  pData[5] == 'a'
-	)
-	{	return ImageCodec_GIF;
-	}
-	else
-	if( *((UINT*)pData) == 0x1312f76)
-	{	
-		return ImageCodec_EXR;
-	}
-	else
-		return ImageCodec_Unk;
-}
-
-bool ImageDecoder::Decode(LPCVOID pDataIn, UINT DataLen, DWORD image_codec)
-{
-	m_BufferUsedLen = 0;
-	LPCBYTE pData = (LPCBYTE)pDataIn;
-	m_DecodedImageWidth = m_DecodedImageHeight = m_DecodedImageStep = m_DecodedImageChannel = 0;
-	m_ImageCodec = ImageCodec_Auto;
-
-	if(image_codec == ImageCodec_Auto)
-	{
-		image_codec = DecodeFormat(pData, DataLen);
-		if(image_codec == ImageCodec_Unk)return false;
-	}
-
-	m_ImageCodec = image_codec;
-	m_FrameCount = 0;
-
-	if(m_ImageCodec == ImageCodec_PNG)
-	{
-		struct _read_function: public rt::IStream_Ref
-		{	_read_function(LPCBYTE p, UINT len):rt::IStream_Ref(p, len){}
-			static void _func(png_structp png, png_bytep buf, png_size_t size)
-			{	png_size_t check = ((_read_function*)(png->io_ptr))->Read(buf,(UINT)size);
-				if(check != size)longjmp(png->jmp_buf_local, 1);
-			}
-		};
-
-		_read_function _png_io(pData, DataLen);
-		png_structp png_ptr = NULL;
-		png_infop info_ptr = NULL;
-        /* initialize stuff */
-		if(	(png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)) &&
-			(info_ptr = png_create_info_struct(png_ptr))
-		)
-		{	
-			if(!setjmp(png_jmpbuf(png_ptr)))
-			{
-				png_set_read_fn(png_ptr, &_png_io, _read_function::_func);
-				_png_io.Seek(8);
-
-				png_set_sig_bytes(png_ptr, 8);
-				png_read_info(png_ptr, info_ptr);
-
-				//int number_of_passes = png_set_interlace_handling(png_ptr);
-				png_set_expand(png_ptr);
-				png_set_strip_16(png_ptr);
-				png_set_packing(png_ptr);
-				png_read_update_info(png_ptr, info_ptr);
-
-				m_DecodedImageWidth = (int)info_ptr->width;
-				m_DecodedImageHeight = (int)info_ptr->height;
-				m_DecodedImageChannel = info_ptr->channels;
-				m_DecodedImageStep = rt::max(m_DecodedImageWidth*m_DecodedImageChannel, (int)png_get_rowbytes(png_ptr,info_ptr));
-				m_DecodedImageStep = (m_DecodedImageStep + 3)&0xfffffffc;
-				m_FrameCount = 1;
-
-				if(!_SetBufferSize(m_DecodedImageStep*m_DecodedImageHeight))
-				{
-					if(png_ptr)png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-					return false;
-				}
-
-				png_bytep* rows = (png_bytep*)alloca(sizeof(png_bytep)*m_DecodedImageHeight);
-				for(int i=0;i<m_DecodedImageHeight;i++)
-					rows[i] = m_TempBuffer.Begin() + i*m_DecodedImageStep;
-			
-				png_read_image(png_ptr, rows);
-				m_BufferUsedLen = m_DecodedImageStep*m_DecodedImageHeight;
-				if(png_ptr)png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-				return true;
-			}
-		}
-		if(png_ptr)png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-	}
-	else if(m_ImageCodec == ImageCodec_JPG)
-	{
-#ifdef PLATFORM_INTEL_IPP_SUPPORT
-		// Use IPP IJL
-		JPEG_CORE_PROPERTIES	m_JcProps;
-		VERIFY(ijlInit(&m_JcProps) == IJL_OK);
-
-		m_DecodedImageStep = 0;
-		m_BufferUsedLen = 0;
-
-		m_JcProps.JPGFile = NULL;
-		m_JcProps.JPGBytes = rt::_CastToNonconst(pData);
-		m_JcProps.JPGSizeBytes = DataLen;
-		if(ijlRead(&m_JcProps, IJL_JBUFF_READPARAMS)!=IJL_OK)
-		{
-			ijlFree(&m_JcProps);
-			return false;
-		}
-
-		m_DecodedImageWidth = m_JcProps.JPGWidth;
-		m_DecodedImageHeight = m_JcProps.JPGHeight;
-		m_DecodedImageChannel = m_JcProps.JPGChannels;
-
-		m_DecodedImageStep = m_DecodedImageWidth*m_DecodedImageChannel;
-		m_DecodedImageStep = (m_DecodedImageStep + 3)&0xfffffffc;
-		m_FrameCount = 1;
-
-		if(!_SetBufferSize(m_DecodedImageHeight*m_DecodedImageStep))
-			return false;
-
-		m_JcProps.DIBBytes = m_TempBuffer;
-
-		switch(m_DecodedImageChannel)
-		{
-		case 1:
-			m_JcProps.JPGColor = IJL_G;
-			m_JcProps.DIBColor = IJL_G;
-			break;
-		case 3:
-			m_JcProps.JPGColor = IJL_YCBCR;
-			m_JcProps.DIBColor = IJL_RGB;
-			break;
-		case 4:
-			m_JcProps.JPGColor = IJL_RGBA_FPX;
-			m_JcProps.DIBColor = IJL_RGBA_FPX;
-			break;
-		default:
-			return false;
-		}
-
-		// Set up the info on the desired DIB properties.
-		m_JcProps.DIBWidth = m_DecodedImageWidth;
-		m_JcProps.DIBHeight = m_DecodedImageHeight; // Implies a bottom-up DIB.
-		m_JcProps.DIBChannels = m_DecodedImageChannel;
-		m_JcProps.DIBPadBytes = m_DecodedImageStep - m_DecodedImageWidth*m_DecodedImageChannel;
-
-		// Now get the actual JPEG image data into the pixel buffer.
-		if(ijlRead(&m_JcProps, IJL_JBUFF_READWHOLEIMAGE) == IJL_OK)
-		{
-			ijlFree(&m_JcProps);
-			m_BufferUsedLen = m_DecodedImageStep*m_DecodedImageHeight;
-			return true;
-		}
-
-		ijlFree(&m_JcProps);
-#else
-		// Use libjpg instead
-		bool ret = false;
-		struct jpeg_decompress_struct cinfo;
-		struct jpeg_error_mgr jerr;
-		cinfo.err = jpeg_std_error(&jerr);
-
-		jpeg_create_decompress(&cinfo);
-#ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((j_common_ptr) &cinfo);
-#endif
-		jpeg_mem_src(&cinfo, (LPBYTE)pDataIn, DataLen);
-		if(JPEG_HEADER_OK == jpeg_read_header(&cinfo, true))
-		{
-			m_DecodedImageWidth = cinfo.image_width;
-			m_DecodedImageHeight = cinfo.image_height;
-			m_DecodedImageChannel = cinfo.num_components;
-
-			m_DecodedImageStep = m_DecodedImageWidth*m_DecodedImageChannel;
-			m_DecodedImageStep = (m_DecodedImageStep + 3)&0xfffffffc;
-
-			if(!_SetBufferSize(m_DecodedImageHeight*m_DecodedImageStep + sizeof(LPBYTE)*m_DecodedImageHeight))
-			{
-				jpeg_destroy_decompress(&cinfo);
-				return false;
-			}
-
-			LPBYTE* scanlines = (LPBYTE*)(m_TempBuffer.Begin() + m_DecodedImageHeight*m_DecodedImageStep);
-			for(int y=0;y<m_DecodedImageHeight;y++)
-				scanlines[y] = &m_TempBuffer[m_DecodedImageStep*y];
-
-			if(jpeg_start_decompress(&cinfo))
-			{	
-				for(int lines=0; 
-					lines<m_DecodedImageHeight; 
-					lines+=jpeg_read_scanlines(&cinfo, scanlines + lines, m_DecodedImageHeight - lines)
-				);
-				jpeg_finish_decompress(&cinfo);
-				ret = true;
-			}
-		}
-		jpeg_destroy_decompress(&cinfo);
-		return ret;
-#endif // #ifdef PLATFORM_INTEL_IPP_SUPPORT
-	}
-	else if(m_ImageCodec == ImageCodec_GIF || m_ImageCodec == ImageCodec_GIF_ANI)
-	{
-		struct data
-		{	LPCVOID pDataIn;
-			UINT	DataLen;
-			UINT	Pos;
-			static int read(GifFileType * g, GifByteType * out, int s)
-			{	
-				auto& d = *(data*)g->UserData;
-				s = rt::min((UINT)s, d.DataLen - d.Pos);
-				
-				memcpy(out, ((LPCBYTE)d.pDataIn) + d.Pos, s);
-				d.Pos += s;
-				return s;
-			}
-		};
-		data d;
-		d.DataLen = DataLen;
-		d.pDataIn = pDataIn;
-		d.Pos = 0;
-		
-		GifFileType* gif = DGifOpen(&d, data::read, NULL);
-		if(gif && DGifSlurp(gif) == GIF_OK && gif->ImageCount > 0 && gif->SWidth > 0 && gif->SHeight > 0)
-		{
-			m_DecodedImageWidth = gif->SWidth;
-			m_DecodedImageHeight = gif->SHeight;
-			m_DecodedImageChannel = 3;
-
-			m_FrameCount = gif->ImageCount;
-			if(m_ImageCodec != ImageCodec_GIF_ANI)
-				m_FrameCount = 1;
-
-			m_DecodedImageStep = m_DecodedImageWidth*m_DecodedImageChannel;
-			m_DecodedImageStep = (m_DecodedImageStep + 3)&0xfffffffc;
-
-			if(!_SetBufferSize(m_DecodedImageStep * m_DecodedImageHeight * m_FrameCount))
-			{
-				DGifCloseFile(gif, NULL);
-				return false;
-			}
-
-			for(int f=0; f<m_FrameCount; f++)
-			{
-				auto& img = gif->SavedImages[f];
-				ColorMapObject* cmo = gif->SColorMap?gif->SColorMap:img.ImageDesc.ColorMap;
-
-				if(	img.ImageDesc.Top < 0 || img.ImageDesc.Left < 0 || 
-					img.ImageDesc.Left + img.ImageDesc.Width > m_DecodedImageWidth ||
-					img.ImageDesc.Top + img.ImageDesc.Height > m_DecodedImageHeight ||
-					cmo == NULL ||
-					img.RasterBits == NULL
-				)
-				{	goto GIF_DECODE_FAILED;
-				}
-
-				LPBYTE data = m_TempBuffer.Begin() + m_DecodedImageStep * m_DecodedImageHeight * f;
-				if(img.ImageDesc.Width < m_DecodedImageWidth || img.ImageDesc.Height < m_DecodedImageHeight)
-				{	
-					if(f == 0)
-					{	// init first frame
-						rt::Zero(data, m_DecodedImageStep * m_DecodedImageHeight);
-					}
-					else
-					{	// copy from preivous frame
-						memcpy(data, data - m_DecodedImageStep * m_DecodedImageHeight, m_DecodedImageStep * m_DecodedImageHeight);
-					}
-				}
-
-				data += m_DecodedImageStep * img.ImageDesc.Top + img.ImageDesc.Left * 3;
-
-				LPCBYTE raster = img.RasterBits;
-                GifColorType* colormap = cmo->Colors;
-				int color_count = cmo->ColorCount;
-
-				for(int y = 0; y < img.ImageDesc.Height; y++)
-				{
-					LPBYTE scanline = data + y*m_DecodedImageStep;
-					for(int x = 0; x < img.ImageDesc.Width; x++, raster++, scanline+=3)
-					{
-						if(*raster<color_count)
-						{	
-							auto& c = colormap[*raster];
-							scanline[0] = c.Red;	scanline[1] = c.Green;		scanline[2] = c.Blue;
-						}
-						else
-						{	scanline[0] = 0;		scanline[1] = 0;			scanline[2] = 0;
-						}
-					}
-				}
-			}
-
-			return true;
-		}
-		else
-		{	
-GIF_DECODE_FAILED:
-			if(gif)DGifCloseFile(gif, NULL);
-			return false;
-		}
-	}
-
-	return false;
-}
-
-_tagImageCodec ImageEncoder::CodecFromExtName(const rt::String_Ref& filename)
-{
-	rt::String	str = filename.GetExtName().TrimLeft(1);
-	if(str.IsEmpty())
-	{	if(filename[0] == '.')
-			str = filename.TrimLeft(1);
-		else
-			str = filename;
-	}
-	
-	str.MakeLower();
-	if(str == "jpg" || str == "jpeg" || str == "jfif")
-		return ImageCodec_JPG;
-	else if(str == "png")
-		return ImageCodec_PNG;
-	else if(str == "pfm")
-		return ImageCodec_PFM;
-	else if(str == "exr")
-		return ImageCodec_EXR_PIZ;
-	else if(str == "gif")
-		return ImageCodec_GIF;
-	else 
-		return ImageCodec_Unk;
-
-}
-
-bool ImageEncoder::Encode(LPCBYTE pData,int Channel,int Width,int Height,int Step, DWORD codec)
-{
-	m_BufferUsedLen = 0;
-	ASSERT(Channel>=0 && Channel<=4);
-	if(Width == 0 || Height == 0)return false;
-
-	if(codec == ImageCodec_PNG)
-	{
-		if(!_SetBufferSize(Channel*Width*Height + 1024))
-			return false;
-
-		struct _write_function: public rt::OStream_Ref
-		{	_write_function(LPCBYTE p, UINT len):rt::OStream_Ref(p, len){}
-			static void _func(png_structp png, png_bytep buf, png_size_t size)
-			{	png_size_t check = ((_write_function*)(png->io_ptr))->Write(buf,(UINT)size);
-				if(check != size)longjmp(png->jmp_buf_local, 1);
-			}
-		};
-
-		_write_function _png_io(m_TempBuffer, (UINT)m_TempBuffer.GetSize());
-		png_structp png_ptr = NULL;
-		png_infop info_ptr = NULL;
-        /* initialize stuff */
-		if(	(png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)) &&
-			(info_ptr = png_create_info_struct(png_ptr))
-		)
-		{	
-			if(!setjmp(png_jmpbuf(png_ptr)))
-			{
-				int color_type[] = {0, 4, 2, 6};
-				png_set_write_fn(png_ptr, &_png_io, _write_function::_func,NULL);
-				png_set_IHDR(png_ptr, info_ptr, Width, Height, 8, color_type[Channel-1], 
-							 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-				png_write_info(png_ptr, info_ptr);
-
-				png_bytep* rows = (png_bytep*)alloca(sizeof(png_bytep)*Height);
-				for(int i=0;i<Height;i++)
-					rows[i] = (png_bytep)(pData + i*Step);
-
-				png_write_image(png_ptr, rows);
-				png_write_end(png_ptr, NULL);
-				if(png_ptr)png_destroy_write_struct(&png_ptr, &info_ptr);
-				m_BufferUsedLen = (int)_png_io.GetLength();
-				return true;
-			}
-			if(png_ptr)png_destroy_write_struct(&png_ptr, &info_ptr);
-		}
-	}
-	else if(codec == ImageCodec_JPG)
-	{
-#ifdef PLATFORM_INTEL_IPP_SUPPORT
-		JPEG_CORE_PROPERTIES	m_JcProps;
-		VERIFY(ijlInit(&m_JcProps) == IJL_OK);
-
-		if(!_SetBufferSize(Channel*Width*Height + 1024))
-			return false;
-
-		m_BufferUsedLen = 0;
-
-		m_JcProps.jquality = m_Quality;
-		m_JcProps.DIBWidth = Width;
-		m_JcProps.DIBHeight = Height;
-		m_JcProps.DIBBytes = rt::_CastToNonconst(pData);
-		if(Step)m_JcProps.DIBPadBytes = Step - Width*Channel;
-
-		m_JcProps.DIBChannels = Channel;
-		switch(Channel)
-		{
-		case 1:
-			m_JcProps.JPGColor = IJL_G;
-			m_JcProps.JPGSubsampling = IJL_NONE;
-			m_JcProps.DIBColor = IJL_G;
-			break;
-		case 3:
-			m_JcProps.JPGColor = IJL_YCBCR;
-			m_JcProps.JPGSubsampling = (IJL_JPGSUBSAMPLING)(m_Flag);
-			m_JcProps.DIBColor = IJL_RGB;
-			break;
-		case 4:
-			m_JcProps.JPGColor = IJL_RGBA_FPX;
-			m_JcProps.JPGSubsampling = (IJL_JPGSUBSAMPLING)(m_Flag==IJL_NONE?IJL_NONE:(m_Flag+2));
-			m_JcProps.DIBColor = IJL_RGBA_FPX;
-			break;
-		default:
-			return false;
-		}
-
-		m_JcProps.JPGFile = NULL;
-		m_JcProps.JPGBytes = m_TempBuffer;
-		m_JcProps.JPGSizeBytes = (int)m_TempBuffer.GetSize();
-
-		m_JcProps.JPGWidth = Width;
-		m_JcProps.JPGHeight = Height;
-		m_JcProps.JPGChannels = Channel;
-
-		if(ijlWrite(&m_JcProps,IJL_JBUFF_WRITEWHOLEIMAGE) == IJL_OK)
-		{
-			m_BufferUsedLen = m_JcProps.JPGSizeBytes;
-			ijlFree(&m_JcProps);
-			return true;
-		}
-		ijlFree(&m_JcProps);
-#else
-		// Use libjpg instead
-		if(Channel != 1 && Channel != 3)return false; // consider libjpeg-turbo to support RGBA
-
-		bool ret = false;
-
-		struct jpeg_compress_struct cinfo;
-		struct jpeg_error_mgr jerr;
-		
-		cinfo.err = jpeg_std_error(&jerr);
-		jpeg_create_compress(&cinfo);
-#ifdef NEED_SIGNAL_CATCHER
-		enable_signal_catcher((j_common_ptr) &cinfo);
-#endif
-		cinfo.image_width = Width;
-		cinfo.image_height = Height;
-		cinfo.input_components = Channel;
-		cinfo.in_color_space = Channel==1?JCS_GRAYSCALE:JCS_RGB;
-
-		jpeg_set_defaults(&cinfo);
-		cinfo.dct_method = JDCT_ISLOW;
-		jpeg_set_quality(&cinfo, m_Quality, false);
-
-		if(!_SetBufferSize(Channel*Width*Height + 1024))
-			return false;
-
-		LPBYTE buf = m_TempBuffer.Begin();
-		m_BufferUsedLen = (int)m_TempBuffer.GetSize();
-		jpeg_mem_dest(&cinfo, &buf, (ULONG*)&m_BufferUsedLen);
-
-		jpeg_start_compress(&cinfo, true);
-		LPCBYTE src = pData;
-		for(int lines = 0;
-			lines < Height;
-			src += Step
-		)
-		{	int written = jpeg_write_scanlines(&cinfo, (JSAMPARRAY)&src, 1);
-			if(!written)
-			{	jpeg_destroy_compress(&cinfo);
-				return false;
-			}
-			lines++;
-		}
-
-		jpeg_finish_compress(&cinfo);
-		jpeg_destroy_compress(&cinfo);
-
-		return true;
-#endif
-	}
-	else if(codec == ImageCodec_GIF)
-	{
-		int colormap_size = GetEnv()->GifEncodeColorCount;
-		ColorMapObject *colormap;
-		colormap = GifMakeMapObject(colormap_size, NULL);
-
-		if(!colormap)return false;
-
-		rt::Buffer<BYTE> bufs;
-		LPBYTE out, r, g, b;
-
-		switch(Channel)
-		{
-		case 1:
-			if(!bufs.SetSize(Width*Height*2))return false;
-
-			out = bufs.Begin();
-			r = out + Width*Height;
-			g = r;
-			b = r;
-
-			for(int y=0; y<Height; y++)
-			{
-				LPCBYTE scanline = pData + y*Step;
-				memcpy(r + y*Width, scanline, Width);
-			}
-			b = g = r;
-			break;
-		case 3:
-			if(!bufs.SetSize(Width*Height*4))return false;
-
-			out = bufs.Begin();
-			r = out + Width*Height;
-			g = r + Width*Height;
-			b = g + Width*Height;
-
-			for(int y=0; y<Height; y++)
-			{
-				LPCBYTE scanline = pData + y*Step;
-				int offset = y*Width;
-				for(int x=0; x<Width; x++)
-				{
-					r[x + offset] = scanline[x*3];
-					g[x + offset] = scanline[x*3+1];
-					b[x + offset] = scanline[x*3+2];
-				}
-			}
-			break;
-		case 4:
-			if(!bufs.SetSize(Width*Height*4))return false;
-
-			out = bufs.Begin();
-			r = out + Width*Height;
-			g = r + Width*Height;
-			b = g + Width*Height;
-
-			for(int y=0; y<Height; y++)
-			{
-				LPCBYTE scanline = pData + y*Step;
-				int offset = y*Width;
-				for(int x=0; x<Width; x++)
-				{
-					g[x + offset] = scanline[x*4+1];
-					r[x + offset] = scanline[x*4];
-					b[x + offset] = scanline[x*4+2];
-				}
-			}
-			break;
-		default: return false;
-		}
-
-		if(GifQuantizeBuffer(Width, Height, &colormap_size, r, g, b,  out, colormap->Colors) == GIF_ERROR)
-			return false;
-
-		if(!_SetBufferSize(Width*Height + colormap_size*3 + 1024))return false;
-
-		struct data
-		{	LPCVOID pDataOut;
-			UINT	DataLen;
-			int&	Used;
-
-			data(int &usedlen):Used(usedlen){}
-			static int write(GifFileType * g, const GifByteType * in, int s)
-			{	
-				auto& d = *(data*)g->UserData;
-				s = rt::min((UINT)s, d.DataLen - d.Used);
-				
-				memcpy(((LPBYTE)d.pDataOut) + d.Used, in, s);
-				d.Used += s;
-				return s;
-			}
-		};
-		data d(m_BufferUsedLen);
-		d.pDataOut = m_TempBuffer.Begin();
-		d.DataLen = (UINT)m_TempBuffer.GetSize();
-
-		GifFileType* gif = EGifOpen(&d, data::write, NULL);
-		if(	gif &&
-			EGifPutScreenDesc(gif, Width, Height, colormap_size, 0, colormap) == GIF_OK &&
-			EGifPutImageDesc(gif, 0, 0, Width, Height, 0, NULL) == GIF_OK
-		)
-		{
-			LPCBYTE ptr = out;
-			for(int i = 0; i < Height; i++)
-			{
-				if(EGifPutLine(gif, (GifPixelType*)ptr, Width) == GIF_ERROR)
-					goto GIF_ENCODE_FAILED;
-
-				ptr += Width;
-			}
-
-			if(EGifCloseFile(gif, NULL) == GIF_OK)
-				return true;
-		}
-
-GIF_ENCODE_FAILED:
-		if(gif)EGifCloseFile(gif, NULL);
-	}
-
-	return false;
-}
-} // namespace ipp
-
-#include "openexr/OpenEXR_inc.cpp"

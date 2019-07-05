@@ -53,3 +53,9 @@ testcases/proj\.win/data_define\.hpp
 testcases/proj\.linux/data_define\.hpp
 
 testcases/proj\.linux/Release/
+
+*.gif
+
+*.pfm
+
+*.exr

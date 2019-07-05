@@ -54,6 +54,112 @@
 namespace ipp
 {
 
+enum _tagImageCodec
+{
+	ImageCodec_Auto = 0,
+	ImageCodec_PNG,
+	ImageCodec_JPG,
+	ImageCodec_GIF,
+	ImageCodec_GIF_ANI,
+	ImageCodec_PFM,
+	ImageCodec_EXR,			
+	ImageCodec_EXR_PIZ = ImageCodec_EXR,		// exr with wavelet, lossy
+	ImageCodec_EXR_ZIP,		// exr with zlib, lossless
+	ImageCodec_EXR_PXR24,	// exr with lossy 24-bit float compression
+	ImageCodec_EXR_END,
+	//ImageCodec_BMP,
+	ImageCodec_Unk = -1,
+};
+
+enum _tagCodecFlag
+{
+	JPEG_ColorSampleNONE    = 0,    /* Corresponds to "No Subsampling". */
+									/* Valid on a JPEG w/ any number of channels. */
+	JPEG_ColorSample411     = 1,    /* Valid on a JPEG w/ 3 channels. */
+	JPEG_ColorSample422     = 2,    /* Valid on a JPEG w/ 3 channels. */
+};
+
+namespace _details
+{
+class ImageCodec
+{
+protected:
+	rt::Buffer<BYTE>	m_TempBuffer;
+	int					m_BufferUsedLen;
+	bool				_SetBufferSize(int size){ m_BufferUsedLen=0; return m_TempBuffer.SetSize(rt::max((UINT)size,(UINT)m_TempBuffer.GetSize())); }
+public:
+	ImageCodec(){ m_BufferUsedLen = 0; }
+	LPCBYTE				GetOutput()const { return m_TempBuffer; }
+	UINT				GetOutputSize()const { return m_BufferUsedLen; }
+};
+} // namespace _details
+
+class ImageDecoder: public _details::ImageCodec
+{
+	int		m_DecodedImageWidth;
+	int		m_DecodedImageHeight;
+	int		m_DecodedImageStep;
+	int		m_DecodedImageChannel;
+	int		m_FrameCount;
+	DWORD	m_ImageCodec;
+
+public:
+	ImageDecoder(){ m_DecodedImageWidth = m_DecodedImageHeight = m_DecodedImageStep = m_DecodedImageChannel = 0; }
+	//bool	DecodeHeader(LPCBYTE image, UINT len, DWORD image_codec = ImageCodec_Auto);
+	static	_tagImageCodec	DecodeFormat(LPCBYTE image, UINT DataLen);
+	bool	Decode(LPCVOID image, UINT len, DWORD image_codec = ImageCodec_Auto);
+
+	UINT	GetImageWidth()const { return m_DecodedImageWidth; }
+	UINT	GetImageHeight()const { return m_DecodedImageHeight; }
+	UINT	GetImageStep()const { return m_DecodedImageStep; }
+	UINT	GetImageChannel()const { return m_DecodedImageChannel; }
+	UINT	GetImageCodec()const { return m_ImageCodec; }
+	UINT	GetFrameCount() const { return m_FrameCount; }
+
+	LPCBYTE	GetOutput(UINT frame = 0)const { return m_TempBuffer.Begin() + frame*m_DecodedImageStep*m_DecodedImageHeight; }
+	UINT	GetOutputSize()const { return m_DecodedImageStep*m_DecodedImageHeight; }
+};
+
+class ImageEncoder: public _details::ImageCodec
+{
+	int		m_Quality;
+	int		m_Flag;
+public:
+	ImageEncoder(){ m_Quality = 95; m_Flag = 0; }
+	void	SetQualityRatio(int quality){ ASSERT(quality<=100 && quality>=0); m_Quality = quality; }
+	void	SetSubSamplingType(int	mode = 0){ m_Flag = mode; }
+
+	bool	Encode(LPCBYTE pData,int Channel,int Width,int Height,int Step, DWORD codec = ImageCodec_JPG);	// codec:=_tagImageCodec
+	static _tagImageCodec CodecFromExtName(const rt::String_Ref& filename);
+};
+
+
+namespace ipp_cpp
+{
+// Haar wavelet transform
+IppStatus ippiHaarWTInv_C1R(LPCIpp8u pSrc,int srcStep, LPIpp8u pDst,int dstStep, IppiSize roi);
+IppStatus ippiHaarWTFwd_C1R(LPCIpp8u pSrc,int srcStep, LPIpp8u pDst,int dstStep, IppiSize roi);
+IppStatus ippiHaarWTInv_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi);
+IppStatus ippiHaarWTFwd_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi);
+}
+
+
+namespace image_codec
+{
+	class _PFM_Header
+	{	friend bool		_Open_PFM(LPCSTR fn,_PFM_Header* pHeader);
+		friend bool		_Read_PFM(const _PFM_Header* pHeader,LPFLOAT pData,UINT ch,UINT step);
+		os::File		file;
+	public:
+		UINT			width;
+		UINT			height;
+		UINT			ch;
+	};
+	extern bool _Write_PFM(LPCSTR fn,LPCFLOAT pData,UINT ch,UINT w,UINT h,UINT step);
+	extern bool _Open_PFM(LPCSTR fn,_PFM_Header* pHeader);
+	extern bool _Read_PFM(const _PFM_Header* pHeader,LPFLOAT pData,UINT ch,UINT step);
+}
+
 namespace _details
 {
 
@@ -77,7 +183,6 @@ struct _ValueEnum;
 
 
 } // namespace _details
-
 
 
 template<typename t_Value,UINT Channel>

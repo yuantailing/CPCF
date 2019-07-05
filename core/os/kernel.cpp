@@ -1459,7 +1459,7 @@ bool os::OpenDefaultBrowser(LPCSTR url)
 		static DWORD _call(LPVOID p)
 		{	
 			::ShellExecuteW(NULL,L"open",((_open_url*)p)->url,NULL,NULL,SW_SHOW);
-			_SafeDel_Const((_open_url*)p);
+			_SafeDel_ConstPtr((_open_url*)p);
 			return os::Thread::THREAD_OBJECT_DELETED_ON_RETURN;
 		};
 	};
@@ -1468,7 +1468,7 @@ bool os::OpenDefaultBrowser(LPCSTR url)
 	p->url = url;
 	p->Create([p](){
 		::ShellExecuteW(NULL,L"open", p->url, NULL, NULL, SW_SHOW);
-		_SafeDel_Const(p);
+		_SafeDel_ConstPtr(p);
 		return os::Thread::THREAD_OBJECT_DELETED_ON_RETURN;
 	});
 	return true;

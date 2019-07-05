@@ -31,10 +31,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "../../rt/small_math.h"
-#include "../../rt/buffer_type.h"
-#include "../../os/file_dir.h"
-
-
 #include "ipp_config.h"
 
 #ifdef PLATFORM_INTEL_IPP_SUPPORT
@@ -149,85 +145,6 @@ public:
 INLFUNC IppiEnvParam * GetEnv(){ return &IppiEnvParam::g_IppEnv; }
 
 
-enum _tagImageCodec
-{
-	ImageCodec_Auto = 0,
-	ImageCodec_PNG,
-	ImageCodec_JPG,
-	ImageCodec_GIF,
-	ImageCodec_GIF_ANI,
-	ImageCodec_PFM,
-	ImageCodec_EXR,			
-	ImageCodec_EXR_PIZ = ImageCodec_EXR,		// exr with wavelet, lossy
-	ImageCodec_EXR_ZIP,		// exr with zlib, lossless
-	ImageCodec_EXR_PXR24,	// exr with lossy 24-bit float compression
-	ImageCodec_EXR_END,
-	//ImageCodec_BMP,
-	ImageCodec_Unk = -1,
-};
-
-enum _tagCodecFlag
-{
-	JPEG_ColorSampleNONE    = 0,    /* Corresponds to "No Subsampling". */
-									/* Valid on a JPEG w/ any number of channels. */
-	JPEG_ColorSample411     = 1,    /* Valid on a JPEG w/ 3 channels. */
-	JPEG_ColorSample422     = 2,    /* Valid on a JPEG w/ 3 channels. */
-};
-
-namespace _details
-{
-class ImageCodec
-{
-protected:
-	rt::Buffer<BYTE>	m_TempBuffer;
-	int					m_BufferUsedLen;
-	bool				_SetBufferSize(int size){ m_BufferUsedLen=0; return m_TempBuffer.SetSize(rt::max((UINT)size,(UINT)m_TempBuffer.GetSize())); }
-public:
-	ImageCodec(){ m_BufferUsedLen = 0; }
-	LPCBYTE				GetOutput()const { return m_TempBuffer; }
-	UINT				GetOutputSize()const { return m_BufferUsedLen; }
-};
-} // namespace _details
-
-class ImageDecoder: public _details::ImageCodec
-{
-	int		m_DecodedImageWidth;
-	int		m_DecodedImageHeight;
-	int		m_DecodedImageStep;
-	int		m_DecodedImageChannel;
-	int		m_FrameCount;
-	DWORD	m_ImageCodec;
-
-public:
-	ImageDecoder(){ m_DecodedImageWidth = m_DecodedImageHeight = m_DecodedImageStep = m_DecodedImageChannel = 0; }
-	//bool	DecodeHeader(LPCBYTE image, UINT len, DWORD image_codec = ImageCodec_Auto);
-	static	_tagImageCodec	DecodeFormat(LPCBYTE image, UINT DataLen);
-	bool	Decode(LPCVOID image, UINT len, DWORD image_codec = ImageCodec_Auto);
-
-	UINT	GetImageWidth()const { return m_DecodedImageWidth; }
-	UINT	GetImageHeight()const { return m_DecodedImageHeight; }
-	UINT	GetImageStep()const { return m_DecodedImageStep; }
-	UINT	GetImageChannel()const { return m_DecodedImageChannel; }
-	UINT	GetImageCodec()const { return m_ImageCodec; }
-	UINT	GetFrameCount() const { return m_FrameCount; }
-
-	LPCBYTE	GetOutput(UINT frame = 0)const { return m_TempBuffer.Begin() + frame*m_DecodedImageStep*m_DecodedImageHeight; }
-	UINT	GetOutputSize()const { return m_DecodedImageStep*m_DecodedImageHeight; }
-};
-
-class ImageEncoder: public _details::ImageCodec
-{
-	int		m_Quality;
-	int		m_Flag;
-public:
-	ImageEncoder(){ m_Quality = 95; m_Flag = 0; }
-	void	SetQualityRatio(int quality){ ASSERT(quality<=100 && quality>=0); m_Quality = quality; }
-	void	SetSubSamplingType(int	mode = 0){ m_Flag = mode; }
-
-	bool	Encode(LPCBYTE pData,int Channel,int Width,int Height,int Step, DWORD codec = ImageCodec_JPG);	// codec:=_tagImageCodec
-	static _tagImageCodec CodecFromExtName(const rt::String_Ref& filename);
-};
-
 } // namespace ipp
 
 namespace ipp
@@ -239,37 +156,29 @@ struct Size:public IppiSize
 	FORCEINL Size(const IppiSize&x){ width=x.width; height=x.height;  }
 	FORCEINL Size(int w,int h){ width = w; height = h; }
 	FORCEINL Size(int s){ width = s; height = s; }
-	FORCEINL Size AddBorder(int border_x,int border_y) const
-	{	return Size(width+border_x*2,height+border_y*2); 
-	}
-	FORCEINL Size AddBorder(int border) const
-	{	return AddBorder(border,border);
-	}
-	FORCEINL Size ScaleTo(int min_sz) const	// making the short dimension to min_sz
-	{	if(width > height)return Size((int)(width*min_sz/height + 0.5f), min_sz);
-		else{ return Size(min_sz, (int)(height*min_sz/width + 0.5f)); }
-	}
-	FORCEINL Size ScaleTo(int max_width, int max_height) const	// making both w <= max_width and h <= max_height
-	{	int neww = width*max_height/height;
-		if(neww <= max_width){ return Size(neww, max_height); }
-		else{ return Size(max_width, height*max_width/width); }
-	}
-	FORCEINL bool operator == (const Size& x) const
-	{	return width == x.width && height == x.height;
-	}
+	FORCEINL Size	AddBorder(int border_x,int border_y) const { return Size(width+border_x*2,height+border_y*2); }
+	FORCEINL Size	AddBorder(int border) const {	return AddBorder(border,border); }
+	FORCEINL Size	ScaleTo(int min_sz) const	// making the short dimension to min_sz
+					{	if(width > height)return Size((int)(width*min_sz/height + 0.5f), min_sz);
+						else{ return Size(min_sz, (int)(height*min_sz/width + 0.5f)); }
+					}
+	FORCEINL Size	ScaleTo(int max_width, int max_height) const	// making both w <= max_width and h <= max_height
+					{	int neww = width*max_height/height;
+						if(neww <= max_width){ return Size(neww, max_height); }
+						else{ return Size(max_width, height*max_width/width); }
+					}
+	FORCEINL bool	operator == (const Size& x) const	{ return width == x.width && height == x.height; }
 	FORCEINL int	Area() const { return width*height; }
-	FORCEINL int GetShortDimen() const { return rt::min(width, height); }
+	FORCEINL int	GetShortDimen() const { return rt::min(width, height); }
 };
 
 struct Point:public IppiPoint
 {
 	FORCEINL Point(){}
 	FORCEINL Point(int ix,int iy){ x = ix; y = iy; }
-	FORCEINL bool operator == (const Point& q) const
-	{	return x == q.x && y == q.y;
-	}
-	FORCEINL Point Translate(int dx, int dy) const { return Point(x+dx, y+dy); }
-	FORCEINL Point Translate(const rt::Vec2i& m) const { return Point(x+m.x, y+m.y); }
+	FORCEINL bool	operator == (const Point& q) const { return x == q.x && y == q.y; }
+	FORCEINL Point	Translate(int dx, int dy) const { return Point(x+dx, y+dy); }
+	FORCEINL Point	Translate(const rt::Vec2i& m) const { return Point(x+m.x, y+m.y); }
 };
 
 struct Rect:public IppiRect
@@ -278,22 +187,22 @@ struct Rect:public IppiRect
 	FORCEINL Rect(int ix,int iy,int w,int h){ x = ix; y = iy; width = w; height = h; }
 	FORCEINL Rect(const Point& pt,int w,int h){ x = pt.x; y = pt.y; width = w; height = h; }
 	FORCEINL Rect(const Point& pt1,const Point& pt2)
-	{	if(pt1.x < pt2.x){ x=pt1.x; width=pt2.x-pt1.x; }
-		else{ x=pt2.x; width=pt1.x-pt2.x; }
-		if(pt1.y < pt2.y){ y=pt1.y; height=pt2.y-pt1.y; }
-		else{ y=pt2.y; height=pt1.y-pt2.y; }
-	}
-	FORCEINL int Area() const { return width*height; }
-	FORCEINL Point& Position(){ return *((Point*)this); }
-	FORCEINL const Point& Position() const { return *((Point*)this); }
-	FORCEINL bool IsHit(const Point& p) const { return p.x>=x && p.x<=x+width && p.y>=y && p.y<=y+height; }
-	FORCEINL void BoundingBoxOf(const Rect& rect1, const Rect& rect2)
-	{	int xx = rt::min(rect1.x, rect2.x);	int yy = rt::min(rect1.y, rect2.y);
-		width = rt::max(rect1.x+rect1.width, rect2.x+rect2.width) - xx;
-		height = rt::max(rect1.y+rect1.height, rect2.y+rect2.height) - yy;
-		x = xx;
-		y = yy;
-	}
+			 {	if(pt1.x < pt2.x){ x=pt1.x; width=pt2.x-pt1.x; }
+			 	else{ x=pt2.x; width=pt1.x-pt2.x; }
+			 	if(pt1.y < pt2.y){ y=pt1.y; height=pt2.y-pt1.y; }
+			 	else{ y=pt2.y; height=pt1.y-pt2.y; }
+			 }
+	FORCEINL int			Area() const { return width*height; }
+	FORCEINL Point&			Position(){ return *((Point*)this); }
+	FORCEINL const Point&	Position() const { return *((Point*)this); }
+	FORCEINL bool			IsHit(const Point& p) const { return p.x>=x && p.x<=x+width && p.y>=y && p.y<=y+height; }
+	FORCEINL void			BoundingBoxOf(const Rect& rect1, const Rect& rect2)
+							{	int xx = rt::min(rect1.x, rect2.x);	int yy = rt::min(rect1.y, rect2.y);
+								width = rt::max(rect1.x+rect1.width, rect2.x+rect2.width) - xx;
+								height = rt::max(rect1.y+rect1.height, rect2.y+rect2.height) - yy;
+								x = xx;
+								y = yy;
+							}
 };
 
 // Type definitions
@@ -310,32 +219,17 @@ struct Rect:public IppiRect
 #undef IPP_TYPE_EXT
 
 
-namespace ipp_cpp
-{
-// Haar wavelet transform
-IppStatus ippiHaarWTInv_C1R(LPCIpp8u pSrc,int srcStep, LPIpp8u pDst,int dstStep, IppiSize roi);
-IppStatus ippiHaarWTFwd_C1R(LPCIpp8u pSrc,int srcStep, LPIpp8u pDst,int dstStep, IppiSize roi);
-IppStatus ippiHaarWTInv_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi);
-IppStatus ippiHaarWTFwd_C1R(LPCIpp32f pSrc,int srcStep, LPIpp32f pDst,int dstStep, IppiSize roi);
+extern ULONGLONG crc64(LPCVOID stream, SIZE_T n, ULONGLONG crc = 0);
+
+#ifndef PLATFORM_INTEL_IPP_SUPPORT
+extern  DWORD crc32c(LPCVOID data, SIZE_T length, DWORD crc_init = 0);
+#else
+INLFUNC DWORD crc32c(LPCVOID data, SIZE_T length, DWORD crc_init = 0)
+{	crc_init = ~crc_init;
+	IPPCALL(ippsCRC32C_8u)((const Ipp8u*)data, (UINT)length, (Ipp32u*)&crc_init);
+	return ~crc_init;
 }
-
-
-namespace image_codec
-{
-	class _PFM_Header
-	{	friend bool		_Open_PFM(LPCSTR fn,_PFM_Header* pHeader);
-		friend bool		_Read_PFM(const _PFM_Header* pHeader,LPFLOAT pData,UINT ch,UINT step);
-		os::File		file;
-	public:
-		UINT			width;
-		UINT			height;
-		UINT			ch;
-	};
-	extern bool _Write_PFM(LPCSTR fn,LPCFLOAT pData,UINT ch,UINT w,UINT h,UINT step);
-	extern bool _Open_PFM(LPCSTR fn,_PFM_Header* pHeader);
-	extern bool _Read_PFM(const _PFM_Header* pHeader,LPFLOAT pData,UINT ch,UINT step);
-}
-
+#endif
 
 } // namespace ipp
 

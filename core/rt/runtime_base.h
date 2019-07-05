@@ -786,10 +786,10 @@ extern bool IsMemoryExceptionEnabledInThread();
 #define _Malloc8AL(type, co)		_Malloc32AL(type, co)
 #define _Malloc32AL(type, co)		((type*)os::_details::TrackMemoryAllocation(os::_details::Malloc32AL(sizeof(type)*(co), true), sizeof(type)*(co), true, #type , (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
 
-#define _SafeFree8AL_Const(ptr)		_SafeFree32AL_Const(ptr)
-#define _SafeFree32AL_Const(ptr)	{ os::_details::UntrackMemoryAllocation(ptr); os::_details::Free32AL(ptr); }
-#define _SafeDel_Const(x)			{ if(x){ os::_details::UntrackMemoryAllocation(x); delete x; } }
-#define _SafeDelArray_Const(x)		{ if(x){ os::_details::UntrackMemoryAllocation(x); delete [] x; } }
+#define _SafeFree8AL_ConstPtr(ptr)	_SafeFree32AL_ConstPtr(ptr)
+#define _SafeFree32AL_ConstPtr(ptr)	{ os::_details::UntrackMemoryAllocation(ptr); os::_details::Free32AL(ptr); }
+#define _SafeDel_ConstPtr(x)		{ if(x){ os::_details::UntrackMemoryAllocation(x); delete x; } }
+#define _SafeDelArray_ConstPtr(x)	{ if(x){ os::_details::UntrackMemoryAllocation(x); delete [] x; } }
 
 #define _New(...)					(os::_details::TrackMemoryNew(os::IsMemoryExceptionEnabledInThread()? new __VA_ARGS__ : new (std::nothrow) __VA_ARGS__, #__VA_ARGS__, __FILE__, __FUNCTION__, __LINE__))
 #define _NewArray(type, co)			((type*)os::_details::TrackMemoryAllocation(os::IsMemoryExceptionEnabledInThread()? new type[co] : new (std::nothrow) type[co], sizeof(type)*co, false, #type, (UINT)(co), __FILE__, __FUNCTION__, __LINE__))
@@ -801,10 +801,10 @@ extern bool IsMemoryExceptionEnabledInThread();
 #define _Malloc8AL(type, co)		((type*) os::IsMemoryExceptionEnabledInThread()? new BYTE[sizeof(type)*co] : new (std::nothrow) BYTE[sizeof(type)*co])
 #define _Malloc32AL(type, co)		((type*)os::_details::Malloc32AL(sizeof(type)*(co), true))
 
-#define _SafeFree8AL_Const(ptr)		{ delete [] (LPBYTE)ptr; }
-#define _SafeFree32AL_Const(ptr)	{ os::_details::Free32AL(ptr); }
-#define _SafeDel_Const(x)			{ if(x){delete x; } }
-#define _SafeDelArray_Const(x)		{ if(x){delete [] x; } }
+#define _SafeFree8AL_ConstPtr(ptr)	{ delete [] (LPBYTE)ptr; }
+#define _SafeFree32AL_ConstPtr(ptr)	{ os::_details::Free32AL(ptr); }
+#define _SafeDel_ConstPtr(x)		{ if(x){delete x; } }
+#define _SafeDelArray_ConstPtr(x)	{ if(x){delete [] x; } }
 
 #define _New(...)					(os::IsMemoryExceptionEnabledInThread()? new __VA_ARGS__ : new (std::nothrow) __VA_ARGS__)
 #define _NewArray(type, co)			(os::IsMemoryExceptionEnabledInThread()? new type[co] : new (std::nothrow) type[co])
@@ -813,10 +813,10 @@ extern bool IsMemoryExceptionEnabledInThread();
 
 #endif
 
-#define _SafeFree8AL(ptr)			{ _SafeFree8AL_Const(ptr); ptr = NULL; }
-#define _SafeFree32AL(ptr)			{ _SafeFree32AL_Const(ptr); ptr = NULL; }
-#define _SafeDel(ptr)				{ _SafeDel_Const(ptr); ptr = NULL; }
-#define _SafeDelArray(ptr)			{ _SafeDelArray_Const(ptr); ptr = NULL; }
+#define _SafeFree8AL(ptr)			{ _SafeFree8AL_ConstPtr(ptr); ptr = NULL; }
+#define _SafeFree32AL(ptr)			{ _SafeFree32AL_ConstPtr(ptr); ptr = NULL; }
+#define _SafeDel(ptr)				{ _SafeDel_ConstPtr(ptr); ptr = NULL; }
+#define _SafeDelArray(ptr)			{ _SafeDelArray_ConstPtr(ptr); ptr = NULL; }
 
 #define _EnlargeTo32AL(num)			((((num) + 0x7)&(~((SIZE_T)0x7))))
 #define _Alloca32AL(sz)				(_EnlargeTo32AL((SIZE_T)alloca(sz + 4)))

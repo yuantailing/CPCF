@@ -132,14 +132,14 @@ public:
 		struct _call { 
 			static DWORD _func(LPVOID p)
 			{	(*((T*)p))();
-				_SafeDel_Const((T*)p);
+				_SafeDel_ConstPtr((T*)p);
 				return 0;
 			}};
 		__CB_Func = _call::_func;
 		__CB_Param = _New(T(threadroute));
 		ASSERT(__CB_Param);		
 		if(_Create(stack_size))return true;
-		_SafeDel_Const((T*)__CB_Param);
+		_SafeDel_ConstPtr((T*)__CB_Param);
 		return false;
 	}
 
@@ -571,7 +571,7 @@ protected:
 public:
 	template<typename OBJ>
 	static void DeleteObj(OBJ * ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ _SafeDel_Const((OBJ *)x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeDel_ConstPtr((OBJ *)x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	template<typename OBJ>
@@ -581,11 +581,11 @@ public:
 	}
 	template<typename OBJ>
 	static void DeleteArray(OBJ * ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ _SafeDelArray_Const((OBJ *)x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeDelArray_ConstPtr((OBJ *)x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	static void Delete32AL(LPVOID ptr, int TTL_msec)
-	{	struct _func{ static void delete_func(LPVOID x){ _SafeFree32AL_Const(x); } };
+	{	struct _func{ static void delete_func(LPVOID x){ _SafeFree32AL_ConstPtr(x); } };
 		DeleteObject(ptr,TTL_msec,_func::delete_func);
 	}
 	static void Delete(LPVOID ptr, int TTL_msec, LPFUNC_DELETION dfunc )

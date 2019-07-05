@@ -11,7 +11,7 @@ void TestMain()
 {
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		test_rt();
+		test_ipp_image();
 		//callback_to_member_function();
 		return;
 	}
