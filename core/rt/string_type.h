@@ -1854,4 +1854,5 @@ typedef tos::DataAsString DS;
 
 } // namespace rt
 
-#define __SS(...)			(rt::SS(#__VA_ARGS__))
+#define __SS(...)					(rt::SS(#__VA_ARGS__))
+#define ALLOCA_STRREF(name, size)	rt::String_Ref name((LPSTR)alloca(size), size);

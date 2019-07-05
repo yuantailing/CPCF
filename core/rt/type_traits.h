@@ -633,13 +633,12 @@ struct Stringify;
 											Stringify(type x){	\
 												switch(x){		\
 
-#define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; break;
+#define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
 
-#define STRINGIFY_ENUM_END(type, ns)			default: _str = NULL; \
-												};} \
+#define STRINGIFY_ENUM_END(type, ns)			}; _str = NULL; } \
 											operator LPCSTR() const { return _str; }	\
 										};}	\
-										namespace oxd { \
+										namespace ns { \
 										template<class t_Ostream> \
 										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x) \
 										{	LPCSTR str = rt::Stringify<type>(x); \
@@ -647,6 +646,6 @@ struct Stringify;
 											else return Ostream<< #type "("<<(int)x<<')'; \
 										}}
 									
-									
-
 } // namespace rt
+
+
