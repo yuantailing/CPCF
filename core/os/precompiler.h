@@ -52,12 +52,13 @@ class PrecompilerPredefinedMacros
 	rt::hash_map<rt::String, rt::String, rt::String::hash_compare> _PredefinedMacros;
 
 public:
-	void ImportCmdLineOptions(const os::CommandLine& cmd);
-	void Set(const rt::String_Ref& macro, const rt::String_Ref& value);
-	void Set(const rt::String_Ref& macro);
-	void Unset(const rt::String_Ref& macro);
-	bool IsDefined(const rt::String_Ref& macro) const;
-	void Dump() const;
+	void	ImportCmdLineOptions(const os::CommandLine& cmd);
+	void	Set(const rt::String_Ref& macro, const rt::String_Ref& value);
+	void	Set(const rt::String_Ref& macro);
+	void	Unset(const rt::String_Ref& macro);
+	bool	IsDefined(const rt::String_Ref& macro) const;
+	void	Dump() const;
+	void 	Merge(const PrecompilerPredefinedMacros& x);
 	const rt::String* Get(const rt::String_Ref& macro) const;
 };
 

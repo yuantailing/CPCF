@@ -331,6 +331,12 @@ Unescaped Matches: 1
 ,
 "bin":<7/ABCDEFG>
 }
+A Json: {
+"var":1.3000
+}
+A Json:  {
+"var":1.3000
+}
 -9.8
 -9.8
  

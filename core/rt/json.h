@@ -355,6 +355,11 @@ public:
 	operator const rt::String_Ref&() const { return _Save; }
 };
 
+template<typename T>
+FORCEINL _SE<String_Ref, const _JVar<LPVOID, T>&>  operator + (const String_Ref& left, const _JVar<LPVOID, T>& right)
+{ return _SE<String_Ref, const _JVar<LPVOID, T>& > ( (left), (right) ); }										
+
+
 } // namespace rt
 
 

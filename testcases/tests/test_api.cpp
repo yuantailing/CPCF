@@ -187,6 +187,22 @@ void test_json()
 
 		_LOG(a.GetString());
 	}
+
+	{
+		rt::String str = rt::SS("A Json: ") + 
+							(
+								J(var) = 1.3
+							);
+		_LOG(str);	
+	}
+
+	{
+		rt::String str = rt::SS("A Json: ") + ' ' +
+							(
+								J(var) = 1.3
+							);
+		_LOG(str);	
+	}
 }
 
 void test_xml()
@@ -913,7 +929,8 @@ void test_Precompiler()
 		os::PrecompilerPredefinedMacros predefined;
 		predefined.Set("VAL", rt::tos::Number(i));
 
-		os::Precompiler s(&predefined);
+		os::Precompiler s;
+		s.SetEnvVars(&predefined);
 
 		s.Compile("val.cpp", source3);
 		//_LOG(source);
@@ -1016,14 +1033,16 @@ void test_Precompiler()
 	predefined.Set("HOMEDRIVE", "C:");
 	predefined.Set("HOMEPATH", "/var/usr/home");
 
-	{	os::Precompiler s(&predefined, "%", "%");
+	{	os::Precompiler s("%", "%");
+		s.SetEnvVars(&predefined);
 		s.Compile("test.bat", source);
 		//_LOG(source);
 		_LOG("\nPrecompiled:");
 		_LOG(s.GetCompiled());
 	}
 
-	{	os::Precompiler s(&predefined);
+	{	os::Precompiler s;
+		s.SetEnvVars(&predefined);
 		s.Compile("test.cpp", source2);
 		//_LOG(source);
 		_LOG("\nPrecompiled:");

@@ -1038,10 +1038,6 @@ class String_AddExpr
 	friend class String_AddExpr;
 	char*		_pString;
 	SSIZE_T		_len;
-	FORCEINL SIZE_T _ExprFill(char* p) const	// return number of char filled
-	{	SIZE_T len = _left._ExprFill(p);
-		return len + _right._ExprFill(p+len);
-	}
 
 public:
 	typedef char t_Char;
@@ -1060,7 +1056,7 @@ public:
 		{	GetLength();
 			_pString = _Malloc32AL(char,_len+1);
 			ASSERT(_pString);
-			VERIFY(_len == (SSIZE_T)_ExprFill(_pString));
+			VERIFY(_len == (SSIZE_T)CopyTo(_pString));
 			_pString[_len] = '\0';
 		}
 		return _pString;
@@ -1071,7 +1067,7 @@ public:
 		{	SIZE_T len = GetLength();
 			_pString = _Malloc32AL(char,len+1);
 			ASSERT(_pString);
-			VERIFY(len == _ExprFill(_pString));
+			VERIFY(len == CopyTo(_pString));
 			_pString[len] = '\0';
 			return String_Ref(_pString, len);
 		}
@@ -1083,7 +1079,10 @@ public:
 	{	if(_len < 0)((String_AddExpr*)this)->_len = _left.GetLength() + _right.GetLength();
 		return _len;
 	}
-	FORCEINL SIZE_T CopyTo(char* p) const { return _ExprFill(p); }  // terminate-zero is not copied
+	FORCEINL SIZE_T CopyTo(char* p) const 
+	{	SIZE_T len = _left.CopyTo(p);
+		return len + _right.CopyTo(p+len);
+	}  // terminate-zero is not copied
 	template<typename t_Str>
 	FORCEINL void	ToString(t_Str& str) const { VERIFY(str.SetLength(GetLength())); VERIFY(str.GetLength() == CopyTo(str)); }
 };

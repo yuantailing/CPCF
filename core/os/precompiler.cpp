@@ -525,6 +525,13 @@ void PrecompilerPredefinedMacros::ImportCmdLineOptions(const os::CommandLine& cm
 	}
 }
 
+void PrecompilerPredefinedMacros::Merge(const PrecompilerPredefinedMacros& x)
+{
+	auto it = x._PredefinedMacros.begin();
+	for(; it != x._PredefinedMacros.end(); it++)
+		_PredefinedMacros[it->first] = it->second;
+}
+
 void PrecompilerPredefinedMacros::Set(const rt::String_Ref& macro, const rt::String_Ref& value)
 {
 	_PredefinedMacros[macro] = value;
