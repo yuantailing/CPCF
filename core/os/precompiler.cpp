@@ -464,7 +464,12 @@ const rt::String_Ref& Precompiler::GetCompiled() const
 	return _MacroSubsituted;
 }
 
-Precompiler::Precompiler(const PrecompilerPredefinedMacros* predefined, const rt::String_Ref& macro_prefix, const rt::String_Ref& macro_suffix, const rt::String_Ref& macro_connect)
+void Precompiler::SetEnvVars(const PrecompilerPredefinedMacros* pv)
+{
+	_pPredefined = pv;
+}
+
+Precompiler::Precompiler(const rt::String_Ref& macro_prefix, const rt::String_Ref& macro_suffix, const rt::String_Ref& macro_connect)
 	:_MacroPrefix(macro_prefix)
 	,_MacroSuffix(macro_suffix)
 	,_MacroConnectOp(macro_connect)
@@ -479,7 +484,7 @@ Precompiler::Precompiler(const PrecompilerPredefinedMacros* predefined, const rt
 	_pFileLoader = NULL;
 	_FileLoaderAllowFallback = true;
 
-	_pPredefined = predefined;
+	_pPredefined = NULL;
 }
 
 void Precompiler::SetIncludeSearchDirectories(const rt::String_Ref& dirs)

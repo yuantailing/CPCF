@@ -125,7 +125,7 @@ protected:
 	bool	_UndefineMacro(const rt::String_Ref& macro);
 
 public:
-	Precompiler(const PrecompilerPredefinedMacros* predefined = NULL, const rt::String_Ref& macro_prefix = NULL, const rt::String_Ref& macro_suffix = NULL, const rt::String_Ref& macro_connect = "##");
+	Precompiler(const rt::String_Ref& macro_prefix = NULL, const rt::String_Ref& macro_suffix = NULL, const rt::String_Ref& macro_connect = "##");
 	~Precompiler(){ Empty(); }
 
 	void	PrintError(LPCSTR msg);
@@ -147,6 +147,7 @@ public:
 	bool	IsMacroDefined(const rt::String_Ref& macro_name) const;
 	const	rt::String_Ref& GetMacroDefinition(const rt::String_Ref& macro_name);
 
+	void	SetEnvVars(const PrecompilerPredefinedMacros* pv);
 	void	SetFileLoader(FileLoad* f, bool allow_fallback = true);
 	void	SetIncludeSearchDirectories(const rt::String_Ref& dirs); // will be converted to absolute directory based on current directory, dir is seperated by ';' or '|'
 	void	AddIncludeSearchDirectory(const rt::String_Ref& dir);
