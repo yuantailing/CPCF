@@ -428,8 +428,7 @@ os::Thread::Thread()
 
 os::Thread::~Thread()
 {
-	if(_hThread)
-		__release_handle(_hThread);
+	ASSERT(_hThread == NULL);
 }
 
 bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, UINT stack_size)

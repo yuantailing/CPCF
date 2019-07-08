@@ -189,19 +189,19 @@ void test_json()
 	}
 
 	{
-		rt::String str = rt::SS("A Json: ") + 
+		auto str = rt::SS("A Json: ") + false +
 							(
 								J(var) = 1.3
 							);
-		_LOG(str);	
+		_LOG(rt::String(str));	
 	}
 
 	{
-		rt::String str = rt::SS("A Json: ") + ' ' +
+		auto str = rt::SS("A Json: ") + ' ' + 13 +
 							(
 								J(var) = 1.3
-							);
-		_LOG(str);	
+							) + " EOF";
+		_LOG(ALLOCA_C_STRING(str));
 	}
 }
 

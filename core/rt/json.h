@@ -356,9 +356,19 @@ public:
 };
 
 template<typename T>
-FORCEINL _SE<String_Ref, const _JVar<LPVOID, T>&>  operator + (const String_Ref& left, const _JVar<LPVOID, T>& right)
-{ return _SE<String_Ref, const _JVar<LPVOID, T>& > ( (left), (right) ); }										
-
+FORCEINL _SE<String_Ref, _JVar<LPVOID, T>>  operator + (const String_Ref& left, const _JVar<LPVOID, T>& right)
+{	return _SE<String_Ref, _JVar<LPVOID, T>> ( (left), (right) );
+}
+template<typename t_Left, typename t_Right, typename T>
+FORCEINL _SE<_JVar<LPVOID, T>, _SE<t_Left,t_Right> >								
+operator + (const _JVar<LPVOID, T>& p, const _SE<t_Left,t_Right>& x)	
+{	return _SE<_JVar<LPVOID, T>, _SE<t_Left,t_Right>>(p,x);
+}
+template<typename t_Left, typename t_Right, typename T>
+FORCEINL _SE<_SE<t_Left,t_Right> , _JVar<LPVOID, T>>
+operator + (const _SE<t_Left,t_Right>& x, const _JVar<LPVOID, T>& p)	
+{	return _SE<_SE<t_Left,t_Right>, _JVar<LPVOID, T>>(x, p);
+}
 
 } // namespace rt
 
