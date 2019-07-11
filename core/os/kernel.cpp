@@ -1322,9 +1322,20 @@ bool os::DecryptData(rt::String& plaintext, const rt::String_Ref& cipertext)
 // All Windows implementations
 #include <windows.h>
 
-void os::Sleep(DWORD msec)
+void os::Sleep(DWORD msec, const bool* interrupt_flag)
 {
-	::Sleep(msec);
+	if(interrupt_flag)
+	{
+		UINT co = msec/32;
+
+		for(UINT i=0; i<co && !*interrupt_flag; i++)
+			::Sleep(32);
+
+		if(!*interrupt_flag)
+			::Sleep(msec%32);
+	}
+	else
+		::Sleep(msec);
 }
 
 bool os::CreateRegKey(HKEY root, LPCWSTR regkey)
@@ -1504,9 +1515,20 @@ bool os::OpenDefaultBrowser(LPCSTR url_in)
 }
 #endif
 
-void os::Sleep(DWORD msec)
+void os::Sleep(DWORD msec, const bool* interrupt_flag)
 {
-	::usleep(msec*1000);
+	if(interrupt_flag)
+	{
+		UINT co = msec/32;
+
+		for(UINT i=0; i<co && !*interrupt_flag; i++)
+			::usleep(32*1000);
+
+		if(!*interrupt_flag)
+			::Sleep((msec%32)*1000);
+	}
+	else
+		::Sleep(msec);
 }
 
 #endif

@@ -202,7 +202,7 @@ extern bool GetSystemMemoryInfo(ULONGLONG* free, ULONGLONG* total = NULL);	// in
 extern bool GetProcessMemoryLoad(SIZE_T* vmem, SIZE_T* phy_mem);
 extern bool GetProcessorTimes(ULONGLONG* busy, ULONGLONG* total = NULL);	// msec, {idle, total}
 extern UINT GetPowerState();		// precentage of battery remaining
-extern void Sleep(DWORD msec = INFINITE);
+extern void Sleep(DWORD msec = INFINITE, const bool* interrupt_flag = NULL);
 extern void Halt();
 
 extern LPVOID VMAlloc(SIZE_T length);
