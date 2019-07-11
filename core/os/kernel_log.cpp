@@ -21,7 +21,7 @@ static rt::String		_LogPrompt;
 
 #endif
 
-#if defined(PLATFORM_WIN)
+#if defined(PLATFORM_WIN) && !defined(PLATFORM_DISABLE_LOG)
 void _CreateConsole()
 {
 	if(::GetConsoleWindow() == NULL)
@@ -153,7 +153,7 @@ DWORD					_LogInputPumpRoute(LPVOID p)
 
 void EnableConsoleInput(ConsoleInputHandler* input_handler, LPCSTR prompt)
 {
-#ifdef PLATFORM_WIN
+#if defined(PLATFORM_WIN) && !defined(PLATFORM_DISABLE_LOG)
 	_details::_CreateConsole();
 #endif
 
