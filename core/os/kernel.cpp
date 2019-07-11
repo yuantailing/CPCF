@@ -1525,10 +1525,10 @@ void os::Sleep(DWORD msec, const bool* interrupt_flag)
 			::usleep(32*1000);
 
 		if(!*interrupt_flag)
-			::Sleep((msec%32)*1000);
+			::usleep((msec%32)*1000);
 	}
 	else
-		::Sleep(msec);
+		::usleep(msec);
 }
 
 #endif
