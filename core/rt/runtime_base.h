@@ -73,11 +73,35 @@ namespace rt
 	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
 	#endif
 #elif defined(PLATFORM_MAC)
-    INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__builtin_clz((DWORD)x); }
+    INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__builtin_clz((DWORD)x) - 16; }
     INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__builtin_clz(x); }
     INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__builtin_clzll(x); }
 #else
-#pragma message ("Advanced Bits Operations lzcnt is not defined")
+#pragma message ("Advanced Bits Operations count-leading-zeros is not available")
+#endif	
+
+// count leading zeros	
+#if defined(PLATFORM_WIN)
+	INLFUNC UINT TrailingZeroBits(WORD x)
+				 {	    DWORD trailing_zero = 0;
+						return _BitScanForward(&trailing_zero, x)?trailing_zero:16;
+				 }
+	INLFUNC UINT TrailingZeroBits(DWORD x)
+				 {	    DWORD trailing_zero = 0;
+						return _BitScanForward(&trailing_zero, x)?trailing_zero:32;
+				 }
+	#if defined(PLATFORM_64BIT)
+	INLFUNC UINT TrailingZeroBits(ULONGLONG x)
+				 {	    DWORD trailing_zero = 0;
+						return _BitScanForward64(&trailing_zero, x)?trailing_zero:64;
+				 }
+	#endif
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+    INLFUNC UINT TrailingZeroBits(WORD x){ return rt::min((UINT)__builtin_ctz((DWORD)x), 16U); }
+    INLFUNC UINT TrailingZeroBits(DWORD x){ return (UINT)__builtin_ctz(x); }
+    INLFUNC UINT TrailingZeroBits(ULONGLONG x){ return (UINT)__builtin_ctzll(x); }
+#else
+#pragma message ("Advanced Bits Operations count-trailing-zeros is not available")
 #endif	
 
 // count 1s
@@ -92,9 +116,23 @@ namespace rt
 	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__builtin_popcount(x); }
 	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__builtin_popcountll(x); }
 #else
-#pragma message ("Advanced Bits Operations popcnt is not defined")
+#pragma message ("Advanced Bits Operations count-pop-bits is not available")
 #endif
 
+// count leading zeros	
+#if defined(PLATFORM_WIN)
+	INLFUNC WORD  ByteOrderSwap(WORD x){ return _byteswap_ushort(x); }
+	INLFUNC DWORD ByteOrderSwap(DWORD x){ return _byteswap_ulong((unsigned long)x); }
+	#if defined(PLATFORM_64BIT)
+	INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x){ return (ULONGLONG)_byteswap_uint64((ULONGLONG&)x); }
+	#endif
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+    INLFUNC WORD  ByteOrderSwap(WORD x){ return (WORD)__builtin_bswap32((((DWORD)x)<<16); }
+    INLFUNC DWORD ByteOrderSwap(DWORD x){ return (DWORD)__builtin_bswap32((int32_t&)x); }
+    INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x){ return (ULONGLONG)__builtin_bswap64((ULONGLONG&)x); }
+#else
+#pragma message ("Advanced Bits Operations byte-order-swap is not available")
+#endif	
 }
 
 ///////////////////////////////////////////////////////
