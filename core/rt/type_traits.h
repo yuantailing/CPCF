@@ -125,6 +125,18 @@ namespace rt
 } //namespace rt
 #endif
 
+///////////////////////////////////////////////////
+// UnitTests Class in Global Scope
+// Allows access to protected/private members in Unit Test
+namespace rt
+{
+
+#define TYPETRAITS_UNITTEST_OPEN_ACCESS	friend struct rt::UnitTests;
+#define TYPETRAITS_UNITTEST(x)	_LOG("=== UnitTest<"<<#x<<">: BEGIN ===");	rt::UnitTests::x(); _LOG("=== UnitTest<"<<#x<<">: END ===\n");
+struct UnitTests;
+
+}
+
 
 namespace rt
 {
@@ -200,10 +212,9 @@ namespace _details
 #undef __TypeTraitsSubstituteConst
 }
 
-#define TYPETRAITS_DECLARE_NON_POD	public: static const bool __IsPOD = false;
-#define TYPETRAITS_DECLARE_POD		public: static const bool __IsPOD = true;
+#define TYPETRAITS_DECLARE_NON_POD		public: static const bool __IsPOD = false;
+#define TYPETRAITS_DECLARE_POD			public: static const bool __IsPOD = true;
 #define TYPETRAITS_DECLARE_VARSIZE_POD	public: static const bool __IsVarSizePOD = true;
-
 
 ////////////////////////////////////////////////////////////////////////////
 // TypeTraits
