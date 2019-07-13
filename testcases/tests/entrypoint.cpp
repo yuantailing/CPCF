@@ -9,18 +9,18 @@ extern "C"
 #endif
 void TestMain()
 {
+	LPCSTR logfile = "../testcases.log";
+	os::SetLogFile(logfile, false);
+	os::SetLogPrefix(os::LogPrefix());
+
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		test_json();
-		//callback_to_member_function();
+		TYPETRAITS_UNITTEST(smallmath);
+		//TYPETRAITS_UNITTEST(callback_to_member_function);
 		return;
 	}
 	else
 	{
-		LPCSTR logfile = "../testcases.log";
-		os::SetLogFile(logfile, false);
-		os::SetLogPrefix(os::LogPrefix());
-
 		rt::String fn;
 		os::File::ResolveRelativePath(logfile, fn);
 		_LOGC("Log: "<<fn);
@@ -37,57 +37,56 @@ void TestMain()
 		os::File::GetCurrentDirectory(dir);
 		_LOGC(dir);
 
-		test_rt();
-		test_buffer();
-		test_sortedpush();
-		test_string_conv();
-		test_string();
-		test_json();
-		test_express_tk();
-		test_xml();
-		test_html();
-		test_file();
-		test_Precompiler();
-		test_vm();
-		test_timedate();
-		test_smallmath();
-		test_filelist();
-		test_multithread();
-		test_inet_encoding();
-		test_inet_encoding_custom();
-		test_sysinfo();
-		test_BinarySearch();
-		test_botan_cipher();
-		test_botan_hash();
+		TYPETRAITS_UNITTEST(rt);
+		TYPETRAITS_UNITTEST(buffer);
+		TYPETRAITS_UNITTEST(sortedpush);
+		TYPETRAITS_UNITTEST(string_conv);
+		TYPETRAITS_UNITTEST(string);
+		TYPETRAITS_UNITTEST(json);
+		TYPETRAITS_UNITTEST(express_tk);
+		TYPETRAITS_UNITTEST(xml);
+		//TYPETRAITS_UNITTEST(html);
+		TYPETRAITS_UNITTEST(file);
+		TYPETRAITS_UNITTEST(precompiler);
+		TYPETRAITS_UNITTEST(vm);
+		TYPETRAITS_UNITTEST(timedate);
+		TYPETRAITS_UNITTEST(smallmath);
+		TYPETRAITS_UNITTEST(filelist);
+		TYPETRAITS_UNITTEST(multithread);
+		TYPETRAITS_UNITTEST(inet_encoding);
+		TYPETRAITS_UNITTEST(inet_encoding_custom);
+		TYPETRAITS_UNITTEST(sysinfo);
+		TYPETRAITS_UNITTEST(binary_search);
+		TYPETRAITS_UNITTEST(botan_cipher);
+		TYPETRAITS_UNITTEST(botan_hash);
 	
 		if(0) // non-static test
 		{
-			test_pfw();
-			test_plog();
-			test_pcqueue();
-			//test_commandline();
-			//test_socket();
-			//test_sockettimed();
-			//test_delayed_deletion();
-			//test_socket_io(1);
+			TYPETRAITS_UNITTEST(pfw);
+			TYPETRAITS_UNITTEST(plog);
+			TYPETRAITS_UNITTEST(pcqueue);
 
-			//test_Httpclient();
-			//test_download();
+			//TYPETRAITS_UNITTEST(commandline();
+			//TYPETRAITS_UNITTEST(socket();
+			//TYPETRAITS_UNITTEST(sockettimed();
+			//TYPETRAITS_UNITTEST(delayed_deletion();
+			//TYPETRAITS_UNITTEST(socket_io);
+			//TYPETRAITS_UNITTEST(socket_io_recv);
 
-			//test_HttpNav();
-			//test_httpd();
+			//TYPETRAITS_UNITTEST(http_client);
+			//TYPETRAITS_UNITTEST(download);
+
+			//TYPETRAITS_UNITTEST(http_nav);
+			//TYPETRAITS_UNITTEST(httpd);
 	
-			//for(int i=0; i<21; i++)
-			//	test_ipp_Saliency(rt::String_Ref("sai/img") + i + ".jpg");
-
-			//test_ipp_canvas();
-			//test_ipp_matting();
-			//test_ipp_imageproc();
-			//test_ipp_image();
-			//test_ipp_image_apps();
-			//test_ipp_zlib();
-			//test_ipp_zip();
-			//test_mkl_vector();
+			//TYPETRAITS_UNITTEST(ipp_canvas);
+			//TYPETRAITS_UNITTEST(ipp_matting);
+			//TYPETRAITS_UNITTEST(ipp_imageproc);
+			//TYPETRAITS_UNITTEST(ipp_image);
+			//TYPETRAITS_UNITTEST(ipp_image_apps);
+			//TYPETRAITS_UNITTEST(ipp_zlib);
+			//TYPETRAITS_UNITTEST(ipp_zip);
+			//TYPETRAITS_UNITTEST(mkl_vector);
 		}
 	}
 }

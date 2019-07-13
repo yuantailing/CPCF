@@ -3,22 +3,7 @@
 #include "../../core/inet/http_client.h"
 #include "../../core/inet/tinyhttpd.h"
 #include "../../core/inet/tinyhttpd_fileserv.h"
-
-
-struct _test_section
-{	LPCSTR	_func_name;
-	_test_section(LPCSTR func)
-	{	_LOG("/===== BEGIN: "<<func<<" =====\\");
-		_func_name = func;
-	}
-	~_test_section()
-	{	_LOG("\\===== END:   "<<_func_name<<" =====/");
-		_LOG(' ');
-		_LOG(' ');
-	}
-};
-
-#define DEF_TEST_SECTION	_test_section __test_s(__FUNCTION__);
+#include "test.h"
 
 
 bool http_cb(LPVOID param, UINT msg, LPVOID cookie)
@@ -63,10 +48,8 @@ bool http_cb(LPVOID param, UINT msg, LPVOID cookie)
 	return true;
 }
 
-void test_download()
+void rt::UnitTests::download()
 {
-	DEF_TEST_SECTION;
-
 	inet::HttpDownloader	dlc;
 	dlc.SetItemEventCallback(http_cb, NULL);
 	//dlc.SetTask("http://gameswalls.com/shin-megami-tensei-digital-devil-saga-2/shin-megami-tensei/1024x768", "test.html", true);
@@ -91,10 +74,8 @@ int http_data_cb(LPCBYTE data, UINT data_len, UINT start_pos, bool fin, LPVOID c
 	return 0;
 }
 
-void test_Httpclient()
+void rt::UnitTests::http_client()
 {
-	DEF_TEST_SECTION;
-
 	// Testing HTTPS
 	{	inet::HttpSession	http;
 		http.SetHangingTimeout(2000);
@@ -209,10 +190,8 @@ void test_Httpclient()
 	}
 }
 
-void test_HttpNav()
+void rt::UnitTests::http_nav()
 {
-	DEF_TEST_SECTION;
-
 	inet::HttpNavigator	http;
 	http.SetItemEventCallback(http_cb, NULL);
 	if(http.NavigateTo("http://google.com/") && http.GetResponseLength()>5*1024)
@@ -222,7 +201,7 @@ void test_HttpNav()
 }
 
 
-void test_httpd()
+void rt::UnitTests::httpd()
 {
 	struct _obj
 	{

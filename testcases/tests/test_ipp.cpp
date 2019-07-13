@@ -4,27 +4,11 @@
 #include "../../core/os/file_dir.h"
 #include "../../core/os/kernel.h"
 #include "../../core/ext/zlib/zlib.h"
+#include "test.h"
 
 
-struct _test_section
-{	LPCSTR	_func_name;
-	_test_section(LPCSTR func)
-	{	_LOG("/===== BEGIN: "<<func<<" =====\\");
-		_func_name = func;
-	}
-	~_test_section()
-	{	_LOG("\\===== END:   "<<_func_name<<" =====/");
-		_LOG(' ');
-		_LOG(' ');
-	}
-};
-
-#define DEF_TEST_SECTION	_test_section __test_s(__FUNCTION__);
-
-void test_ipp_canvas()
+void rt::UnitTests::ipp_canvas()
 {
-	DEF_TEST_SECTION
-
 	ipp::Image_3c8u img;
 	img.Load("test.jpg");
 
@@ -328,7 +312,7 @@ void major_color(LPCVOID pRGB32, UINT w, UINT h, UINT step, std::string& json)
 	json += "\n]";
 }
 
-void test_ipp_major_color()
+void rt::UnitTests::ipp_major_color()
 {
 	ipp::Image_4c8u img;
 	if(img.Load("c3.jpg"))
@@ -340,7 +324,7 @@ void test_ipp_major_color()
 	}
 }
 
-void test_ipp_image()
+void rt::UnitTests::ipp_image()
 {
 	{	// hook up with OpenCV by referrring the internal pixel buffer from a cv::Mat without memory allocation
 		//cv::Mat frame;
@@ -460,7 +444,7 @@ void test_ipp_image()
 
 #ifdef PLATFORM_INTEL_IPP_SUPPORT
 
-void test_ipp_image_apps()
+void rt::UnitTests::ipp_image_apps()
 {
 	//{	// VRF
 	//	float threshold = 0.04f;
@@ -666,7 +650,7 @@ void test_ipp_image_apps()
 }
 
 
-void test_ipp_imageproc()
+void rt::UnitTests::ipp_imageproc()
 {
 	{
 		ipp::Image_3c8u bg, lab, sh;
@@ -762,85 +746,7 @@ void test_ipp_imageproc()
 	ret.Save("gauss_blur.jpg");
 }
 
-void test_ipp_Saliency(LPCSTR fn)
-{
-	ipp::Image_3c8u	img_raw;
-	img_raw.Load(fn);
-
-	ipp::Image_3c8u	img, ret;
-	img.SetSize(img_raw.GetRegion().ScaleTo(140));
-	img_raw.ResizeTo_SuperSampling(img);
-	ret.SetSize(img);
-
-	os::TickCount	tc;
-	tc.LoadCurrentTick();
-
-	// Image Saliency
-	ipp::Image_1c32f	Saliency;
-	Saliency.SetSize(img);
-	Saliency.Set(0);
-
-	ipp::Image_1c8u chan[3];
-	chan[0].SetSize(img);
-	chan[1].SetSize(img);
-	chan[2].SetSize(img);
-	img.ChannelSplit(chan[0],chan[1],chan[2]);
-
-	UINT DoGs[] = { 9, 17, 33, 65, 129 /*, 257 , 513*/ };
-	//UINT DoGs[] = { 17, 25, 33, 47, 65, 99, 129, 185, 257, 385, 513 };
-
-	ipp::Image_1c8u t[3];
-	t[0].SetSize(img);
-	t[1].SetSize(img);
-	t[2].SetSize(img);
-
-	ipp::Image_1c8u t0[3];
-	t0[0].SetSize(img);
-	t0[1].SetSize(img);
-	t0[2].SetSize(img);
-		
-	ipp::Image_1c8u d[3];
-	d[0].SetSize(img);
-	d[1].SetSize(img);
-	d[2].SetSize(img);
-
-	ipp::Image_1c8u m;
-	m.SetSize(img);
-		
-	for(int c=0;c<3;c++)
-		chan[c].GaussTo(t0[c], DoGs[0]);
-
-	for(UINT s = 1; s<sizeofArray(DoGs); s++)
-	{
-		m.Set(0);
-		for(int c=0;c<3;c++)
-		{
-			chan[c].GaussTo(t[c], DoGs[s]);
-			d[c].Difference(t[c], t0[c]);
-			//m.Max(d[c]);
-			Saliency.Accumulate(d[c]);
-
-			t0[c] = t[c];
-		}
-
-		//m.Save(rt::String_Ref("DoG_Level_") + s + ".jpg");
-		//Saliency.Accumulate(m);
-		Saliency.Multiply(0.85f);
-	}
-
-	rt::Vec1f mv;
-	Saliency.Sqr();
-	Saliency.Max(mv);
-	Saliency.Multiply(1.0f/mv);
-
-	_LOG("time = "<<tc.TimeLapse()<<"ms");
-
-	m = Saliency;
-	m.Save(rt::String_Ref(fn) + "_sa.jpg");
-}
-
-
-void test_ipp_matting()
+void rt::UnitTests::ipp_matting()
 {
 	ipp::Image_3c8u	w,b;
 
@@ -877,7 +783,7 @@ void test_ipp_matting()
 #endif // #ifdef PLATFORM_INTEL_IPP_SUPPORT
 
 
-void test_ipp_zlib()
+void rt::UnitTests::ipp_zlib()
 {
 	os::FileRead<BYTE>	data("test.dat");
 	rt::Buffer<BYTE>	comp;

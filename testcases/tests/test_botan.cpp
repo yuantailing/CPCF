@@ -1,26 +1,9 @@
 #include "../../core/rt/string_type.h"
 #include "../../core/ext/botan/botan.h"
+#include "test.h"
 
-struct _test_section
-{	LPCSTR	_func_name;
-	_test_section(LPCSTR func)
-	{	_LOG("/===== BEGIN: "<<func<<" =====\\");
-		_func_name = func;
-	}
-	~_test_section()
-	{	_LOG("\\===== END:   "<<_func_name<<" =====/");
-		_LOG(' ');
-		_LOG(' ');
-	}
-};
-
-#define DEF_TEST_SECTION	_test_section __test_s(__FUNCTION__);
-
-
-void test_botan_hash()
+void rt::UnitTests::botan_hash()
 {
-	DEF_TEST_SECTION
-
 	BYTE hash[20];
 
 	_LOG("Input: \"hello world\"");
@@ -41,10 +24,8 @@ void test_botan_hash()
 }
 
 
-void test_botan_cipher()
+void rt::UnitTests::botan_cipher()
 {
-	DEF_TEST_SECTION
-    
     #ifdef PLATFORM_INTEL_IPP_SUPPORT
     
 /*

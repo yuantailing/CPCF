@@ -127,7 +127,6 @@ struct Vec
 
 	INLFUNC t_Val Min(){ return rt::min(_p[LEN-1], ((Vec<t_Val, LEN-1>&)(*this)).Min()); }
 	INLFUNC t_Val Max(){ return rt::max(_p[LEN-1], ((Vec<t_Val, LEN-1>&)(*this)).Max()); }
-
 };
 
 template<typename T, int chan>
@@ -397,7 +396,8 @@ struct Vec:public ::rt::tos::S_<chan>
 		:_SC(x)
 	{}
 };
-}
+} // namespace tos
+
 
 #define CPF_STRING_VEC_CONNECT_OP(T) \
 template<int chan> \
@@ -426,13 +426,13 @@ CPF_STRING_VEC_CONNECT_OP(signed char)
 
 #undef CPF_STRING_VEC_CONNECT_OP
 
-} // rt::tos
 template<typename ostream, typename t_Val, int LEN>
-ostream& operator << (ostream& s, const rt::Vec<t_Val, LEN>& v)
+ostream& operator << (ostream& s, const Vec<t_Val, LEN>& v)
 {
 	s << '(' << rt::tos::Vec<LEN>(v) << ')';
 	return s;
 };
+} // rt
 
 
 //////////////////////////////////////////////////////////////////
@@ -1096,22 +1096,22 @@ typedef Mat4x4<float> Mat4x4f;
 typedef Mat3x3<double> Mat3x3d;
 typedef Mat4x4<double> Mat4x4d;
 
-} // namespace rt
 template<class t_Ostream, typename t_Ele>
-t_Ostream& operator<<(t_Ostream& Ostream, const rt::Mat3x3<t_Ele> & vec)
+t_Ostream& operator<<(t_Ostream& Ostream, const Mat3x3<t_Ele> & vec)
 {	Ostream<<*((rt::Vec<t_Ele,3>*)&vec.m00)<<'\n'
 		   <<*((rt::Vec<t_Ele,3>*)&vec.m01)<<'\n'
 		   <<*((rt::Vec<t_Ele,3>*)&vec.m02);
 	return Ostream;
 }
 template<class t_Ostream, typename t_Ele>
-t_Ostream& operator<<(t_Ostream& Ostream, const rt::Mat4x4<t_Ele> & vec)
+t_Ostream& operator<<(t_Ostream& Ostream, const Mat4x4<t_Ele> & vec)
 {	Ostream<<*((rt::Vec<t_Ele,3>*)&vec.m00)<<'\n'
 		   <<*((rt::Vec<t_Ele,3>*)&vec.m01)<<'\n'
 		   <<*((rt::Vec<t_Ele,3>*)&vec.m02)<<'\n'
 		   <<*((rt::Vec<t_Ele,3>*)&vec.m03);
 	return Ostream;
 }
+} // namespace rt
 
 //////////////////////////////////////////////////////////
 // Quaternion

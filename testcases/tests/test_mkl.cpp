@@ -1,21 +1,7 @@
 #include "../../core/rt/string_type.h"
 #include "../../core/os/file_dir.h"
 #include "../../core/os/kernel.h"
-
-struct _test_section
-{	LPCSTR	_func_name;
-	_test_section(LPCSTR func)
-	{	_LOG("/===== BEGIN: "<<func<<" =====\\");
-		_func_name = func;
-	}
-	~_test_section()
-	{	_LOG("\\===== END:   "<<_func_name<<" =====/");
-		_LOG(' ');
-		_LOG(' ');
-	}
-};
-
-#define DEF_TEST_SECTION	_test_section __test_s(__FUNCTION__);
+#include "test.h"
 
 
 #if defined(PLATFORM_INTEL_MKL_SUPPORT)
@@ -24,10 +10,8 @@ struct _test_section
 #include "../../core/ext/mkl/mkl_matrix.h"
 #include "../../core/ext/mkl/mkl_linequ.h"
 
-void test_mkl_vector()
+void rt::UnitTests::mkl_vector()
 {
-	DEF_TEST_SECTION
-
 	srand(0);
 
 	mkl::Vector32	vec;
@@ -65,11 +49,8 @@ void test_mkl_vector()
 	}
 }
 
-void test_mkl_linequ()
+void rt::UnitTests::mkl_linequ()
 {
-	DEF_TEST_SECTION
-
-	
 	// y = a*x + b
 	mkl::LinearEquationSolver<> equ;
 	equ.DefineProblem(1000, 2, 2000);
@@ -89,11 +70,9 @@ void test_mkl_linequ()
 		B(i) = 32.1f*x + 446.8f + 5*(rand()/(float)RAND_MAX - 0.5f);
 	}
 
-
 	equ.Solve(B,X);
 	_LOG("Solved: "<<X);
 }
-
 
 #endif
 

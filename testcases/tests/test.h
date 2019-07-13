@@ -1,65 +1,72 @@
 #pragma once
 #include "../../essentials.h"
 
-void test_string();
-void test_string_conv();
-void test_rt();
-void test_buffer();
-void test_xml();
-void test_html();
-void test_json();
-void test_file();
-void test_timedate();
-void test_Httpclient();
-void test_socket();
-void test_pfw();
-void test_sockettimed();
-void test_multithread();
-void test_download();
-void test_inet_encoding();
-void test_inet_encoding_custom();
-void test_delayed_deletion();
-void test_sysinfo();
-void test_socket_io(bool recv);
-void test_filelist();
-void test_smallmath();
-void test_vm();
-void test_pcqueue();
-void test_BinarySearch();
-void test_plog();
-void test_Precompiler();
-void test_commandline();
-void test_sortedpush();
+namespace rt
+{
 
-void test_httpd();
+struct UnitTests
+{
+	static void string();
+	static void string_conv();
+	static void rt();
+	static void buffer();
+	static void xml();
+	static void html();
+	static void json();
+	static void file();
+	static void timedate();
+	static void http_client();
+	static void http_nav();
+	static void socket();
+	static void pfw();
+	static void sockettimed();
+	static void multithread();
+	static void download();
+	static void inet_encoding();
+	static void inet_encoding_custom();
+	static void delayed_deletion();
+	static void sysinfo();
+	static void socket_io();
+	static void socket_io_recv();
+	static void filelist();
+	static void smallmath();
+	static void vm();
+	static void pcqueue();
+	static void binary_search();
+	static void plog();
+	static void precompiler();
+	static void commandline();
+	static void sortedpush();
 
-void test_botan_hash();
-void test_botan_cipher();
-void test_ipp_zlib();
-void test_ipp_canvas();
-void test_ipp_image();
-void test_ipp_major_color();
-void test_express_tk();
-void test_ipp_zip();
+	static void httpd();
 
-void callback_to_member_function();
-void hash_func();
+	static void botan_hash();
+	static void botan_cipher();
+	static void ipp_zlib();
+	static void ipp_canvas();
+	static void ipp_image();
+	static void ipp_major_color();
+	static void express_tk();
+	static void ipp_zip();
 
-void image_to_text();
+	static void callback_to_member_function();
+	static void hash_func();
 
-
-#if defined(PLATFORM_INTEL_IPP_SUPPORT)
-void test_ipp_Saliency(LPCSTR);
-void test_ipp_matting();
-void test_ipp_image_apps();
-void test_ipp_imageproc();
-#endif
-
-#if defined(PLATFORM_INTEL_MKL_SUPPORT)
-void test_mkl_vector();
-void test_mkl_linequ();
-#endif
+	static void image_to_text();
 
 
-#define DEF_TEST_SECTION	_LOG(' '); _LOG("==== "<< __func__<<" ====");
+	#if defined(PLATFORM_INTEL_IPP_SUPPORT)
+	static void ipp_matting();
+	static void ipp_image_apps();
+	static void ipp_imageproc();
+	#endif
+
+	#if defined(PLATFORM_INTEL_MKL_SUPPORT)
+	static void mkl_vector();
+	static void mkl_linequ();
+	#endif
+};
+
+} // namespace rt
+
 

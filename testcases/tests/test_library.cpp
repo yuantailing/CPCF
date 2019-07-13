@@ -1,9 +1,9 @@
 #include "../../core/os/kernel.h"
 #include "../../core/ext/exprtk/exprtk.h"
+#include "test.h"
 
 
-
-void test_express_tk()
+void rt::UnitTests::express_tk()
 {
 	typedef double T;
 

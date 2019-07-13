@@ -11,15 +11,13 @@
 #include "../../core/os/precompiler.h"
 #include "../../core/inet/inet.h"
 #include <string>
+#include <algorithm>
 
 #pragma warning(disable: 4838)
 
 #include "test.h"
 
-
-#include <algorithm>
-
-void test_json()
+void rt::UnitTests::json()
 {
 	{
 		rt::String str =
@@ -205,10 +203,8 @@ void test_json()
 	}
 }
 
-void test_xml()
+void rt::UnitTests::xml()
 {
-	DEF_TEST_SECTION;
-
 	{	rt::String val;
 		rt::XMLParser::_convert_xml_to_text("abcd & fff-&lt;-<cdnsion cnindi>!</v>??", val, true);
 		_LOG(val);
@@ -261,7 +257,7 @@ void test_xml()
 	xmlp.TextDump();
 }
 
-void test_html()
+void rt::UnitTests::html()
 {
 	os::FileRead<char>	file("category_page.htm");
 	rt::XMLParser	html;
@@ -284,10 +280,8 @@ os::CriticalSection	test_multithread_ccs;
 os::Event test_multithread_event;
 
 
-void test_multithread()
+void rt::UnitTests::multithread()
 {
-	DEF_TEST_SECTION;
-
 	{
 		volatile INT c = 0;
 		bool ends = false;
@@ -478,10 +472,8 @@ void test_multithread()
 	}
 }
 
-void test_BinarySearch()
+void rt::UnitTests::binary_search()
 {
-	DEF_TEST_SECTION
-
 	typedef WORD TT;
 
 	rt::Buffer<TT>	a;
@@ -503,10 +495,8 @@ void test_BinarySearch()
 }
 
 
-void test_string_conv()
+void rt::UnitTests::string_conv()
 {
-	DEF_TEST_SECTION;
-
 	double a = 0;
 
 	_LOG(rt::tos::Number((BYTE)12));
@@ -522,10 +512,8 @@ void test_string_conv()
 }
 
 
-void test_string()
+void rt::UnitTests::string()
 {
-	DEF_TEST_SECTION;
-
 	{	rt::String s	= "123\xF0\x9F\x93\xA2\xe5\xa5\xbd\xe7\x9a\x84 456";
 		_LOG(s);
 		s.RegularizeUTF8();
@@ -905,10 +893,8 @@ void test_string()
 	}
 }
 
-void test_Precompiler()
+void rt::UnitTests::precompiler()
 {
-	DEF_TEST_SECTION;
-
 	rt::String source3 = rt::SS(
 		"#if VAL == 1\n"
 		"#if true\n"
@@ -1053,10 +1039,8 @@ void test_Precompiler()
 }
 
 
-void test_buffer()
+void rt::UnitTests::buffer()
 {
-	DEF_TEST_SECTION;
-
 	rt::BufferEx<int>	buf;
 	buf.SetSize(3);
 	buf.Set(0);
@@ -1143,10 +1127,8 @@ void test_buffer()
 	_LOG("Strings copied: "<<non_pod_copy);
 }
 
-void test_pcqueue()
+void rt::UnitTests::pcqueue()
 {
-	DEF_TEST_SECTION;
-
 	os::ProducerConsumerQueue<UINT> q;
 	q.Reset(4);
 
@@ -1242,10 +1224,8 @@ void test_pcqueue()
 	};
 #pragma pack()
 
-void test_rt()
+void rt::UnitTests::rt()
 {
-	DEF_TEST_SECTION;
-
 	{
 		int					a[4];
 		LONGLONG			b;
@@ -1334,10 +1314,8 @@ void test_rt()
 }
 
 
-void test_timedate()
+void rt::UnitTests::timedate()
 {
-	DEF_TEST_SECTION;
-
 	{	os::Timestamp	tm;
 		tm.LoadCurrentTime();
 		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
@@ -1437,10 +1415,8 @@ void test_timedate()
 	}
 }
 
-void test_commandline()
+void rt::UnitTests::commandline()
 {
-	DEF_TEST_SECTION;
-
 	os::CommandLine cmd;
 	cmd.SetOptionDefault("TEST_OPT", "SomeValue");
 	cmd.LoadEnvironmentVariablesAsOptions();
@@ -1451,10 +1427,8 @@ void test_commandline()
 	_LOG(text);
 }
 
-void test_file()
+void rt::UnitTests::file()
 {
-	DEF_TEST_SECTION;
-
 	{	os::FileBuffer<BYTE>	file("D:/ArtSq/Coin-FE/Dev/proj/unit_test/captcha_bg.jpg");
 		os::File out;
 		out.Open("data_define.hpp", os::File::Normal_WriteText);
@@ -1548,10 +1522,8 @@ void test_file()
 	}
 }
 
-void test_pfw()
+void rt::UnitTests::pfw()
 {
-	DEF_TEST_SECTION;
-
 	{	os::ParallelFileWriter	pfw;
 
 		pfw.Open("pfw_test.txt", false);
@@ -1628,10 +1600,8 @@ void test_pfw()
 	}
 }
 
-void test_plog()
+void rt::UnitTests::plog()
 {
-	DEF_TEST_SECTION;
-
 	os::ParallelLog log(500);
 
 	for(;;)
@@ -1662,10 +1632,8 @@ void test_ipp_zip()
 }
 */
 
-void test_inet_encoding()
+void rt::UnitTests::inet_encoding()
 {
-	DEF_TEST_SECTION;
-
 	{	static const LPCSTR testcase[][2] = 
 		{
 			{ "1", "MQ==" },
@@ -1730,10 +1698,8 @@ void test_inet_encoding()
      */
 }
 
-void test_inet_encoding_custom()
+void rt::UnitTests::inet_encoding_custom()
 {
-	DEF_TEST_SECTION;
-
 	LPCSTR in[] = {
 		"a",
 		"ab",
@@ -1763,10 +1729,8 @@ void test_inet_encoding_custom()
 
 inet::Socket	a,b,c;
 
-void test_socket()
+void rt::UnitTests::socket()
 {
-	DEF_TEST_SECTION;
-
 	struct _call
 	{
 		static DWORD _func(LPVOID p)
@@ -1855,10 +1819,8 @@ struct A
 	}
 };
 
-void test_delayed_deletion()
+void rt::UnitTests::delayed_deletion()
 {
-	DEF_TEST_SECTION;
-
 	A* p = new A;
 	_SafeDel_Delayed(p, 2000);
 	p = new A;
@@ -1867,10 +1829,8 @@ void test_delayed_deletion()
 	os::Sleep(9000);
 }
 
-void test_sysinfo()
+void rt::UnitTests::sysinfo()
 {
-	DEF_TEST_SECTION;
-
 	rt::String exe, host, user;
 	os::GetExecutableFilename(exe);
 	os::GetHostName(host);
@@ -1914,8 +1874,6 @@ void test_sysinfo()
 
 void test_socket_io(bool recv)
 {
-	DEF_TEST_SECTION;
-
 	if(recv)
 	{
 		inet::Socket	s;
@@ -1961,10 +1919,19 @@ void test_socket_io(bool recv)
 	}
 }
 
-void test_filelist()
+void rt::UnitTests::socket_io()
 {
-	DEF_TEST_SECTION;
+	test_socket_io(false);
+}
 
+void rt::UnitTests::socket_io_recv()
+{
+	test_socket_io(true);
+}
+
+
+void rt::UnitTests::filelist()
+{
 	rt::String fp;
 	os::FileList	fl;
 	fl.Populate("../tests", ".cpp");
@@ -1983,10 +1950,8 @@ void test_filelist()
 	}
 }
 
-void test_sockettimed()
+void rt::UnitTests::sockettimed()
 {
-	DEF_TEST_SECTION;
-
 	inet::SocketTimed s;
 	inet::InetAddr addr;
 	addr.SetAsLocal();
@@ -2003,10 +1968,8 @@ void test_sockettimed()
 }
 
 
-void test_smallmath()
+void rt::UnitTests::smallmath()
 {
-	DEF_TEST_SECTION;
-
 	{
 		rt::Vec4d	c;
 		c.x = 1e-100;
@@ -2048,10 +2011,8 @@ void test_smallmath()
 }
 
 
-void test_vm()
+void rt::UnitTests::vm()
 {
-	DEF_TEST_SECTION;
-
 	LPVOID p = os::VMAlloc(1024*1024*1024);
 	_LOG("1G VM: "<<!!p);
 
@@ -2073,10 +2034,8 @@ void test_vm()
 	os::File::Remove("filemapping.data");
 }
 
-void test_sortedpush()
+void rt::UnitTests::sortedpush()
 {
-	DEF_TEST_SECTION;
-
 	rt::Randomizer a(100);
 
 	{	_LOG("BufferEx::SortedPush");

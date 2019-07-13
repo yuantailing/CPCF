@@ -1,21 +1,6 @@
 #include "../../essentials.h"
 #include "../../core/ext/botan/botan.h"
-
-
-struct _test_section
-{	LPCSTR	_func_name;
-	_test_section(LPCSTR func)
-	{	_LOG("/===== BEGIN: "<<func<<" =====\\");
-		_func_name = func;
-	}
-	~_test_section()
-	{	_LOG("\\===== END:   "<<_func_name<<" =====/");
-		_LOG(' ');
-		_LOG(' ');
-	}
-};
-
-#define DEF_TEST_SECTION	_test_section __test_s(__FUNCTION__);
+#include "test.h"
 
 struct vFun
 {
@@ -35,7 +20,7 @@ struct cb_t
 	}
 };
 
-void callback_to_member_function()
+void rt::UnitTests::callback_to_member_function()
 {
 	static const size_t t = 1000000000;
 
@@ -108,7 +93,7 @@ void callback_to_member_function()
 
 }
 
-void hash_func()
+void rt::UnitTests::hash_func()
 {
 	static const size_t t = 100000;
 
