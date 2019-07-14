@@ -1513,6 +1513,19 @@ public:
 
 }
 
+namespace rt
+{
+namespace _details
+{
+template<typename T>
+String_Ref __alloca_string_ref(LPSTR p, const T& x)
+{	UINT len;
+	len = x.CopyTo(p);
+	return String_Ref(p, len);
+}
+}} // namespace rt::_details
+
+#define ALLOCA_STRING_REF(x)	(rt::_details::__alloca_string_ref((LPSTR)alloca(x.GetLength()), x))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
 
 namespace rt
 {
@@ -1853,5 +1866,5 @@ typedef tos::DataAsString DS;
 
 } // namespace rt
 
-#define __SS(...)					(rt::SS(#__VA_ARGS__))
-#define ALLOCA_STRREF(name, size)	rt::String_Ref name((LPSTR)alloca(size), size);
+#define __SS(...)							(rt::SS(#__VA_ARGS__))
+#define ALLOCA_STRING_BUFFER(size)			(rt::String_Ref((LPSTR)alloca(size), size))

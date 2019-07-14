@@ -47,7 +47,7 @@ void rt::UnitTests::json()
 			J_IF(false, J(cond_false) = "no")
 		);
 
-		_LOG(str);
+		_LOG(JsonBeautified(str));
 	}
 
 	rt::_JArray<> a;
@@ -58,7 +58,7 @@ void rt::UnitTests::json()
 	a.append("haha");
 	a.append('@');
 
-	_LOG(rt::String(a));
+	_LOG(JsonBeautified(rt::String(a)));
 
 	std::string std_string("std::string");
 
@@ -99,7 +99,7 @@ void rt::UnitTests::json()
 	int  len = JsonObject.CopyTo(buf);
 	_LOG("Json Size: "<<len<<" = "<<JsonObject.GetLength());
 
-	_LOG(rt::String_Ref(buf, len));
+	_LOG(JsonBeautified(rt::String_Ref(buf, len)));
 
 	rt::JsonObject obj(rt::String_Ref(buf, len));
 	_LOG(obj.GetValue("Key:Complex"));

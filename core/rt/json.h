@@ -355,19 +355,19 @@ public:
 	operator const rt::String_Ref&() const { return _Save; }
 };
 
-template<typename T>
-FORCEINL _SE<String_Ref, _JVar<LPVOID, T>>  operator + (const String_Ref& left, const _JVar<LPVOID, T>& right)
-{	return _SE<String_Ref, _JVar<LPVOID, T>> ( (left), (right) );
+template<typename LEFT, typename T>
+FORCEINL _SE<String_Ref, _JVar<LEFT, T>>  operator + (const String_Ref& left, const _JVar<LEFT, T>& right)
+{	return _SE<String_Ref, _JVar<LEFT, T>> ( (left), (right) );
 }
-template<typename t_Left, typename t_Right, typename T>
-FORCEINL _SE<_JVar<LPVOID, T>, _SE<t_Left,t_Right> >								
-operator + (const _JVar<LPVOID, T>& p, const _SE<t_Left,t_Right>& x)	
-{	return _SE<_JVar<LPVOID, T>, _SE<t_Left,t_Right>>(p,x);
+template<typename t_Left, typename t_Right, typename LEFT, typename T>
+FORCEINL _SE<_JVar<LEFT, T>, _SE<t_Left,t_Right> >								
+operator + (const _JVar<LEFT, T>& p, const _SE<t_Left,t_Right>& x)	
+{	return _SE<_JVar<LEFT, T>, _SE<t_Left,t_Right>>(p,x);
 }
-template<typename t_Left, typename t_Right, typename T>
-FORCEINL _SE<_SE<t_Left,t_Right> , _JVar<LPVOID, T>>
-operator + (const _SE<t_Left,t_Right>& x, const _JVar<LPVOID, T>& p)	
-{	return _SE<_SE<t_Left,t_Right>, _JVar<LPVOID, T>>(x, p);
+template<typename t_Left, typename t_Right, typename LEFT, typename T>
+FORCEINL _SE<_SE<t_Left,t_Right> , _JVar<LEFT, T>>
+operator + (const _SE<t_Left,t_Right>& x, const _JVar<LEFT, T>& p)	
+{	return _SE<_SE<t_Left,t_Right>, _JVar<LEFT, T>>(x, p);
 }
 
 } // namespace rt
@@ -943,6 +943,124 @@ public:
 	}
 };
 
+class JsonBeautified: public rt::String
+{
+	int _Indent;
+	int _Line_max;
+
+	void _AppendSpace(UINT count)
+	{	UINT org = (UINT)GetLength();
+		SetLength(org + count);
+		for(UINT i=0; i<count; i++)
+			_p[org + i] = ' ';
+	}
+	int	 _CountSeps(const rt::String_Ref& doc)
+	{	bool in_quote = false;
+		int ret = 0;
+		for(UINT i=0; i<doc.GetLength(); i++)
+		{
+			char c = doc[i];
+			if(in_quote)
+			{	if(c == '"' && doc[i-1] != '\\')
+					in_quote = false;
+			}
+			else
+			{	if(c == ',')ret++;
+				if(c == '"')in_quote = true;
+			}
+		}
+		return ret;
+	}
+	void _AppendWithSpaceTrimmed(const rt::String_Ref& doc)
+	{
+		bool in_quote = false;
+		for(UINT i=0; i<doc.GetLength(); i++)
+		{
+			char c = doc[i];
+			if(in_quote)
+			{	*this += c;
+				if(c == '"' && doc[i-1] != '\\')
+					in_quote = false;
+			}
+			else
+			{	if(c <= ' ')continue;
+				*this += c;
+				if(c == '"')in_quote = true;
+			}
+		}
+	}
+
+	void _Beautify(const rt::String_Ref& json_string, int depth, int line_remain)
+	{
+		rt::String_Ref doc = json_string.TrimSpace();
+		if(doc.IsEmpty())return;
+
+		if(doc[0] != '{' && doc[0] != '[')
+		{	*this += doc;
+			return;
+		}
+
+		if(	doc.GetLength() < line_remain &&
+			(doc.GetLength() < 16 || _CountSeps(doc) <= 3)
+		)
+		{	_AppendWithSpaceTrimmed(doc);
+			return;
+		}
+
+		if(depth)*this += '\n';
+		_AppendSpace(_Indent*depth);
+		*this += doc[0];
+		depth++;
+
+		if(doc[0] == '{')
+		{
+			rt::JsonKeyValuePair	kv;
+			rt::JsonObject obj = doc;
+			while(obj.GetNextKeyValuePair(kv))
+			{
+				*this += '\n';
+				_AppendSpace(_Indent*depth);
+				auto k = kv.GetKey();
+				if(k[-1] == '"')
+					k = rt::String_Ref(&k[-1], k.GetLength()+2);
+
+				*this += k;
+				*this += ':';
+				*this += ' ';
+				_Beautify(kv.GetValueRaw(), depth, _Line_max - _Indent*depth - (int)k.GetLength() + 3);
+				*this += ',';
+			}
+			SetLength(GetLength()-1);
+		}
+		else
+		{	ASSERT(doc[0] == '[');
+			rt::JsonArray arr = doc;
+			rt::String_Ref obj;
+			while(arr.GetNextObjectRaw(obj))
+			{
+				*this += '\n';
+				_AppendSpace(_Indent*depth);
+				_Beautify(obj, depth, _Line_max - _Indent*depth - 2);
+				*this += ',';
+			}
+			SetLength(GetLength()-1);
+		}
+
+		depth--;
+		*this += '\n';
+		_AppendSpace(_Indent*depth);
+		*this += doc.Last();
+	}
+
+public:
+	JsonBeautified(const rt::String_Ref& json_string, int indent = 3, int line_lmt = 79)
+	{
+		_Indent = indent;
+		_Line_max = 80;
+
+		_Beautify(json_string, 0, 0);
+	}
+};
 
 } // namespace rt
 

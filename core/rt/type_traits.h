@@ -633,15 +633,15 @@ struct _InvokeThisCall
 //////////////////////////////////////////////////////
 // Stringify Enum
 template<typename T>
-struct Stringify;
+struct EnumStringify;
 
 // Must be defined in global scope !!!
 #define STRINGIFY_ENUM_BEGIN(type, ns)	namespace rt { \
 										using namespace ns; \
 										template<> \
-										struct Stringify<type>	\
+										struct EnumStringify<type>	\
 										{	LPCSTR _str;		\
-											Stringify(type x){	\
+											EnumStringify(type x){	\
 												switch(x){		\
 
 #define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
@@ -652,7 +652,7 @@ struct Stringify;
 										namespace ns { \
 										template<class t_Ostream> \
 										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x) \
-										{	LPCSTR str = rt::Stringify<type>(x); \
+										{	LPCSTR str = rt::EnumStringify<type>(x); \
 											if(str)return Ostream<<str; \
 											else return Ostream<< #type "("<<(int)x<<')'; \
 										}}

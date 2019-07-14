@@ -15,7 +15,7 @@ void TestMain()
 
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		TYPETRAITS_UNITTEST(smallmath);
+		TYPETRAITS_UNITTEST(json);
 		//TYPETRAITS_UNITTEST(callback_to_member_function);
 		return;
 	}
