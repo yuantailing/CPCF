@@ -225,14 +225,6 @@ public:
 	INLFUNC rt::String_Ref ToString() const { return rt::String_Ref((LPCSTR)Bytes,_LEN); }
 
 public:
-	INLFUNC DataBlock() = default;
-    INLFUNC DataBlock(const DataBlock& x){ From(x); }
-	INLFUNC ~DataBlock(){ if(is_sec)rt::Zero(*this); }
-
-	template<bool sb>
-	INLFUNC DataBlock(const DataBlock<_LEN, sb>& x){ From(x); }
-	INLFUNC explicit DataBlock(const rt::String_Ref& str){ FromBase32(str); }
-
 	template<bool sb>
 	INLFUNC const DataBlock<_LEN, sb>& operator = (const DataBlock<_LEN, sb>& x){ From(x); }
 
@@ -249,6 +241,11 @@ public:
 	{	return s << rt::tos::Base32LowercaseOnStack<_LEN*8/5 + 4>((LPCBYTE)d, _LEN);
 	}
 };
+	template<UINT _LEN>
+	struct DataBlock<_LEN, true>: public DataBlock<_LEN, false>
+	{
+		~DataBlock(){ rt::Zero(*this); }
+	};
 #pragma pack(pop)
 
 
