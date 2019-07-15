@@ -131,7 +131,7 @@ public:
 		else return false;
 	}
 	INLFUNC bool IsOpen() const { return _pDB!=NULL; }
-	INLFUNC void Close(){ _SafeDel(_pDB); }
+	INLFUNC void Close(){ if(_pDB){ delete _pDB; _pDB = NULL; } }
 	INLFUNC bool Set(const SliceValue& k, const SliceValue& val, WriteOptions* opt = NULL){ ASSERT(_pDB); return _pDB->Put(opt?*opt:__DefaultWriteOpt, k, val).ok(); }
 	INLFUNC bool Merge(const SliceValue& k, const SliceValue& val, WriteOptions* opt = NULL){ ASSERT(_pDB); return _pDB->Merge(opt?*opt:__DefaultWriteOpt, k, val).ok(); }
 	INLFUNC bool Get(const SliceValue& k, std::string& str, ReadOptions* opt = NULL) const { ASSERT(_pDB); return _pDB->Get(opt?*opt:__DefaultReadOpt, k, &str).ok(); }

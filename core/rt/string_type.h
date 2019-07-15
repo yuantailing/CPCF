@@ -223,6 +223,7 @@ public:
 	FORCEINL char&			First()		{ ASSERT(GetLength()); return _SC::_p[0]; }
 	FORCEINL const char&	First()const{ ASSERT(GetLength()); return _SC::_p[0]; }
 	FORCEINL bool			IsZeroTerminated() const { return _SC::_p && _SC::_p[GetLength()] == 0; }
+	FORCEINL bool			HasTrailingPathSeparator() const { return Last() == '\\' || Last() == '/'; }
 	template<typename t_Str>
 	FORCEINL void			ToString(t_Str& str){ str = *this; }
 
@@ -328,7 +329,7 @@ public:
 	{	for(SIZE_T i=0;i<GetLength();i++)
 			if(_SC::_p[i] == '\\' || _SC::_p[i] == '/')_SC::_p[i] = with;
 	}
-	FORCEINL t_String_Ref TrimPathTerminateSeparator() const // remove if last character is '\\' or '/'
+	FORCEINL t_String_Ref TrimPathTrailingPathSeparator() const // remove if last character is '\\' or '/'
 	{	if(!_SC::IsEmpty() && (Last() == '\\' || Last() == '/'))return t_String_Ref(_SC::_p, GetLength()-1);
 		return *this;
 	}

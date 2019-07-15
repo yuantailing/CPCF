@@ -792,7 +792,7 @@ bool os::File::ProbeAvailableFilename(LPCSTR fn, rt::String& fn_out)
 
 bool os::File::RemovePath(const rt::String_Ref& src_)
 {
-	rt::String src = src_.TrimPathTerminateSeparator();
+	rt::String src = src_.TrimPathTrailingPathSeparator();
 
 	if(!os::File::IsExist(src))return true;
 
@@ -817,11 +817,11 @@ bool os::File::CopyPath(const rt::String_Ref& dest_, const rt::String_Ref& src_,
 {
 	__time64_t s_tm, d_tm;
 
-	rt::String src = src_.TrimPathTerminateSeparator();
+	rt::String src = src_.TrimPathTrailingPathSeparator();
 	if(!os::File::GetPathTime(src, NULL, NULL, &s_tm))
 		return false;
 
-	rt::String dst = dest_.TrimPathTerminateSeparator();
+	rt::String dst = dest_.TrimPathTrailingPathSeparator();
 	if(!CreateDirectories(dst, false))
 		return false;
 
