@@ -34,6 +34,7 @@
 #include "./core/rt/type_traits.h"
 #include "./core/rt/string_type.h"
 #include "./core/rt/buffer_type.h"
+#include "./core/rt/json.h"
 
 #include "./core/os/file_dir.h"
 #include "./core/os/high_level.h"

@@ -1,6 +1,7 @@
 #include "essentials.h"
 
 // amalgamation CPP files, don't include them again in the project
+#include "./core/rt/json.cpp"
 #include "./core/os/file_dir.cpp"
 #include "./core/os/multi_thread.cpp"
 #include "./core/os/kernel.cpp"
