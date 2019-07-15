@@ -1528,7 +1528,7 @@ void os::Sleep(DWORD msec, const bool* interrupt_flag)
 			::usleep((msec%32)*1000);
 	}
 	else
-		::usleep(msec);
+		::usleep(msec*1000);
 }
 
 #endif
