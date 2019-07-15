@@ -186,6 +186,7 @@
     <ClCompile Include="..\..\core\os\user_inputs.cpp" />
     <ClCompile Include="..\..\core\os\kernel.cpp" />
     <ClCompile Include="..\..\core\os\multi_thread.cpp" />
+    <ClCompile Include="..\..\core\rt\json.cpp" />
     <ClCompile Include="..\..\core\rt\xml_xhtml.cpp" />
     <ClCompile Include="..\tests\entrypoint.cpp" />
     <ClCompile Include="..\tests\experiments.cpp" />
