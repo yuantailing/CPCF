@@ -519,7 +519,7 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 		return;
 	}
 
-	if(	doc.GetLength() < line_remain)
+	if(doc.GetLength() < line_remain)
 	{
 		int seps = JsonObject::_count_seps(doc);
 		if(seps == 0 || (doc.GetLength() < (seps+1)*16 && seps<=3))
@@ -538,6 +538,7 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 
 	if(depth)*this += '\n';
 
+	bool not_empty = false;
 	if(doc[0] == '{')
 	{
 		rt::JsonKeyValuePair	kv;
@@ -555,8 +556,8 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 			_Beautify(kv.GetValueRaw(), false, depth, _Line_max - _Indent*depth - (int)k.GetLength() + 3);
 			*this += ',';
 			*this += '\n';
+			not_empty = true;
 		}
-		SetLength(GetLength()-2);
 	}
 	else
 	{	ASSERT(doc[0] == '[');
@@ -568,12 +569,18 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 			_Beautify(obj, true, depth, _Line_max - _Indent*depth - 2);
 			*this += ',';
 			*this += '\n';
+			not_empty = true;
 		}
-		SetLength(GetLength()-2);
 	}
 
 	depth--;
-	*this += '\n';
+
+	if(not_empty)
+	{
+		SetLength(GetLength()-2);
+		*this += '\n';
+	}
+
 	_AppendSpace(_Indent*depth);
 	*this += doc.Last();
 }
@@ -583,7 +590,7 @@ JsonBeautified::JsonBeautified(const rt::String_Ref& json_string, int indent, in
 	_Indent = indent;
 	_Line_max = 80;
 
-	_Beautify(json_string, true, 0, 0);
+	_Beautify(json_string, true, 0, _Line_max);
 }
 
 } // namespace rt
