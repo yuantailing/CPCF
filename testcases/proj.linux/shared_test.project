@@ -39,7 +39,6 @@
       <File Name="../../core/ext/exprtk/exprtk.h"/>
       <File Name="../../core/os/file_zip.cpp"/>
       <File Name="../../core/os/file_zip.h"/>
-      <File Name="../../core/rt/json.cpp"/>
       <File Name="../../core/ext/ipp/ipp_image.cpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
