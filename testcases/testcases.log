@@ -473,7 +473,7 @@ Date32 diff 1: 1,-1
 Date32 diff 1: 2,-2
 Waiting for 2 seconds ...
 os::TickCount: 2
-os::Timestamp: -2100
+os::Timestamp/10: 210
 === UnitTest<timedate>: END =====
 
 === UnitTest<smallmath>: BEGIN ===

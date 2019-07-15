@@ -640,9 +640,9 @@ struct EnumStringify;
 										using namespace ns; \
 										template<> \
 										struct EnumStringify<type>	\
-										{	LPCSTR _str;		\
-											EnumStringify(type x){	\
-												switch(x){		\
+										{	LPCSTR _str;			\
+											EnumStringify(int x){	\
+												switch((type)x){	\
 
 #define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
 

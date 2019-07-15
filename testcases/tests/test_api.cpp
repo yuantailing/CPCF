@@ -51,12 +51,12 @@ void rt::UnitTests::json()
 	}
 
 	rt::_JArray<> a;
-	a.append((J(name) = "jake", J(age) = 12));
-	a.append((J(name) = "mary", J(age) = 7));
-	a.append(1);
-	a.append(false);
-	a.append("haha");
-	a.append('@');
+	a.Append((J(name) = "jake", J(age) = 12));
+	a.Append((J(name) = "mary", J(age) = 7));
+	a.Append(1);
+	a.Append(false);
+	a.Append("haha");
+	a.Append('@');
 
 	_LOG(JsonBeautified(rt::String(a)));
 
@@ -1411,7 +1411,7 @@ void rt::UnitTests::timedate()
 		t2.LoadCurrentTime();
 		tick.TimeLapse();
 		_LOG("os::TickCount: "<<tick.TimeLapse()/1000);
-		_LOG("os::Timestamp: "<<t1 - t2);
+		_LOG("os::Timestamp/10: "<<((t2 - t1) + 5)/10);
 	}
 }
 

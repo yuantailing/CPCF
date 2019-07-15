@@ -213,7 +213,7 @@ class _JArray
 public:
 	FORCEINL _JArray(){ _buf = "["; }
 
-#define JA_NUMERIC_ITEM(numeric_type)	FORCEINL void append(numeric_type x){ append(rt::tos::Number(x), false); }
+#define JA_NUMERIC_ITEM(numeric_type)	FORCEINL void Append(numeric_type x){ Append(rt::tos::Number(x), false); }
 	JA_NUMERIC_ITEM(bool)
 	JA_NUMERIC_ITEM(short)
 	JA_NUMERIC_ITEM(unsigned short)
@@ -229,12 +229,12 @@ public:
 	JA_NUMERIC_ITEM(double)
 #undef JA_NUMERIC_ITEM
 		
-	FORCEINL void	append(LPCSTR x){ append(rt::String_Ref(x), true); }
-	FORCEINL void	append(LPSTR x){ append(rt::String_Ref(x), true); }
-	FORCEINL void	append(char x){ append(rt::String_Ref(&x, 1), true); }
+	FORCEINL void	Append(LPCSTR x){ Append(rt::String_Ref(x), true); }
+	FORCEINL void	Append(LPSTR x){ Append(rt::String_Ref(x), true); }
+	FORCEINL void	Append(char x){ Append(rt::String_Ref(&x, 1), true); }
 
 	template<typename T>
-	FORCEINL void	append(const T& obj, bool need_quote = (bool)rt::_details::_NeedQuote<const T*>::need)
+	FORCEINL void	Append(const T& obj, bool need_quote = (bool)rt::_details::_NeedQuote<const T*>::need)
 					{	if(_buf.GetLength() != 1)
 						{	_buf += ',';
 						}
@@ -255,7 +255,7 @@ public:
 					}
 	
 	template<typename T>
-	FORCEINL rt::_JArray<t_String>& operator , (T&& right){ append(right); return *this; }
+	FORCEINL rt::_JArray<t_String>& operator , (T&& right){ Append(right); return *this; }
 };
 
 #define J_EXPR_CONNECT_OP(type, type_in, vt)					\

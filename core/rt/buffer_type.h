@@ -715,6 +715,22 @@ public:
 	void	True(){ memset(_Bits, 0xff, sizeof(_Bits)); }
 	void	operator ^= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] ^= x._Bits[i]; }
 	void	operator |= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] |= x._Bits[i]; }
+	template<typename CB>
+	UINT	Visit(CB&& cb)	// visit all ones
+			{	UINT hit = 0;
+				for(UINT i=0; i<sizeofArray(_Bits); i++)
+				{	SIZE_T bits = _Bits[i];
+					if(bits)
+					{	for(UINT b=0; b<sizeof(SIZE_T)*8; b++)
+						{	if(bits&(1ULL<<b))
+							{	cb(i*BLOCK_SIZE + b);
+								hit++;
+							}
+						}
+					}
+				}
+				return hit;
+			}
 };
 
 

@@ -1466,15 +1466,19 @@ public:
 			*this += extname;
 		}
 	}
-	FORCEINL String& RegularizeUTF8()
+	INLFUNC String& RegularizeUTF8()
 	{	String_Ref::RegularizeUTF8();
 		if(_len)_p[_len-1] = 0;
 		return *this;
 	}
-	FORCEINL String& DecodedURL()	// inplace precent-decoding
+	INLFUNC String& DecodedURL()	// inplace precent-decoding
 	{	rt::String_Ref::DecodedURL();
 		if(_len)_p[_len-1] = 0;
         return *this;
+	}
+	INLFUNC String& Shorten(UINT n = 1)
+	{	SetLength(rt::max<SSIZE_T>(0, ((SSIZE_T)GetLength()) - n));
+		return *this;
 	}
 };
 //template<class t_Ostream>
