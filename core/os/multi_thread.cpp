@@ -372,30 +372,30 @@ void DumpTrackedMemoryAllocation(bool verbose)
 {
 	if(_TMA_Exit)return;
 
-	if(verbose)_LOG(" ");
+	if(verbose)_LOGC(" ");
 
 	EnterCSBlock(_GetTMA()._CS);
 	SIZE_T tot = 0;
 	if(_GetTMA()._TrackedMemory.size())
 	{
-		if(verbose)_LOG("Dump Tracked Memory Blocks ("<<_GetTMA()._TrackedMemory.size()<<"):");
+		if(verbose)_LOGC("Dump Tracked Memory Blocks ("<<_GetTMA()._TrackedMemory.size()<<"):");
 		for(auto it = _GetTMA()._TrackedMemory.begin(); it != _GetTMA()._TrackedMemory.end(); it++)
 		{
-			_LOG("[0x"<<it->first<<"] "<<it->second->Size<<"B "<<it->second->Memo);
+			_LOGC("[0x"<<it->first<<"] "<<it->second->Size<<"B "<<it->second->Memo);
 			if(verbose)
 			{
 				auto x = rt::String_Ref((LPCSTR)it->first, rt::min(72, (int)it->second->Size));
 				LPSTR d = ALLOCA_C_STRING(x);
 				for(int i=0; d[i]; i++)
 					if(d[i]<' ')d[i] = ' ';
-				_LOG("    = \""<<d<<'"');
+				_LOGC("    = \""<<d<<'"');
 			}
 			tot += it->second->Size;
 		}
-		if(verbose)_LOG("Tracked memory blocks take "<<rt::tos::FileSize<>(tot));
+		if(verbose)_LOGC("Tracked memory blocks take "<<rt::tos::FileSize<>(tot));
 	}
 	else
-	{	if(verbose)_LOG("No tracked memory blocks");
+	{	if(verbose)_LOGC("No tracked memory blocks");
 	}
 }
 

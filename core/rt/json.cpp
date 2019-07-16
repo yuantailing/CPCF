@@ -503,7 +503,7 @@ void JsonBeautified::_AppendAsSingleLine(const rt::String_Ref& doc)
 		else
 		{	if(c <= ' ')continue;
 			*this += c;
-			if(c == ','){ *this += ' '; continue; }
+			if(c == ',' || c == ':'){ *this += ' '; continue; }
 			if(c == '"')in_quote = true;
 		}
 	}
