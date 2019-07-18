@@ -239,8 +239,8 @@ namespace rt
 {
 namespace _details
 {
-
-INLFUNC bool _VERIFY_RET(bool exp, LPCSTR exp_str, LPCSTR func, int line, LPCSTR file)
+template<typename RET>
+INLFUNC RET _VERIFY_RET(RET&& exp, LPCSTR exp_str, LPCSTR func, int line, LPCSTR file)
 {
 #ifdef PLATFORM_DEBUG_BUILD
 	if(!exp)

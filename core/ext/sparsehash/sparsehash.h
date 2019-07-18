@@ -100,7 +100,7 @@ public:
 				ptrs.push_back(it->second);
 		_SC::clear();
 		for(UINT i=0;i<ptrs.GetSize();i++)
-			delete ptrs[i];
+			_SafeDel_ConstPtr(ptrs[i]);
 	}
 };
 
