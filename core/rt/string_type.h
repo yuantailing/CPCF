@@ -329,7 +329,7 @@ public:
 	{	for(SIZE_T i=0;i<GetLength();i++)
 			if(_SC::_p[i] == '\\' || _SC::_p[i] == '/')_SC::_p[i] = with;
 	}
-	FORCEINL t_String_Ref TrimPathTrailingPathSeparator() const // remove if last character is '\\' or '/'
+	FORCEINL t_String_Ref TrimTrailingPathSeparator() const // remove if last character is '\\' or '/'
 	{	if(!_SC::IsEmpty() && (Last() == '\\' || Last() == '/'))return t_String_Ref(_SC::_p, GetLength()-1);
 		return *this;
 	}
