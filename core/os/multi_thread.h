@@ -181,6 +181,28 @@ public:
 	FORCEINL void		AtomicSet(__int64 val, volatile __int64 *theValue){ AtomicAdd(val-*theValue, theValue); }
 #endif
 
+// Desgined for cross function reusing of TempVar that involves buffer allocation on heap
+template<typename T, int IDX = 0>
+struct LocalScopeTempVar
+{
+protected:
+	T& _t;
+	static T& _get(bool release = false)
+	{	thread_local T x;
+		thread_local bool inuse = false;
+		if(release){ ASSERT(inuse); inuse = false; }
+		else { ASSERT(!inuse); inuse = true; }
+		return x;
+	}
+public:
+	LocalScopeTempVar():_t(_get()){}
+	~LocalScopeTempVar(){ _get(true); }
+
+	T* operator ->(){ return &_t; }
+	T& operator  *(){ return _t; }
+	operator T&   (){ return _t; }
+};
+
 class AtomicLock  //  a non-waiting CriticalSection, not thread-recursive
 {
 	volatile int	_iAtom;
@@ -270,8 +292,6 @@ public:
 	INLFUNC ~TryEnterCSBlock(){ if(_bEntered)_CCS.Unlock(); }
 	INLFUNC bool IsLocked() const { return _bEntered; }
 };
-
-
 
 /*
 #define EnterRWLBlockShared(x) os::ReaderWriterLock::_RWL_Holder MARCO_JOIN(_RWL_Holder_,__COUNTER__)(x, true);
