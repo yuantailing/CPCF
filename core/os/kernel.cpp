@@ -137,7 +137,13 @@ bool os::GetSystemMemoryInfo(ULONGLONG* free, ULONGLONG* total)
 	if(GlobalMemoryStatusEx(&ms))
 	{
 		if(free)*free = ms.ullAvailPhys;
-		if(total)*total = ms.ullTotalPhys;
+		if (total)
+		{
+			if (GetPhysicallyInstalledSystemMemory(total) == FALSE)
+				*total = ms.ullTotalPhys;
+			else
+				*total *= 1024;
+		}
 		return true;
 	}
 #elif defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
