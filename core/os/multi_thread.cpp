@@ -532,7 +532,7 @@ bool os::Thread::_Create(UINT stack_size)
 	_bWantExit = false;
 
 	struct _call
-	{	static DWORD _func(LPVOID p)
+	{	static DWORD WINAPI _func(LPVOID p)
 		{	return ((Thread*)p)->_Run();
 	}	};
 
