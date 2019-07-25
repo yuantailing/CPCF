@@ -412,9 +412,7 @@ bool os::Thread::WaitForEnding(UINT time_wait_ms, bool terminate_if_timeout)
 		if(time_wait_ms!=INFINITE)time_wait_ms -= 100;
 	}
 
-#if !defined(PLATFORM_DEBUG_BUILD)
 	if(terminate_if_timeout)TerminateForcely();
-#endif
 	return false;
 }
 
