@@ -85,7 +85,7 @@ protected:
 	bool		bErrorFlag;
 	rt::String	Filename;
 	static bool	_GetFileStat(LPCSTR fn_utf8, struct _stat& stat);
-	bool	_GetFileStat(struct _stat& stat) const;
+	bool		_GetFileStat(struct _stat& stat) const;
 
 public:
 	static const LPCSTR		Normal_Read;
@@ -105,8 +105,8 @@ public:
 public:
 	FILE* GetFileHandle(){ return hFile; }
 	File();
-	File(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
 	~File();
+	File(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
 	bool		IsOpen() const { return hFile != NULL; }
 
 	SIZE_T		Write(const rt::String_Ref& x){ return Write(x.Begin(), x.GetLength()); }

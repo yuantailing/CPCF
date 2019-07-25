@@ -795,6 +795,8 @@ bool Timestamp::GetLocalDateTime(Fields& fields) const	// Local Time
 	__time64_t t = _Timestamp/1000;
 	fields.MillSecond = (int)(_Timestamp%1000);
 	
+	tzset(); // update timezone info for time conversion 
+
 	struct tm * ptm;
 #if defined(PLATFORM_WIN)
 	ptm = _localtime64(&t);

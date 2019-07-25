@@ -598,9 +598,10 @@ void ParallelFileWriter::RealizeFilename(const rt::String& file_template, const 
 void ParallelFileWriter::_RealizeFilename(rt::String& filename)
 {
 	os::Timestamp::Fields f;
-	_FilenameByLocalTime?
-		os::Timestamp::Get().GetLocalDateTime(f):
-		os::Timestamp::Get().GetDateTime(f),
+	if(_FilenameByLocalTime)
+		os::Timestamp::Get().GetLocalDateTime(f);
+	else
+		os::Timestamp::Get().GetDateTime(f);
 
 	RealizeFilename(_FilenameTemplate, f, filename);
 }

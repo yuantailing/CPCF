@@ -218,12 +218,12 @@ TimeSpan<false>: 16d:7h:41m:0s
       "yue": 3.10
    },
    "empty": {},
-   "fix": {"H":0, "R":2},
+   "fix": {"H": 0, "R": 2},
    "cond_true": 1234
 }
 [
-   {"name":"jake", "age":12},
-   {"name":"mary", "age":7},
+   {"name": "jake", "age": 12},
+   {"name": "mary", "age": 7},
    1,
    false,
    "haha",
@@ -238,7 +238,7 @@ Json Size: 507 = 507
    "alive": true,
    "age": 20,
    "char": "C",
-   "phone": {"number":5235251, "ext":432},
+   "phone": {"number": 5235251, "ext": 432},
    "weight": "123.50kg",
    "state": 
    {
@@ -247,8 +247,8 @@ Json Size: 507 = 507
    },
    "children": 
    [
-      {"name":"jake", "age":12},
-      {"name":"mary", "age":7},
+      {"name": "jake", "age": 12},
+      {"name": "mary", "age": 7},
       1,
       false,
       "haha",
@@ -259,12 +259,12 @@ Json Size: 507 = 507
       1,
       2,
       "hello",
-      {"c":1.2000},
+      {"c": 1.2000},
       [3, "c", false],
       <7/InArray>,
       4.50
    ],
-   "other": [{"f0":0}, {"f1":1}],
+   "other": [{"f0": 0}, {"f1": 1}],
    "std": "std::string",
    "bin": <21/1234567890ABCDEFGHIJK>,
    "raw": null,
