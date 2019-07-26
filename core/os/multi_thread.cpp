@@ -359,12 +359,15 @@ void UntrackMemoryAllocation(LPCVOID p)
 
 	if(p)
 	{
-		EnterCSBlock(_GetTMA()._CS);
-		auto it = _GetTMA()._TrackedMemory.find((SIZE_T&)p);
-		ASSERT(it != _GetTMA()._TrackedMemory.end());
+		LPBYTE to_be_del;
+		{	EnterCSBlock(_GetTMA()._CS);
+			auto it = _GetTMA()._TrackedMemory.find((SIZE_T&)p);
+			ASSERT(it != _GetTMA()._TrackedMemory.end());
+			to_be_del = (LPBYTE)it->second;
+			_GetTMA()._TrackedMemory.erase(it);
+		}
 
-		delete [] (LPBYTE)it->second;
-		_GetTMA()._TrackedMemory.erase(it);
+		delete [] to_be_del;
 	}
 }
 

@@ -1,10 +1,13 @@
 #include "ipp_core.h"
 
-
-ipp::IppiEnvParam	ipp::IppiEnvParam::g_IppEnv;
-
 #define IppEnvStackSize	32
-#define EnvParamSize ((DWORD)(reinterpret_cast<SIZE_T>(&(( static_cast<const IppiEnvParam*>(NULL) )->m_pEnvParamStack))))
+
+namespace ipp
+{
+	IppiEnvParam	IppiEnvParam::g_IppEnv;
+	BYTE			g_IppEnvParamStack[IppEnvStackSize*sizeof(IppiEnvParamItems)];
+} // namespace ipp
+
 
 ipp::IppiEnvParam::IppiEnvParam()
 {
@@ -23,9 +26,6 @@ ipp::IppiEnvParam::IppiEnvParam()
 	ResultBitShift = 0;
 	IntegerScaleFactor = 1;
 
-	m_pEnvParamStack = _Malloc32AL(BYTE,IppEnvStackSize*EnvParamSize);
-	ASSERT(m_pEnvParamStack);
-
 	m_StackPointer = 0;
 	JpegEncodeQuality = 95;
 	GifEncodeColorCount = 256;
@@ -33,15 +33,10 @@ ipp::IppiEnvParam::IppiEnvParam()
 	BorderType = ippBorderRepl;
 }
 
-ipp::IppiEnvParam::~IppiEnvParam()
-{
-	_SafeFree32AL(m_pEnvParamStack);
-}
-
 void ipp::IppiEnvParam::Push()
 {
 	ASSERT( m_StackPointer < IppEnvStackSize );
-	memcpy(&m_pEnvParamStack[m_StackPointer*EnvParamSize],this,EnvParamSize);
+	memcpy(&g_IppEnvParamStack[m_StackPointer*EnvParamSize],this,EnvParamSize);
 	m_StackPointer++;
 }
 
@@ -49,7 +44,7 @@ void ipp::IppiEnvParam::Pop()
 {
 	ASSERT( m_StackPointer > 0 );
 	m_StackPointer--;
-	memcpy(this,&m_pEnvParamStack[m_StackPointer*EnvParamSize],EnvParamSize);	
+	memcpy(this,&g_IppEnvParamStack[m_StackPointer*EnvParamSize],EnvParamSize);	
 }
 #undef EnvParamSize
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 //////////////////////////////////////////////////////////////////////
 // Cross-Platform Core Foundation (CPCF)
@@ -85,12 +85,12 @@ enum _tagIppEnvOption
 	DitherMode_Stucki = ippDitherStucki,
 	DitherMode_Bayer = ippDitherBayer,
 
-	BlendMethod_AlphaOver = ippAlphaOver,		//OVER	¦Á(A)*A+[1-¦Á(A)]*¦Á(B)*B 
-	BlendMethod_AlphaIn   = ippAlphaIn,			//IN	¦Á(A)*A*¦Á(B)
-	BlendMethod_AlphaOut  = ippAlphaOut,		//OUT	¦Á(A)*A*[1-¦Á(B)]
-	BlendMethod_AlphaATop = ippAlphaATop,		//ATOP	¦Á(A)*A*¦Á(B)+[1-¦Á(A)]*¦Á(B)*B 
-	BlendMethod_AlphaXor  = ippAlphaXor,		//XOR	¦Á(A)*A*[1-¦Á(B)]+[1-¦Á(A)]*¦Á(B)*B 
-	BlendMethod_AlphaPlus = ippAlphaPlus,		//PLUS	¦Á(A)*A + ¦Á(B)*B
+	BlendMethod_AlphaOver = ippAlphaOver,		//OVER	Î±(A)*A+[1-Î±(A)]*Î±(B)*B 
+	BlendMethod_AlphaIn   = ippAlphaIn,			//IN	Î±(A)*A*Î±(B)
+	BlendMethod_AlphaOut  = ippAlphaOut,		//OUT	Î±(A)*A*[1-Î±(B)]
+	BlendMethod_AlphaATop = ippAlphaATop,		//ATOP	Î±(A)*A*Î±(B)+[1-Î±(A)]*Î±(B)*B 
+	BlendMethod_AlphaXor  = ippAlphaXor,		//XOR	Î±(A)*A*[1-Î±(B)]+[1-Î±(A)]*Î±(B)*B 
+	BlendMethod_AlphaPlus = ippAlphaPlus,		//PLUS	Î±(A)*A + Î±(B)*B
 #endif
 
 	RoundMode_Zero = ippRndZero,
@@ -109,12 +109,8 @@ enum _tagIppEnvOption
 	IppiOption_Max
 };
 
-
-class IppiEnvParam
-{	
-	friend IppiEnvParam * GetEnv();
-public:
-
+struct IppiEnvParamItems
+{
 #ifdef PLATFORM_INTEL_IPP_SUPPORT
 	IppiDitherType		DitherMode;
 #endif
@@ -130,14 +126,18 @@ public:
 
 	int					JpegEncodeQuality;
 	int					GifEncodeColorCount;
+};
+
+class IppiEnvParam: public IppiEnvParamItems
+{	
+	friend IppiEnvParam * GetEnv();
+	static const UINT EnvParamSize = sizeof(IppiEnvParamItems);
 
 protected:
 	static IppiEnvParam	g_IppEnv;
-	LPBYTE				m_pEnvParamStack;
 	int					m_StackPointer;
 
 public:
-	~IppiEnvParam();
 	IppiEnvParam();
 	void	Push();
 	void	Pop();
