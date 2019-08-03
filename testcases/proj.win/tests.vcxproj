@@ -56,6 +56,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <UseIntelIPP>false</UseIntelIPP>
   </PropertyGroup>
+  <Import Project="vs.user" Condition="exists('vs.user')" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
