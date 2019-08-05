@@ -195,7 +195,7 @@ bool SetLogFile(LPCSTR filename_in, bool append)
 
 	EnterCSBlock(_details::_LogWriteCS);
 	if(_details::_LogFile.IsOpen())_details::_LogFile.Close();
-	if(_details::_LogFile.Open(filename, append?os::File::Normal_AppendText:os::File::Normal_WriteText, true))
+	if(_details::_LogFile.Open(filename, append?os::File::Normal_Append:os::File::Normal_Write, true))
 	{
 		if(!append || _details::_LogFile.GetFileSize() == 0)
 			if(3 != _details::_LogFile.Write("\xef\xbb\xbf", 3))
@@ -543,7 +543,7 @@ void LogWriteDefault(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int typ
             }
         }
 		_LogFile.Write(rt::String_Ref(log));
-		_LogFile.Write('\n');
+		_LogFile.Write("\x0d\x0a", 2);
 		_LogFile.Flush();
 	}
 
