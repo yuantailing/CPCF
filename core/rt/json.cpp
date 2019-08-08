@@ -522,7 +522,7 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 	if(((int)doc.GetLength()) < line_remain)
 	{
 		int seps = JsonObject::_count_seps(doc);
-		if(seps == 0 || (doc.GetLength() < (seps+1)*16 && seps<=3))
+		if(seps == 0 || (doc.GetLength() < (UINT)((seps+1)*16) && seps<=3))
 		{
 			_AppendAsSingleLine(doc);
 			return;

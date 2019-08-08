@@ -373,6 +373,7 @@ struct Timestamp	// UNIX time (UTC) in millisecond, compatible to javascript's (
 
 	static rt::String_Ref	GetMonthName(int month);	// base 1
 	static int				ParseMonthName(LPCSTR b);	// base 1
+	static int				ParseWeekdayName(LPCSTR b);
 
 	static rt::String_Ref	GetDayOfWeekName(int day_of_week); // base 0, Sunday is 0
 	static LONGLONG			ParseTimeSpan(const rt::String_Ref& x);

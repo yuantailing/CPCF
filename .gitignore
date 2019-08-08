@@ -59,3 +59,11 @@ testcases/proj\.linux/Release/
 *.pfm
 
 *.exr
+
+tools/pylon/bin/
+
+tools/pylon/proj\.win/\.vs/
+
+tools/pylon/proj\.win/Debug/
+
+*.filters

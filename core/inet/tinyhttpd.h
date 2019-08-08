@@ -165,6 +165,7 @@ class HttpHandler:public HttpEndpoint
 	};
 	static bool _endpoint_handler(HttpResponse* resp, HttpEndpoint* pThis){ return ((_tDerived_wrap*)pThis)->OnRequest(*resp); }
 protected:
+	virtual ~HttpHandler(){}
 	HttpHandler(){ Handler = _endpoint_handler; }
 };
 

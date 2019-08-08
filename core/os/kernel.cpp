@@ -883,6 +883,12 @@ int	Timestamp::ParseMonthName(LPCSTR b)
 	return month_hash[(b[0]+b[1]+b[2])%21];
 }
 
+int Timestamp::ParseWeekdayName(LPCSTR b)
+{
+	static const int wday_hash[15] = { 0, 0, 3, 4, 6, 5, 0, 0, 0, 0, 1, 7, 0, 2, 0 };
+	return wday_hash[(b[0]+b[1]+b[2])%15];
+}
+
 LONGLONG Timestamp::ParseTimeSpan(const rt::String_Ref& x)
 {	
 	int offset;
