@@ -2770,7 +2770,7 @@ namespace _details
 void os::EnableCrashDump(LPCSTR dump_filename, bool full_memory)
 {
 	if(dump_filename)
-	{	os::_details::g_DumpFilename = rt::String_Ref(dump_filename) + '_' + rt::tos::TimestampFields<true,true,'-','-'>(os::Timestamp::Get().GetLocalDateTime()) + ".dmp";
+	{	os::_details::g_DumpFilename = rt::String_Ref(dump_filename) + '_' + rt::tos::Timestamp<true,true,'-','-'>(os::Timestamp::Get()) + ".dmp";
 	}
 	else
 	{	os::_details::g_DumpFilename.Empty();

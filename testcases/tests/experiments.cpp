@@ -39,7 +39,7 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 		}
 		else
 		{
-			result += rt::SS("NEW,") + n.Name.GetFilename() + ',' + rt::tos::TimestampFields<>(n.StartTime.GetLocalDateTime()) + '\n';
+			result += rt::SS("NEW,") + n.Name.GetFilename() + ',' + rt::tos::Timestamp<>(n.StartTime) + '\n';
 		}
 	}
 
@@ -58,7 +58,7 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 
 		if(match==NULL)
 		{
-			result += rt::SS("DEL,") + n.Name.GetFilename() + ',' + rt::tos::TimestampFields<>(n.StartTime.GetLocalDateTime()) + '\n';
+			result += rt::SS("DEL,") + n.Name.GetFilename() + ',' + rt::tos::Timestamp<>(n.StartTime) + '\n';
 		}
 	}
 }
@@ -85,11 +85,11 @@ void exp_tracking_proc_ip()
 
 	os::File proc_log;
 	if(!proc_log.Open(log_fn + "/proc.log", os::File::Normal_AppendText))return;
-	proc_log.Write(rt::SS("---,---,") + rt::tos::TimestampFields<>(os::Timestamp::Get().GetLocalDateTime()) + '\n');
+	proc_log.Write(rt::SS("---,---,") + rt::tos::Timestamp<>(os::Timestamp::Get()) + '\n');
 
 	os::File ip_log;
 	if(!ip_log.Open(log_fn + "/ip.log", os::File::Normal_AppendText))return;
-	proc_log.Write(rt::SS("---,---,") + rt::tos::TimestampFields<>(os::Timestamp::Get().GetLocalDateTime()) + '\n');
+	proc_log.Write(rt::SS("---,---,") + rt::tos::Timestamp<>(os::Timestamp::Get()) + '\n');
 
 	rt::Buffer<os::Process::Info>	proc_list[2];
 	rt::Buffer<os::Process::Info>	ip_list[2];

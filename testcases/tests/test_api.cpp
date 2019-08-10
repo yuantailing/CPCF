@@ -1318,13 +1318,13 @@ void rt::UnitTests::timedate()
 {
 	{	os::Timestamp	tm;
 		tm.LoadCurrentTime();
-		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::Timestamp<>(tm));
 		os::Sleep(10);
 		tm.LoadCurrentTime();
-		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::Timestamp<>(tm));
 		os::Sleep(10);
 		tm.LoadCurrentTime();
-		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::Timestamp<>(tm));
 
 		os::Timestamp	stm;
 		stm.SetDateTime("1980/3/2 12:21:33.321");	_LOG((stm.GetDateTime()));
@@ -1368,20 +1368,20 @@ void rt::UnitTests::timedate()
 
 	{	os::Timestamp tm;
 		tm.LoadCurrentTime();
-		_LOGC(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOGC(rt::tos::Timestamp<>(tm));
 
 		tm.SetLocalDateTime(os::Timestamp::Fields("2001-4-3 13:45:3"));
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOG(rt::tos::Timestamp<>(tm));
 
 		tm.SetLocalDateTime(os::Timestamp::Fields("2011-7-13"));
-		_LOG(rt::tos::TimestampFields<>(tm.GetLocalDateTime()));
+		_LOG(rt::tos::Timestamp<>(tm));
 	}
 	
 	{	os::Timestamp	tt;
 		os::Timestamp::Fields f;
 		f.FromInternetTimeFormat("Tue, 15 Nov 1994 12:45:26 GMT");
 		tt.SetDateTime(f);
-		_LOG("FromInternetTimeFormat: "<<rt::tos::TimestampFields<>(tt.GetDateTime()));
+		_LOG("FromInternetTimeFormat: "<<rt::tos::Timestamp<>(tt));
 
 		char ttt[30];
 		tt.GetDateTime().ToInternetTimeFormat(ttt);
@@ -1537,7 +1537,7 @@ void rt::UnitTests::pfw()
 				os::ParallelFileWriter* w = (os::ParallelFileWriter*)p;
 				for(UINT i=0;i<5000;i++)
 				{
-					w->WriteString(rt::String_Ref("ParallelFileWriter Test ") + rt::tos::TimestampFields<>(os::Timestamp::Get().GetLocalDateTime()) + rt::SS(" \r\n"));
+					w->WriteString(rt::String_Ref("ParallelFileWriter Test ") + rt::tos::Timestamp<>(os::Timestamp::Get()) + rt::SS(" \r\n"));
 					os::Sleep(10);
 				}
 				return 0;
@@ -1584,7 +1584,7 @@ void rt::UnitTests::pfw()
 		pfw.SetWriteDownInterval(500);
 
 		for(UINT i=0;i<100;i++)
-		{	pfw.WriteLine(rt::SS("Some thing appended") + rt::tos::TimestampFields<>(os::Timestamp::Get().GetLocalDateTime()));
+		{	pfw.WriteLine(rt::SS("Some thing appended") + rt::tos::Timestamp<>(os::Timestamp::Get()));
 			os::Sleep(100);
 		}
 	}
@@ -1594,7 +1594,7 @@ void rt::UnitTests::pfw()
 		pfw.SetWriteDownInterval(500);
 
 		for(UINT i=0;i<100;i++)
-		{	pfw.WriteLine(rt::SS("Some thing appended again") + rt::tos::TimestampFields<>(os::Timestamp::Get().GetLocalDateTime()));
+		{	pfw.WriteLine(rt::SS("Some thing appended again") + rt::tos::Timestamp<>(os::Timestamp::Get()));
 			os::Sleep(100);
 		}
 	}
@@ -1946,7 +1946,7 @@ void rt::UnitTests::filelist()
 	_LOG("\nProcess Listed "<<!!list.GetSize());
 	for(UINT i=0;i<list.GetSize();i++)
 	{
-		_LOGC(list[i].Name.GetFilename()<<'('<<list[i].PID<<"), "<<rt::tos::TimestampFields<>(list[i].StartTime.GetLocalDateTime()));
+		_LOGC(list[i].Name.GetFilename()<<'('<<list[i].PID<<"), "<<rt::tos::Timestamp<>(list[i].StartTime));
 	}
 }
 

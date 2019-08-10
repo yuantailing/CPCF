@@ -1808,45 +1808,6 @@ struct BinaryCString:public ::rt::tos::S_<1,LEN>
 	}
 };
 
-template<bool show_msec = true, bool show_date = true, char sep_date = '/', char sep_time = ':'>
-struct TimestampFields:public ::rt::tos::S_<1, 70>
-{
-	template<typename t_DateTimeFields>
-	INLFUNC TimestampFields(const t_DateTimeFields& x)
-	{	typedef ::rt::tos::S_<1,70> _SC;
-		if(show_date)
-		{
-			if(show_msec)
-			{	_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d %02d%c%02d%c%02d.%03d", x.Year, sep_date, x.Month, sep_date, x.Day,x.Hour,sep_time,x.Minute,sep_time,x.Second,x.MillSecond);
-			}
-			else
-			{	_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d %02d%c%02d%c%02d", x.Year, sep_date, x.Month, sep_date, x.Day,x.Hour,sep_time,x.Minute,sep_time,x.Second);
-			}	
-		}
-		else
-		{
-			if(show_msec)
-			{	_SC::_len = 1+sprintf(_string,"%02d%c%02d%c%02d.%03d", x.Hour,sep_time,x.Minute,sep_time,x.Second,x.MillSecond);
-			}
-			else
-			{	_SC::_len = 1+sprintf(_string,"%02d%c%02d%c%02d", x.Hour,sep_time,x.Minute,sep_time,x.Second);
-			}
-		}
-	}
-};
-
-template<char sep_date = '/'>
-struct TimestampDate:public ::rt::tos::S_<1, 70>
-{
-	template<typename t_DateTimeFields>
-	INLFUNC TimestampDate(const t_DateTimeFields& x)
-	{	typedef ::rt::tos::S_<1,70> _SC;
-		_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d", x.Year, sep_date, x.Month, sep_date, x.Day);
-	}
-};
-
-
-
 struct GUID:public ::rt::tos::S_<>
 {
 	INLFUNC GUID(const ::GUID& guid)

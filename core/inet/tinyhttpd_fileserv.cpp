@@ -187,7 +187,7 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 						os::File::GetPathTime(fn, NULL, NULL, &last_mod);					
 						resp.SendChuncked(
 							rt::SS("<tr><td style='padding-right: 12px;'><a href=\".") + flist.GetFilename(i) + rt::SS("/\">") + (flist.GetFilename(i).TrimLeft(1)) + rt::SS("/</a></td><td></td><td>") + 
-							rt::tos::TimestampFields<false>(os::Timestamp(last_mod*1000).GetLocalDateTime()) +
+							rt::tos::Timestamp<false>(last_mod*1000) +
 							rt::SS("</td></tr>")
 						);
 					}
@@ -205,7 +205,7 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 						resp.SendChuncked(
 							rt::SS("<tr><td style='padding-right: 12px;'><a href=\".") + flist.GetFilename(i) + rt::SS("\">") + (flist.GetFilename(i).TrimLeft(1)) + rt::SS("</a></td><td style='text-align:right;'>") + 
 							rt::tos::FileSize<>(fsize) + rt::SS("</td><td>") + 
-							rt::tos::TimestampFields<false>(os::Timestamp(last_mod*1000).GetLocalDateTime()) +
+							rt::tos::Timestamp<false>(last_mod*1000) +
 							rt::SS("</td></tr>")
 						);
 					}

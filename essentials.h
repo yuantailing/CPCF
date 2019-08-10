@@ -30,15 +30,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////
 
-#include "./core/rt/runtime_base.h"
-#include "./core/rt/type_traits.h"
 #include "./core/rt/string_type.h"
 #include "./core/rt/buffer_type.h"
 #include "./core/rt/json.h"
 
 #include "./core/os/file_dir.h"
-#include "./core/os/high_level.h"
-#include "./core/os/kernel.h"
 #include "./core/os/multi_thread.h"
 #include "./core/inet/inet.h"
 

@@ -502,7 +502,7 @@ void LogWriteDefault(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int typ
                 {
                 case _LOG_TIME:
                     _LogTime.LoadCurrentTime();
-                    _LogFile.Write(rt::tos::TimestampFields<false,true>(_LogTime.GetLocalDateTime()));
+                    _LogFile.Write(rt::tos::Timestamp<false,true>(_LogTime));
                     break;
                 case _LOG_FILE:
                     _LogFile.Write(file);

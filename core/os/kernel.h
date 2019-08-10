@@ -412,6 +412,54 @@ INLFUNC ostream& operator << (ostream& s, const os::Timestamp::Fields& f)
 };
 } // namespace os
 
+namespace rt
+{
+namespace tos
+{
+template<bool show_msec = true, bool show_date = true, char sep_date = '/', char sep_time = ':'>
+struct Timestamp:public ::rt::tos::S_<1, 70>
+{
+	Timestamp(const os::Timestamp::Fields & x)
+	{	typedef ::rt::tos::S_<1,70> _SC;
+		if(show_date)
+		{
+			if(show_msec)
+			{	_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d %02d%c%02d%c%02d.%03d", x.Year, sep_date, x.Month, sep_date, x.Day,x.Hour,sep_time,x.Minute,sep_time,x.Second,x.MillSecond);
+			}
+			else
+			{	_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d %02d%c%02d%c%02d", x.Year, sep_date, x.Month, sep_date, x.Day,x.Hour,sep_time,x.Minute,sep_time,x.Second);
+			}	
+		}
+		else
+		{
+			if(show_msec)
+			{	_SC::_len = 1+sprintf(_string,"%02d%c%02d%c%02d.%03d", x.Hour,sep_time,x.Minute,sep_time,x.Second,x.MillSecond);
+			}
+			else
+			{	_SC::_len = 1+sprintf(_string,"%02d%c%02d%c%02d", x.Hour,sep_time,x.Minute,sep_time,x.Second);
+			}
+		}
+	}
+	Timestamp(LONGLONG timestamp, bool local_time = true)
+		:Timestamp(local_time?os::Timestamp(timestamp).GetLocalDateTime():os::Timestamp(timestamp).GetDateTime())
+	{}
+};
+
+template<char sep_date = '/'>
+struct TimestampDate:public ::rt::tos::S_<1, 70>
+{
+	TimestampDate(const os::Timestamp::Fields & x)
+	{	typedef ::rt::tos::S_<1,70> _SC;
+		_SC::_len = 1+sprintf(_string,"%04d%c%02d%c%02d", x.Year, sep_date, x.Month, sep_date, x.Day);
+	}
+	TimestampDate(LONGLONG timestamp, bool local_time = true)
+		:TimestampDate(local_time?os::Timestamp(timestamp).GetLocalDateTime():os::Timestamp(timestamp).GetDateTime())
+	{}
+};
+
+}} // namespace rt::tos
+
+
 namespace os
 {
 #ifdef PLATFORM_WIN
