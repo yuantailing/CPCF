@@ -923,6 +923,26 @@ namespace rt
 } // namespace rt
 
 
+namespace rt
+{
+FORCEINL WORD		BitSmudgeRight(WORD x) // (minimum power of 2 >= x) - 1
+					{	UINT r = x | (x>>1);
+						r |= r >> 2;	r |= r >> 4;	r |= r >> 8;
+						return (WORD)r;
+					}
+FORCEINL UINT		BitSmudgeRight(UINT x) // (minimum power of 2 >= x) - 1
+					{	UINT r = x | (x>>1);
+						r |= r >> 2;	r |= r >> 4;	r |= r >> 8;	r |= r >> 16;
+						return r;
+					}
+FORCEINL ULONGLONG	BitSmudgeRight(ULONGLONG x) // (minimum power of 2 >= x) - 1
+					{	ULONGLONG r = x | (x>>1);
+						r |= r >> 2;	r |= r >> 4;	r |= r >> 8;	r |= r >> 16;	r |= r >> 32;
+						return (WORD)r;
+					}
+}
+
+
 ////////////////////////////////////////////////////////////////////////////
 // Optimized Object Swap, UNSAFE if the object has self or member pointed pointers
 // No additional temporary object, no ctor/dtor called
