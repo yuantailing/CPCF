@@ -828,8 +828,7 @@ extern SIZE_T	Base32EncodeLength(SIZE_T len);
 extern SIZE_T	Base32DecodeLength(SIZE_T len);
 extern void		Base32Encode(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
 extern void		Base32EncodeLowercase(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
-extern bool		Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len);
-extern bool		Base32DecodeLowercase(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len);
+extern bool		Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len);  // for both upper/lowercase
 
 extern void		Base32Encode(rt::String& Base32Out, const rt::String_Ref& blob);
 extern bool		Base32Decode(rt::String& blob, const rt::String_Ref& base32in);

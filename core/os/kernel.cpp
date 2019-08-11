@@ -2182,44 +2182,68 @@ namespace os
 {
 namespace _details
 {
-	static const int _Base32_decode['z' - '0' + 1] = 
+	// Modified based on Crockford's Base32 - http://en.wikipedia.org/wiki/Base32
+	//value		encode	decode			value	encode	decode
+	//0			0		0 o O			16		G		g G
+	//1			1		1 i I l L		17		H		h H
+	//2			2		2 z Z			18		J		j J
+	//3			3		3				19		K		k K
+	//4			4		4				20		M		m M
+	//5			5		5 s S			21		N		n N
+	//6			6		6				22		P		p P
+	//7			7		7				23		Q		q Q
+	//8			8		8				24		R		r R
+	//9			9		9				25		$
+	//10		A		a A				26		T		t T
+	//11		B		b B				27		V		v V u U
+	//12		C		c C				28		W		w W
+	//13		D		d D				29		X		x X
+	//14		E		e E				30		Y		y Y
+	//15		F		f F				31		@		@
+
+	static const int _Base32_decode['z' - ' ' + 1] = 
 	{
+		-1, -1, -1, -1,			/* [SPC] !"# */
+		25,						/* $ */
+		-1,-1,-1,-1,-1,-1,-1,-1,/* %&'()*+, */ 
+		-1,						/* - */
+		-1, -1,					/* ./ */
 		0,1,2,3,4, 5,6,7,8,9,	/*0-9*/
-		-1,-1,-1,-1,-1,-1,-1,	/*:	; <	= >	? @	*/
-		10,11,12,13,14,15,		/*A-F*/	
-		16,17,					/* G H */
+		-1,-1,-1,-1,-1,-1,31,	/*:	; <	= >	? @	*/
+		10,11,12,13,14,15,16,17,/*A-H*/	
 		1,						/* I = 1*/
 		18,19,					/* J K */	
 		1,						/*L	= 1*/
 		20,21,					/*M	N */	
 		0,						/*O = 0	*/
 		22,						/*P	*/		
-		23,24,25,26,			/*QRST */	
+		23,24,5,26,				/*QRST */	
 		27,27,					/*U V */	
-		28,29,30,31,			/*WXYZ*/
-		-1,-1,-1,-1,-1,-1,		/*[	\ ] ^ _ `*/	
-		10,11,12,13,14,15,		/*a-f*/	
-		16,17,					/* g h */
+		28,29,30,2,				/*WXYZ*/
+		-1,-1,-1,-1,			/*[	\ ] ^*/
+		-1,						/* _ */
+		-1,						/* ` */	
+		10,11,12,13,14,15,16,17,/*a-h*/	
 		1,						/* i = 1*/
 		18,19,					/* j k */	
 		1,						/*l	= 1*/
 		20,21,					/*m	n */	
 		0,						/*o = 0	*/
 		22,						/*p	*/		
-		23,24,25,26,			/*qrst */	
-		27,27,					/*u v */	
-		28,29,30,31,			/*wxyz*/
+		23,24,5,26,				/*qrst */	
+		27,27,					/*u v */
+		28,29,30, 2,			/*wxyz*/
 	};
 	static const char _Base32_encode[33] = 
 	//			1		  2			3
 	//01234567890123456789012345678901
-	 "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-	static const char _Base32_encode_lowercase[33] = "0123456789abcdefghjkmnpqrstvwxyz";
+	 "0123456789ABCDEFGHJKMNPQR$TVWXY@";
+	static const char _Base32_encode_lowercase[33] = "0123456789abcdefghjkmnpqr$tvwxy@";
 }
 }
 
 SIZE_T os::Base32DecodeLength(SIZE_T len)
-{						  // 0, 1, 2, 3, 4, 5, 6, 7
+{						    // 0, 1, 2, 3, 4, 5, 6, 7
 	static const int tl[] = {  0,-1, 1,-1, 2, 3,-1, 4 } ;
 	int tail_len = tl[len&0x7];
 	if(tail_len >=0)
@@ -2245,25 +2269,6 @@ bool os::Base32Decode(rt::String& blob, const rt::String_Ref& base32in)
 	return Base32Decode(blob.Begin(), blob.GetLength(), base32in.Begin(), base32in.GetLength());
 }
 
-
-// Crockford's Base32 - http://en.wikipedia.org/wiki/Base32
-//value		encode	decode			value	encode	decode
-//0			0		0 o O			16		G		g G
-//1			1		1 i I l L		17		H		h H
-//2			2		2				18		J		j J
-//3			3		3				19		K		k K
-//4			4		4				20		M		m M
-//5			5		5				21		N		n N
-//6			6		6				22		P		p P
-//7			7		7				23		Q		q Q
-//8			8		8				24		R		r R
-//9			9		9				25		S		s S
-//10		A		a A				26		T		t T
-//11		B		b B				27		V		v V
-//12		C		c C				28		W		w W
-//13		D		d D				29		X		x X
-//14		E		e E				30		Y		y Y
-//15		F		f F				31		Z		z Z
 void os::Base32Encode(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 {
 	LPCBYTE d = (LPCBYTE)pdata;
@@ -2284,7 +2289,7 @@ void os::Base32Encode(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 
 	p[0] = _details::_Base32_encode[d[0]>>3];
 	if(d+1 == e)	// nnnXX
-	{	static const char encode[9] = "JKMNQRST";	
+	{	static const char encode[9] = "ABCDEFGH";
 		p[1] = encode[d[0]&0x7];
 		return;
 	}
@@ -2292,7 +2297,7 @@ void os::Base32Encode(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 	p[1] = _details::_Base32_encode[((d[0]&0x7)<<2) | (d[1]>>6) ];
 	p[2] = _details::_Base32_encode[(d[1]>>1) & 0x1f ];
 	if(d+2 == e)	// nXXXX
-	{	static const char encode[3] = "GH";	
+	{	static const char encode[3] = "01";	
 		p[3] = encode[d[1]&0x1];
 		return;
 	}
@@ -2306,7 +2311,7 @@ void os::Base32Encode(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 	p[4] = _details::_Base32_encode[((d[2]&0xf)<<1) | (d[3]>>7) ];
 	p[5] = _details::_Base32_encode[(d[3]>>2) & 0x1f  ];
 	ASSERT(d+4 == e);	// nnXXX
-	p[6] = (d[3]&0x3) + 'W';
+	p[6] = (d[3]&0x3) + 'V';
 
 	return;
 }
@@ -2331,7 +2336,7 @@ void os::Base32EncodeLowercase(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 
 	p[0] = _details::_Base32_encode_lowercase[d[0]>>3];
 	if(d+1 == e)	// nnnXX
-	{	static const char encode[9] = "jkmnqrst";	
+	{	static const char encode[9] = "abcdefgh";	
 		p[1] = encode[d[0]&0x7];
 		return;
 	}
@@ -2339,7 +2344,7 @@ void os::Base32EncodeLowercase(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 	p[1] = _details::_Base32_encode_lowercase[((d[0]&0x7)<<2) | (d[1]>>6) ];
 	p[2] = _details::_Base32_encode_lowercase[(d[1]>>1) & 0x1f ];
 	if(d+2 == e)	// nXXXX
-	{	static const char encode[3] = "gh";	
+	{	static const char encode[3] = "01";	
 		p[3] = encode[d[1]&0x1];
 		return;
 	}
@@ -2353,7 +2358,7 @@ void os::Base32EncodeLowercase(LPSTR p,LPCVOID pdata, SIZE_T data_len)
 	p[4] = _details::_Base32_encode_lowercase[((d[2]&0xf)<<1) | (d[3]>>7) ];
 	p[5] = _details::_Base32_encode_lowercase[(d[3]>>2) & 0x1f  ];
 	ASSERT(d+4 == e);	// nnXXX
-	p[6] = (d[3]&0x3) + 'w';
+	p[6] = (d[3]&0x3) + 'v';
 
 	return;
 
@@ -2369,14 +2374,14 @@ bool os::Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str
 	for(;(d + 8)<=e; p+=5)
 	{
 		int b[8];
-		if(*d>='0' && *d<='z'){ b[0] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[1] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[2] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[3] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[4] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[5] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[6] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[7] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[0] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[1] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[2] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[3] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[4] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[5] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[6] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
+		if(*d>=' ' && *d<='z'){ b[7] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 
 		p[0] = (b[0]<<3) | (b[1]>>2);
 		p[1] = (b[1]<<6) | (b[2]<<1) | (b[3]>>4);
@@ -2388,137 +2393,56 @@ bool os::Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str
 	if(d == e)return true;
 
 	int b[7];
-	if(*d>='0' && *d<='z' && d<e){ b[0] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[0] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 
-	if(d+1 == e)					 //J K L,M N O,P,Q R S T
-	{	static const int decode[11] = {0,1,-1,2,3,-1,-1,4,5,6,7};
-		int v;
-		if(d[0]>='J' && d[0]<='T')
-		{	if((v = decode[d[0]-'J']) == -1)return false; }
-		else if(d[0]>='j' && d[0]<='t')
-		{	if((v = decode[d[0]-'j']) == -1)return false; }
-		else return false;
-
-		p[0] = (b[0]<<3) | v;
+	if(d+1 == e)
+	{		
+		if(*d<' ' || *d>'z')return false;
+		int v = _details::_Base32_decode[*d - ' '];
+		if(v < 10 || v > 17)return false;
+		
+		p[0] = (b[0]<<3) | (v-10);
 		return true;
 	}
 	
-	if(*d>='0' && *d<='z' && d<e){ b[1] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[1] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 	p[0] = (b[0]<<3) | (b[1]>>2);
-	if(*d>='0' && *d<='z' && d<e){ b[2] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[2] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 
 	if(d+1 == e)
 	{	int v;
-		if(d[0] == 'g' || d[0] == 'G'){ v = 0; }
-		else if(d[0] == 'h' || d[0] == 'H'){ v = 1; }
-		else{ return false; }
+		if(d[0] == '0'){ v = 0; }
+		else if(d[0] == '1'){ v = 1; }
+		else return false; 
 		p[1] = (b[1]<<6) | (b[2]<<1) | v;
 		return true;
 	}
 	
-	if(*d>='0' && *d<='z' && d<e){ b[3] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[3] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 	p[1] = (b[1]<<6) | (b[2]<<1) | (b[3]>>4);
 
 	if(d+1 == e)
-	{	if(d[0]<'0' || d[0]>'z')return false;
-		int v = _details::_Base32_decode[d[0] - '0'];
+	{	if(d[0]<' ' || d[0]>'z')return false;
+		int v = _details::_Base32_decode[d[0] - ' '];
 		if(v<0 || v>15)return false;
 		p[2] = (b[3]<<4) | v;
 		return true;
 	}
 
-	if(*d>='0' && *d<='z' && d<e){ b[4] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[4] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 	p[2] = (b[3]<<4) | (b[4]>>1);
-	if(*d>='0' && *d<='z' && d<e){ b[5] = _details::_Base32_decode[(*d++) - '0']; }else return false;
+	if(*d>=' ' && *d<='z' && d<e){ b[5] = _details::_Base32_decode[(*d++) - ' ']; }else return false;
 
 	if(d+1 == e)
-	{	if(d[0]<'0' || d[0]>'z')return false;
-		int v = _details::_Base32_decode[d[0] - '0'];
-		if(v<28)return false;
-		p[3] = (b[4]<<7) | (b[5]<<2) | (v-28);
+	{	if(d[0]<' ' || d[0]>'z')return false;
+		int v = _details::_Base32_decode[d[0] - ' '];
+		if(v<27 || v>30)return false;
+		p[3] = (b[4]<<7) | (b[5]<<2) | (v-27);
 		return true;
 	}
 
 	return false;
 }
-
-
-bool os::Base32DecodeLowercase(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len)
-{
-	LPBYTE p = (LPBYTE)pDataOut;
-	LPCSTR d = pBase32;
-	LPCSTR e = d + str_len;
-	for(;(d + 8)<=e; p+=5)
-	{
-		int b[8];
-		if(*d>='0' && *d<='z'){ b[0] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[1] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[2] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[3] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[4] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[5] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[6] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-		if(*d>='0' && *d<='z'){ b[7] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-
-		p[0] = (b[0]<<3) | (b[1]>>2);
-		p[1] = (b[1]<<6) | (b[2]<<1) | (b[3]>>4);
-		p[2] = (b[3]<<4) | (b[4]>>1);
-		p[3] = (b[4]<<7) | (b[5]<<2) | (b[6]>>3);
-		p[4] = (b[6]<<5) | b[7];
-	}
-
-	if(d == e)return true;
-
-	int b[7];
-	if(*d>='0' && *d<='z' && d<e){ b[0] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-
-	if(d+1 == e)					 //J K L,M N O,P,Q R S T
-	{	static const int decode[11] = {0,1,-1,2,3,-1,-1,4,5,6,7};
-		int v;
-		if(d[0]<'j' || d[0]>'t' || (v = decode[d[0]-'j']) == -1)return false;
-		p[0] = (b[0]<<3) | v;
-		return true;
-	}
-	
-	if(*d>='0' && *d<='z' && d<e){ b[1] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-	p[0] = (b[0]<<3) | (b[1]>>2);
-	if(*d>='0' && *d<='z' && d<e){ b[2] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-
-	if(d+1 == e)
-	{	int v;
-		if(d[0] == 'g'){ v = 0; }
-		else if(d[0] == 'h'){ v = 1; }
-		else{ return false; }
-		p[1] = (b[1]<<6) | (b[2]<<1) | v;
-		return true;
-	}
-	
-	if(*d>='0' && *d<='z' && d<e){ b[3] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-	p[1] = (b[1]<<6) | (b[2]<<1) | (b[3]>>4);
-
-	if(d+1 == e)
-	{	if(d[0]<'0' || d[0]>'z')return false;
-		int v = _details::_Base32_decode[d[0] - '0'];
-		if(v<0 || v>15)return false;
-		p[2] = (b[3]<<4) | v;
-		return true;
-	}
-
-	if(*d>='0' && *d<='z' && d<e){ b[4] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-	p[2] = (b[3]<<4) | (b[4]>>1);
-	if(*d>='0' && *d<='z' && d<e){ b[5] = _details::_Base32_decode[(*d++) - '0']; }else return false;
-
-	if(d+1 == e)
-	{	if(d[0]<'0' || d[0]>'z')return false;
-		int v = _details::_Base32_decode[d[0] - '0'];
-		if(v<28)return false;
-		p[3] = (b[4]<<7) | (b[5]<<2) | (v-28);
-		return true;
-	}
-
-	return false;
-}
-
 
 void os::UrlEncode(const rt::String_Ref& url, rt::String& encoded_url)
 {
