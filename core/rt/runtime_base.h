@@ -710,7 +710,7 @@ LPSTR __alloca_string(LPSTR p, const T& x)
 }
 }} // namespace rt::_details
 
-#define ALLOCA_C_STRING(x)	(rt::_details::__alloca_string((LPSTR)alloca(x.GetLength() + 1), x))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
+#define ALLOCA_C_STRING(x)	(rt::_details::__alloca_string((LPSTR)alloca((x).GetLength() + 1), (x)))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
 
 
 namespace os

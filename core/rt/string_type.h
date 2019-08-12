@@ -1525,12 +1525,12 @@ namespace _details
 template<typename T>
 String_Ref __alloca_string_ref(LPSTR p, const T& x)
 {	UINT len;
-	len = x.CopyTo(p);
+	len = (UINT)x.CopyTo(p);
 	return String_Ref(p, len);
 }
 }} // namespace rt::_details
 
-#define ALLOCA_STRING_REF(x)	(rt::_details::__alloca_string_ref((LPSTR)alloca(x.GetLength()), x))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
+#define ALLOCA_STRING_REF(x)	(rt::_details::__alloca_string_ref((LPSTR)alloca((x).GetLength()), (x)))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
 
 namespace rt
 {
