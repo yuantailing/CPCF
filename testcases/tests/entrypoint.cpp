@@ -15,7 +15,7 @@ void TestMain()
 
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		TYPETRAITS_UNITTEST(json);
+		TYPETRAITS_UNITTEST(encoding);
 		//TYPETRAITS_UNITTEST(callback_to_member_function);
 		return;
 	}
@@ -42,6 +42,7 @@ void TestMain()
 		TYPETRAITS_UNITTEST(sortedpush);
 		TYPETRAITS_UNITTEST(string_conv);
 		TYPETRAITS_UNITTEST(string);
+		TYPETRAITS_UNITTEST(encoding);
 		TYPETRAITS_UNITTEST(json);
 		TYPETRAITS_UNITTEST(express_tk);
 		TYPETRAITS_UNITTEST(xml);
@@ -54,7 +55,6 @@ void TestMain()
 		TYPETRAITS_UNITTEST(filelist);
 		TYPETRAITS_UNITTEST(multithread);
 		TYPETRAITS_UNITTEST(inet_encoding);
-		TYPETRAITS_UNITTEST(inet_encoding_custom);
 		TYPETRAITS_UNITTEST(sysinfo);
 		TYPETRAITS_UNITTEST(binary_search);
 		TYPETRAITS_UNITTEST(botan_cipher);

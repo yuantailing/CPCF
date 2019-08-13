@@ -5,6 +5,7 @@
 #include "./core/os/file_dir.cpp"
 #include "./core/os/multi_thread.cpp"
 #include "./core/os/kernel.cpp"
+#include "./core/os/kernal_encode.cpp"
 #include "./core/os/kernel_log.cpp"
 #include "./core/inet/inet.cpp"
 

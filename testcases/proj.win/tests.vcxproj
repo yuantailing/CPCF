@@ -182,6 +182,7 @@
     <ClCompile Include="..\..\core\os\file_dir.cpp" />
     <ClCompile Include="..\..\core\os\file_zip.cpp" />
     <ClCompile Include="..\..\core\os\high_level.cpp" />
+    <ClCompile Include="..\..\core\os\kernal_encode.cpp" />
     <ClCompile Include="..\..\core\os\kernel_log.cpp" />
     <ClCompile Include="..\..\core\os\precompiler.cpp" />
     <ClCompile Include="..\..\core\os\user_inputs.cpp" />

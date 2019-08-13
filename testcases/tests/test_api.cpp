@@ -1127,6 +1127,96 @@ void rt::UnitTests::buffer()
 	_LOG("Strings copied: "<<non_pod_copy);
 }
 
+void rt::UnitTests::encoding()
+{
+	rt::Randomizer r; 
+
+	for(UINT i=0;i<100000;i++)
+	{
+		char buf[20];
+		for(UINT b=1;b<20;b++)
+		{
+			r.Randomize(buf, b);
+			rt::tos::Base32CrockfordOnStack<> base32(buf, b);
+			if(i==0)
+			{	_LOG(rt::tos::Binary<>(buf,b)<<" = "<<base32);
+			}
+
+			char buf_dec[20];
+			int dec_b = (int)os::Base32DecodeLength(base32.GetLength());
+			os::Base32CrockfordDecode(buf_dec, dec_b, base32, base32.GetLength());
+			if(dec_b != b || memcmp(buf_dec, buf, b) != 0)
+			{	_LOG_ERROR(rt::tos::Binary<>(buf,b)<<" = "<<base32<<" => "<<rt::tos::Binary<>(buf_dec, dec_b));
+				return;
+			}
+		}
+	}
+
+	for(UINT i=0;i<100000;i++)
+	{
+		char buf[20];
+		for(UINT b=1;b<20;b++)
+		{
+			r.Randomize(buf, b);
+			rt::tos::Base32CrockfordLowercaseOnStack<> base32(buf, b);
+			if(i==0)
+			{	_LOG(rt::tos::Binary<>(buf,b)<<" = "<<base32);
+			}
+
+			char buf_dec[20];
+			int dec_b = (int)os::Base32DecodeLength(base32.GetLength());
+			os::Base32CrockfordDecode(buf_dec, dec_b, base32, base32.GetLength());
+			if(dec_b != b || memcmp(buf_dec, buf, b) != 0)
+			{	_LOG_ERROR(rt::tos::Binary<>(buf,b)<<" = "<<base32<<" => "<<rt::tos::Binary<>(buf_dec, dec_b));
+				return;
+			}
+		}
+	}
+
+	for(UINT i=0;i<100000;i++)
+	{
+		char buf[20];
+		for(UINT b=1;b<20;b++)
+		{
+			r.Randomize(buf, b);
+			rt::tos::Base32OnStack<> base32(buf, b);
+			if(i==0)
+			{	_LOG(rt::tos::Binary<>(buf,b)<<" = "<<base32);
+			}
+
+			char buf_dec[20];
+			int dec_b = (int)os::Base32DecodeLength(base32.GetLength());
+			os::Base32Decode(buf_dec, dec_b, base32, base32.GetLength());
+			if(dec_b != b || memcmp(buf_dec, buf, b) != 0)
+			{	_LOG_ERROR(rt::tos::Binary<>(buf,b)<<" = "<<base32<<" => "<<rt::tos::Binary<>(buf_dec, dec_b));
+				return;
+			}
+		}
+	}
+
+	for(UINT i=0;i<100000;i++)
+	{
+		char buf[20];
+		for(UINT b=1;b<20;b++)
+		{
+			r.Randomize(buf, b);
+			rt::tos::Base32LowercaseOnStack<> base32(buf, b);
+			if(i==0)
+			{	_LOG(rt::tos::Binary<>(buf,b)<<" = "<<base32);
+			}
+
+			char buf_dec[20];
+			int dec_b = (int)os::Base32DecodeLength(base32.GetLength());
+			os::Base32Decode(buf_dec, dec_b, base32, base32.GetLength());
+			if(dec_b != b || memcmp(buf_dec, buf, b) != 0)
+			{	_LOG_ERROR(rt::tos::Binary<>(buf,b)<<" = "<<base32<<" => "<<rt::tos::Binary<>(buf_dec, dec_b));
+				return;
+			}
+		}
+	}
+
+}
+
 void rt::UnitTests::pcqueue()
 {
 	os::ProducerConsumerQueue<UINT> q;
@@ -1381,7 +1471,7 @@ void rt::UnitTests::timedate()
 		os::Timestamp::Fields f;
 		f.FromInternetTimeFormat("Tue, 15 Nov 1994 12:45:26 GMT");
 		tt.SetDateTime(f);
-		_LOG("FromInternetTimeFormat: "<<rt::tos::Timestamp<>(tt));
+		_LOG("FromInternetTimeFormat: "<<rt::tos::Timestamp<>(tt, false));
 
 		char ttt[30];
 		tt.GetDateTime().ToInternetTimeFormat(ttt);
@@ -1671,61 +1761,7 @@ void rt::UnitTests::inet_encoding()
 	}
 
 	return;
-
-    /*
-	for(int len=5;len<10;len++)
-	{
-		int encode_len = (int)os::Base32EncodeLength(len);
-
-		for(int c=0;c<256;c++)
-		{
-            BYTE i = c;
-			BYTE t[10] = { i,i,i,i,i,i,i,i,i,i };
-
-			char b32[100];
-			os::Base32Encode(b32,t,len);
-
-			ASSERT(len == os::Base32DecodeLength(encode_len));
-
-			BYTE out[10];
-			VERIFY(os::Base32Decode(out,len,b32,encode_len));
-
-			_LOG(rt::String_Ref(b32,encode_len)<<" ==> "<<rt::tos::Binary<>(out,len));
-
-			VERIFY(0 == memcmp(t,out,len));
-		}
-	}
-     */
 }
-
-void rt::UnitTests::inet_encoding_custom()
-{
-	LPCSTR in[] = {
-		"a",
-		"ab",
-		"abc",
-		"abcd",
-		"abcde",
-		"abcdef",
-		"abcdefg",
-		"abcdefgh",
-		"abcdefghi",
-		"abcdefghij",
-		"\x95\xE1\xF3\x3C\xA8\x6B\x48\x15\xAA\x8B\x7F\xC7\xE4\x86\x5F\x65",
-	};
-	for (int i = 0; i < 11; i++)
-	{
-		int len = (int)strlen(in[i]);
-		int encode_len = (int)os::Base32EncodeLength(len);
-
-		char b32[100];
-		memset(b32, 0, sizeof(char) * 100);
-		os::Base32Encode(b32,in[i],len);
-
-		_LOG(in[i] << " --> " << rt::String_Ref(b32, encode_len));
-	}
-}
-
 
 inet::Socket	a,b,c;
 

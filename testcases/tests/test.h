@@ -6,6 +6,7 @@ namespace rt
 
 struct UnitTests
 {
+	static void encoding();
 	static void string();
 	static void string_conv();
 	static void rt();
@@ -23,7 +24,6 @@ struct UnitTests
 	static void multithread();
 	static void download();
 	static void inet_encoding();
-	static void inet_encoding_custom();
 	static void delayed_deletion();
 	static void sysinfo();
 	static void socket_io();

@@ -217,6 +217,10 @@ extern LPVOID GetDynamicLibrarySymbol(HANDLE dll, LPCSTR fn);
 extern bool	  GetDeviceUID(rt::String& uid);
 extern DWORD  GetRandomSeed();
 
+extern LPCSTR GetBuildSpecificationString();
+extern void	  SetDebugTextBox(const rt::String_Ref& x);
+extern void	  SetupDebugTextBox(LPVOID param = NULL);
+
 extern void	  BruteforceExit();
 
 #if defined(PLATFORM_WIN)
@@ -799,45 +803,17 @@ extern void		UrlEncode(const rt::String_Ref& url, rt::String& encoded_url);
 extern UINT		UrlDecode(LPCSTR encoded_url, UINT encoded_url_len, LPSTR url);  // return encoded length
 extern void		UrlDecode(const rt::String_Ref& encoded_url, rt::String& url);
 
-// Crockford's Base32 - http://en.wikipedia.org/wiki/Base32
-//value		encode	decode			value	encode	decode
-//0			0		0 o O			16		G		g G
-//1			1		1 i I l L		17		H		h H
-//2			2		2				18		J		j J
-//3			3		3				19		K		k K
-//4			4		4				20		M		m M
-//5			5		5				21		N		n N
-//6			6		6				22		P		p P
-//7			7		7				23		Q		q Q
-//8			8		8				24		R		r R
-//9			9		9				25		S		s S
-//10		A		a A				26		T		t T
-//11		B		b B				27		V		vu VU
-//12		C		c C				28		W		w W
-//13		D		d D				29		X		x X
-//14		E		e E				30		Y		y Y
-//15		F		f F				31		Z		z Z
-// My Scheme for padding
-// Tail #bytes	Reminder Bits			encode			decode
-//	1			000XX-111XX				JKMNQRST		JKMNQRST jkmnqrst
-//	2			0XXXX-1XXXX				GH				GH gh
-//	3			0000X-1111X				0-F				same as value 0-15
-//	4			00XXX-11XXX				WXYZ			WXYZ wxyz
-
+// Base32 Encoding
 extern SIZE_T	Base32EncodeLength(SIZE_T len);
 extern SIZE_T	Base32DecodeLength(SIZE_T len);
+// Base32 Extended HEX (0-9A-V)
+extern bool		Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len);  // for both upper/lowercase
 extern void		Base32Encode(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
 extern void		Base32EncodeLowercase(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
-extern bool		Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len);  // for both upper/lowercase
-
-extern void		Base32Encode(rt::String& Base32Out, const rt::String_Ref& blob);
-extern bool		Base32Decode(rt::String& blob, const rt::String_Ref& base32in);
-
-extern LPCSTR	GetBuildSpecificationString();
-
-extern void		SetDebugTextBox(const rt::String_Ref& x);
-extern void		SetupDebugTextBox(LPVOID param = NULL);
-
+// Base32 Modified Crockford (also avoids s and z, which confuse with 2 and 5)
+extern bool		Base32CrockfordDecode(LPVOID pDataOut, SIZE_T data_len, LPCSTR pBase32, SIZE_T str_len);  // for both upper/lowercase
+extern void		Base32CrockfordEncode(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
+extern void		Base32CrockfordEncodeLowercase(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len);
 
 
 } // namespace os
@@ -893,6 +869,38 @@ struct Base32LowercaseOnStack: public ::rt::tos::S_<1, LEN>
 	template<typename T>
 	Base32LowercaseOnStack(const T& x)
 	{	new (this) Base32LowercaseOnStack(&x, sizeof(x));
+	}
+};
+
+template<UINT LEN = 256>
+struct Base32CrockfordOnStack: public ::rt::tos::S_<1, LEN>
+{	typedef ::rt::tos::S_<1, LEN> _SC;
+	Base32CrockfordOnStack(LPCVOID pData, SIZE_T len)
+	{	int slen = (int)os::Base32EncodeLength((UINT)len);
+		ASSERT(slen < LEN);
+		os::Base32CrockfordEncode(_SC::_p, pData,(UINT)len);
+		_SC::_p[slen] = 0;
+		_SC::_len = slen + 1;
+	}
+	template<typename T>
+	Base32CrockfordOnStack(const T& x)
+	{	new (this) Base32CrockfordOnStack(&x, sizeof(x));
+	}
+};
+
+template<UINT LEN = 256>
+struct Base32CrockfordLowercaseOnStack: public ::rt::tos::S_<1, LEN>
+{	typedef ::rt::tos::S_<1, LEN> _SC;
+	Base32CrockfordLowercaseOnStack(LPCVOID pData, SIZE_T len)
+	{	int slen = (int)os::Base32EncodeLength((UINT)len);
+		ASSERT(slen < LEN);
+		os::Base32CrockfordEncodeLowercase(_SC::_p, pData,(UINT)len);
+		_SC::_p[slen] = 0;
+		_SC::_len = slen + 1;
+	}
+	template<typename T>
+	Base32CrockfordLowercaseOnStack(const T& x)
+	{	new (this) Base32CrockfordLowercaseOnStack(&x, sizeof(x));
 	}
 };
 
