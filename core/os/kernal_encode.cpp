@@ -472,11 +472,11 @@ namespace _details
 	//2			2		2 z Z			18		J		j J
 	//3			3		3				19		K		k K
 	//4			4		4				20		M		m M
-	//5			5		5 s S			21		N		n N
+	//5			5		5				21		N		n N
 	//6			6		6				22		P		p P
 	//7			7		7				23		Q		q Q
 	//8			8		8				24		R		r R
-	//9			9		9				25		$
+	//9			9		9				25		s		s S
 	//10		A		a A				26		T		t T
 	//11		B		b B				27		V		v V u U
 	//12		C		c C				28		W		w W
@@ -487,7 +487,7 @@ namespace _details
 	static const int _base32_crockford_decoding['z' - ' ' + 1] = 
 	{
 		-1, -1, -1, -1,			/* [SPC] !"# */
-		25,						/* $ */
+		-1,						/* $ */
 		-1,-1,-1,-1,-1,-1,-1,-1,/* %&'()*+, */ 
 		-1,						/* - */
 		-1, -1,					/* ./ */
@@ -500,7 +500,7 @@ namespace _details
 		20,21,					/*M	N */	
 		0,						/*O = 0	*/
 		22,						/*P	*/		
-		23,24,5,26,				/*QRST */	
+		23,24,25,26,			/*QRST */	
 		27,27,					/*U V */	
 		28,29,30,2,				/*WXYZ*/
 		-1,-1,-1,-1,			/*[	\ ] ^*/
@@ -513,13 +513,13 @@ namespace _details
 		20,21,					/*m	n */	
 		0,						/*o = 0	*/
 		22,						/*p	*/		
-		23,24,5,26,				/*qrst */	
+		23,24,25,26,			/*qrst */	
 		27,27,					/*u v */
 		28,29,30, 2,			/*wxyz*/
 	}; 															//			1		  2			3
 																//01234567890123456789012345678901
-	static const char _base32_crockford_encoding_uppercase[33] = "0123456789ABCDEFGHJKMNPQR$TVWXY@";
-	static const char _base32_crockford_encoding_lowercase[33] = "0123456789abcdefghjkmnpqr$tvwxy@";
+	static const char _base32_crockford_encoding_uppercase[33] = "0123456789ABCDEFGHJKMNPQRSTVWXY@";
+	static const char _base32_crockford_encoding_lowercase[33] = "0123456789abcdefghjkmnpqrstvwxy@";
 
 																//			1		  2			3
 																//01234567890123456789012345678901
