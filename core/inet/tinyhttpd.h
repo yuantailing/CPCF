@@ -112,7 +112,7 @@ public:
 	}
 	void				SendChuncked_End();
 	void				SendHttpError(int http_status);
-	void				SendRedirection(UINT code = HTTP_NOT_MODIFIED, LPCSTR url = NULL, int url_len = NULL);
+	void				SendRedirection(UINT code = HTTP_NOT_MODIFIED, LPCSTR url = NULL, int url_len=0);
 
 	void				SendJSONP_Begin();
 	void				SendJSONP_End();

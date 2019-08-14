@@ -629,7 +629,7 @@ bool os::Thread::_Create(UINT stack_size)
 
 	struct _call
 	{	static LPVOID _func(LPVOID p)
-		{	return (LPVOID)((Thread*)p)->_Run();
+		{	return (LPVOID)(unsigned long)((Thread*)p)->_Run();
 	}	};
 
 	if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))

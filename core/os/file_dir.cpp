@@ -2695,6 +2695,7 @@ bool os::Process::IsRunning(UINT pid_in)
 	}
 	
 	closedir(d);
+	return false;
 }
 
 UINT os::Process::CurrentId()
