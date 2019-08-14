@@ -186,11 +186,10 @@ public:
 	{	Hasher = NULL;
 		try
 		{	Hasher = new HashType;
-			ASSERT(Hasher);
 		}catch(std::exception& e){ _LOG_EXPCEPTION(e.what()); }
 	}
 	INLFUNC ~Hash()
-	{	try{ _SafeDel(Hasher); return; }
+	{	try{ delete Hasher; }
 		catch(std::exception& e){ _LOG_EXPCEPTION(e.what()); }
 	}
 	INLFUNC void Reset()
