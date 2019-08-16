@@ -188,15 +188,18 @@ public:
 	const BYTE&  operator [](T i) const { return GetBytes()[i]; }
 	template<typename T>
 	BYTE& operator [](T i){ return GetBytes()[i]; }
-	INLFUNC UINT	GetLength() const { return _LEN; }
-	INLFUNC void	CopyTo(LPVOID buf) const { *((DataBlock*)buf) = *this; }
-	INLFUNC void	SwitchByteOrder(){ rt::SwitchByteOrder(*this); }
-	INLFUNC bool	FromBase16(const rt::String_Ref& str){ return os::Base16DecodeLength(str.GetLength()) == _LEN && os::Base16Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
-	INLFUNC bool	FromBase64(const rt::String_Ref& str){ SIZE_T len; return os::Base64DecodeLength(str.Begin(), str.GetLength()) == _LEN && os::Base64Decode(GetBytes(), &len, str.Begin(), str.GetLength()) && len == _LEN; }
-	INLFUNC bool	FromBase32(const rt::String_Ref& str){ return os::Base32DecodeLength(str.GetLength()) == _LEN && os::Base32Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
-	INLFUNC void	ToBase32(rt::String& str) const	{ str.SetLength(os::Base32EncodeLength(_LEN)); os::Base32EncodeLowercase(str, GetBytes(), _LEN); }
+	INLFUNC UINT		GetLength() const { return _LEN; }
+	INLFUNC void		CopyTo(LPVOID buf) const { *((DataBlock*)buf) = *this; }
+	INLFUNC void		SwitchByteOrder(){ rt::SwitchByteOrder(*this); }
+	INLFUNC bool		FromBase16(const rt::String_Ref& str){ return os::Base16DecodeLength(str.GetLength()) == _LEN && os::Base16Decode(GetBytes(), _LEN, str.Begin(), str.GetLength()); }
+	INLFUNC bool		FromBase64(const rt::String_Ref& str){ SIZE_T len; return os::Base64DecodeLength(str.Begin(), str.GetLength()) == _LEN && os::Base64Decode(GetBytes(), &len, str.Begin(), str.GetLength()) && len == _LEN; }
+	INLFUNC void		ToBase64(rt::String& str) const	{ str.SetLength(os::Base64EncodeLength(_LEN)); os::Base64Encode(str, GetBytes(), _LEN); }
+	INLFUNC void		ToBase16(rt::String& str) const	{ str.SetLength(os::Base16EncodeLength(_LEN)); os::Base16Encode(str, GetBytes(), _LEN); }
+	INLFUNC bool		IsZero() const { return dwop::equ(GetDWords(), (DWORD)0); }
+	INLFUNC bool		IsVoid() const { return dwop::equ(GetDWords(), (DWORD)0xffffffff); }
 	INLFUNC DataBlock&	Random(UINT seed){ rt::Randomizer(seed).Randomize(GetBytes(), _LEN); return *this; }
 	INLFUNC	DataBlock&	UnseededRandom(){ randombytes_buf(GetBytes(), _LEN); return *this; }
+
 	template<bool sb> INLFUNC void	From(const DataBlock<_LEN, sb>& x){	ASSERT(!IsEmpty()); dwop::set(DWords, x.GetDWords()); }
 	template<bool sb> INLFUNC void	operator ^= (const DataBlock<_LEN, sb>& x){ ASSERT(!IsEmpty()); dwop::xor_to(DWords, x.GetDWords()); }
 	template<bool sb> INLFUNC bool	operator == (const DataBlock<_LEN, sb>& x) const { return dwop::equ(GetDWords(), x.GetDWords()); }
@@ -205,8 +208,6 @@ public:
 	template<bool sb> INLFUNC bool	operator <= (const DataBlock<_LEN, sb>& x) const { return dwop::cmp(GetDWords(), x.GetDWords()) <= 0; }
 	template<bool sb> INLFUNC bool	operator > (const DataBlock<_LEN, sb>& x) const { return dwop::cmp(GetDWords(), x.GetDWords()) > 0; }
 	template<bool sb> INLFUNC bool	operator >= (const DataBlock<_LEN, sb>& x) const { return dwop::cmp(GetDWords(), x.GetDWords()) >= 0; }
-	INLFUNC bool	IsZero() const { return dwop::equ(GetDWords(), (DWORD)0); }
-	INLFUNC bool	IsVoid() const { return dwop::equ(GetDWords(), (DWORD)0xffffffff); }
 
 	INLFUNC const DataBlock& Zero(){ dwop::set(GetDWords(), (DWORD)0); return *this; }
 	INLFUNC const DataBlock& Void(){ dwop::set(GetDWords(), (DWORD)0xffffffff); return *this; }

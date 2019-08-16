@@ -1215,6 +1215,26 @@ void rt::UnitTests::encoding()
 		}
 	}
 
+	for(UINT i=0;i<100000;i++)
+	{
+		char buf[20];
+		for(UINT b=1;b<20;b++)
+		{
+			r.Randomize(buf, b);
+			rt::tos::Base32CrockfordFavCharLowercaseOnStack<> base32(buf, b);
+			if(i==0)
+			{	_LOG(rt::tos::Binary<>(buf,b)<<" = "<<base32);
+			}
+
+			char buf_dec[20];
+			int dec_b = (int)os::Base32DecodeLength(base32.GetLength());
+			os::Base32CrockfordDecode(buf_dec, dec_b, base32, base32.GetLength());
+			if(dec_b != b || memcmp(buf_dec, buf, b) != 0)
+			{	_LOG_ERROR(rt::tos::Binary<>(buf,b)<<" = "<<base32<<" => "<<rt::tos::Binary<>(buf_dec, dec_b));
+				return;
+			}
+		}
+	}
 }
 
 void rt::UnitTests::pcqueue()

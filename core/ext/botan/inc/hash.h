@@ -185,11 +185,11 @@ public:
 	INLFUNC Hash()
 	{	Hasher = NULL;
 		try
-		{	Hasher = new HashType;
+		{	Hasher = _New(HashType);
 		}catch(std::exception& e){ _LOG_EXPCEPTION(e.what()); }
 	}
 	INLFUNC ~Hash()
-	{	try{ delete Hasher; }
+	{	try{ _SafeDel(Hasher); }
 		catch(std::exception& e){ _LOG_EXPCEPTION(e.what()); }
 	}
 	INLFUNC void Reset()

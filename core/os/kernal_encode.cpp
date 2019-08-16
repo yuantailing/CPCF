@@ -484,13 +484,8 @@ namespace _details
 	//14		E		e E				30		Y		y Y
 	//15		F		f F				31		@		@
 
-	static const int _base32_crockford_decoding['z' - ' ' + 1] = 
+	static const int _base32_crockford_decoding['z' - '0' + 1] = 
 	{
-		-1, -1, -1, -1,			/* [SPC] !"# */
-		-1,						/* $ */
-		-1,-1,-1,-1,-1,-1,-1,-1,/* %&'()*+, */ 
-		-1,						/* - */
-		-1, -1,					/* ./ */
 		0,1,2,3,4, 5,6,7,8,9,	/*0-9*/
 		-1,-1,-1,-1,-1,-1,31,	/*:	; <	= >	? @	*/
 		10,11,12,13,14,15,16,17,/*A-H*/	
@@ -520,6 +515,8 @@ namespace _details
 																//01234567890123456789012345678901
 	static const char _base32_crockford_encoding_uppercase[33] = "0123456789ABCDEFGHJKMNPQRSTVWXY@";
 	static const char _base32_crockford_encoding_lowercase[33] = "0123456789abcdefghjkmnpqrstvwxy@";
+	static const char _base32_crockford_encoding_uppercase_favchar[33] = "OIZ3456789ABCDEFGHJKMNPQRSTVWXY@";
+	static const char _base32_crockford_encoding_lowercase_favchar[33] = "oiz3456789abcdefghjkmnpqrstvwxy@";
 
 																//			1		  2			3
 																//01234567890123456789012345678901
@@ -541,18 +538,24 @@ namespace _details
 		{	FORCEINL static int encode(int d){ return _base32_extendhex_encoding_lowercase[d]; }
 		};
 
-	template<bool uppercase = true>
+	template<bool uppercase = true, bool fav_char = false>
 	struct table_crockford
 	{
 		FORCEINL static bool decode(int&b, int d)
 		{	
-			if(d>=' ' && d<='z'){ b = _base32_crockford_decoding[d - ' ']; return false; }
+			if(d>='0' && d<='z'){ b = _base32_crockford_decoding[d - '0']; return false; }
 			return true;
 		}
 		FORCEINL static int encode(int d){ return _base32_crockford_encoding_uppercase[d]; }
 	};
-		template<> struct table_crockford<false>: public table_crockford<true>
+		template<> struct table_crockford<false, false>: public table_crockford<true>
 		{	FORCEINL static int encode(int d){ return _base32_crockford_encoding_lowercase[d]; }
+		};
+		template<> struct table_crockford<false, true>: public table_crockford<true>
+		{	FORCEINL static int encode(int d){ return _base32_crockford_encoding_lowercase_favchar[d]; }
+		};
+		template<> struct table_crockford<true, true>: public table_crockford<true>
+		{	FORCEINL static int encode(int d){ return _base32_crockford_encoding_uppercase_favchar[d]; }
 		};
 
 	template<typename BASE32_TABLE>
@@ -576,14 +579,14 @@ namespace _details
 
 		p[0] = BASE32_TABLE::encode(d[0]>>3);
 		if(d+1 == e)	// nnnXX
-		{	p[1] = (d[0]&0x7) + '0';
+		{	p[1] = BASE32_TABLE::encode(d[0]&0x7);
 			return;
 		}
 
 		p[1] = BASE32_TABLE::encode(((d[0]&0x7)<<2) | (d[1]>>6));
 		p[2] = BASE32_TABLE::encode((d[1]>>1) & 0x1f);
 		if(d+2 == e)	// nXXXX
-		{	p[3] = (d[1]&0x1) + '0';
+		{	p[3] = BASE32_TABLE::encode(d[1]&0x1);
 			return;
 		}
 
@@ -596,7 +599,7 @@ namespace _details
 		p[4] = BASE32_TABLE::encode(((d[2]&0xf)<<1) | (d[3]>>7));
 		p[5] = BASE32_TABLE::encode((d[3]>>2) & 0x1f);
 		ASSERT(d+4 == e);	// nnXXX
-		p[6] = (d[3]&0x3) + '0';
+		p[6] = BASE32_TABLE::encode(d[3]&0x3);
 
 		return;
 	}
@@ -630,13 +633,14 @@ namespace _details
 
 		if(d == e)return true;
 
+		int t;
 		int b[7];
 		if(BASE32_TABLE::decode(b[0], *d++))return false;
 
 		if(d+1 == e)
 		{		
-			if(*d<'0' || *d>'7')return false;
-			p[0] = (b[0]<<3) | (*d-'0');
+			if(BASE32_TABLE::decode(t, *d) || t > 7)return false;
+			p[0] = (b[0]<<3) | t;
 			return true;
 		}
 	
@@ -646,8 +650,8 @@ namespace _details
 
 		if(d+1 == e)
 		{	
-			if(*d<'0' || *d>'1')return false;
-			p[1] = (b[1]<<6) | (b[2]<<1) | (*d-'0');
+			if(BASE32_TABLE::decode(t, *d) || t > 1)return false;
+			p[1] = (b[1]<<6) | (b[2]<<1) | t;
 			return true;
 		}
 	
@@ -656,15 +660,8 @@ namespace _details
 
 		if(d+1 == e)
 		{	
-			if(d[0]<'0' || d[0]>'f')return false;
-
-			int v;
-			if(*d<='9'){ v = *d - '0'; }
-			else if(*d>='A' && *d<='F'){ v = *d - 'A' + 10; }
-			else if(*d>='a'){ v = *d - 'a' + 10; }
-			else return false;
-
-			p[2] = (b[3]<<4) | v;
+			if(BASE32_TABLE::decode(t, *d) || t > 16)return false;
+			p[2] = (b[3]<<4) | t;
 			return true;
 		}
 
@@ -673,8 +670,9 @@ namespace _details
 		if(BASE32_TABLE::decode(b[5], *d++))return false;
 
 		if(d+1 == e)
-		{	if(*d<'0' || *d>'4')return false;
-			p[3] = (b[4]<<7) | (b[5]<<2) | (*d-'0');
+		{	
+			if(BASE32_TABLE::decode(t, *d) || t > 4)return false;
+			p[3] = (b[4]<<7) | (b[5]<<2) | t;
 			return true;
 		}
 
@@ -710,6 +708,16 @@ void Base32CrockfordEncode(LPSTR pBase32Out, LPCVOID pData, SIZE_T data_len)
 void Base32CrockfordEncodeLowercase(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len)
 {
 	_details::_Base32Encode<_details::table_crockford<false>>(pBase32Out, pData, data_len);
+}
+
+void Base32CrockfordFavCharEncode(LPSTR pBase32Out, LPCVOID pData, SIZE_T data_len)
+{
+	_details::_Base32Encode<_details::table_crockford<true, true>>(pBase32Out, pData, data_len);
+}
+
+void Base32CrockfordFavCharEncodeLowercase(LPSTR pBase32Out,LPCVOID pData, SIZE_T data_len)
+{
+	_details::_Base32Encode<_details::table_crockford<false, true>>(pBase32Out, pData, data_len);
 }
 
 bool Base32Decode(LPVOID pDataOut,SIZE_T data_len,LPCSTR pBase32, SIZE_T str_len)
