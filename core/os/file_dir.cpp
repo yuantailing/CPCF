@@ -254,7 +254,7 @@ bool os::File::_GetFileStat(struct _stat& stat) const
 #ifdef	PLATFORM_WIN
 		return 0 == _fstat(fileno(_hFile), &stat);
 #else
-		return 0 == fstat(fileno(hFile), &stat);
+		return 0 == fstat(fileno(_hFile), &stat);
 #endif
 }
 
@@ -359,7 +359,7 @@ bool os::File::SetFileTime(__time64_t last_access, __time64_t last_modify) const
 		ASSERT(!Filename.IsEmpty());
 		return 0 == utimes(Filename, tm);
 	#else
-		return 0 == futimes(fileno(hFile), tm);
+		return 0 == futimes(fileno(_hFile), tm);
 	#endif
 #endif
 }
