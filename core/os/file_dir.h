@@ -46,19 +46,19 @@ namespace os
 class MemoryFileRef: public rt::_File
 {
 protected:
-	LPBYTE	m_pData;
-	SIZE_T	m_CurPos;
-	SIZE_T	m_Len;
+	LPBYTE	_pData;
+	SIZE_T	_CurPos;
+	SIZE_T	_Len;
 	MemoryFileRef();
 
 public:
 	MemoryFileRef(LPVOID pData, SIZE_T Len){ SetMemoryBuffer(pData,Len); }
 	void SetMemoryBuffer(LPVOID pData, SIZE_T Len);
 
-	virtual SIZE_T		Read(LPVOID lpBuf,SIZE_T nCount);
-	virtual SIZE_T		Write(LPCVOID lpBuf,SIZE_T nCount);
-	virtual SIZE_T		Seek(SSIZE_T offset,UINT nFrom = rt::_File::Seek_Begin); // return ULLONG_MAX for failure.
-	virtual SIZE_T		GetLength() const;
+	virtual SIZE_T Read(LPVOID lpBuf,SIZE_T nCount);
+	virtual SIZE_T Write(LPCVOID lpBuf,SIZE_T nCount);
+	virtual SIZE_T Seek(SSIZE_T offset,UINT nFrom = rt::_File::Seek_Begin); // return ULLONG_MAX for failure.
+	virtual SIZE_T GetLength() const;
 };
 
 
@@ -68,24 +68,24 @@ class MemoryFile: public MemoryFileRef
 public:
 	MemoryFile(SIZE_T Len=0);
 	~MemoryFile();
-	void SetBufferSize(SIZE_T Len);
+	void	SetBufferSize(SIZE_T Len);
 
-	SIZE_T Read(LPVOID pBuf, SIZE_T sz){ return MemoryFileRef::Read(pBuf,sz); }
-	SIZE_T Write(LPCVOID pBuf, SIZE_T sz){ return MemoryFileRef::Write(pBuf,sz); }
-	SIZE_T Seek(SSIZE_T offset=0, DWORD where = SEEK_SET){ return MemoryFileRef::Seek(offset,where); } //return INFINITE if not seekable
-	INLFUNC LPBYTE GetBuffer(){ return m_pData; }
-	INLFUNC LPCBYTE GetBuffer() const { return m_pData; }
+	SIZE_T	Read(LPVOID pBuf, SIZE_T sz){ return MemoryFileRef::Read(pBuf,sz); }
+	SIZE_T	Write(LPCVOID pBuf, SIZE_T sz){ return MemoryFileRef::Write(pBuf,sz); }
+	SIZE_T	Seek(SSIZE_T offset=0, DWORD where = SEEK_SET){ return MemoryFileRef::Seek(offset,where); } //return INFINITE if not seekable
+	LPBYTE	GetBuffer(){ return _pData; }
+	LPCBYTE GetBuffer() const { return  _pData; }
 };
 
 	
 class File:public rt::_File
 {
 protected:
-	FILE*		hFile;
-	bool		bErrorFlag;
-	rt::String	Filename;
-	static bool	_GetFileStat(LPCSTR fn_utf8, struct _stat& stat);
-	bool		_GetFileStat(struct _stat& stat) const;
+	FILE*			_hFile;
+	bool			_bErrorFlag;
+	rt::String		_Filename;
+	static bool		_GetFileStat(LPCSTR fn_utf8, struct _stat& stat);
+	bool			_GetFileStat(struct _stat& stat) const;
 
 public:
 	static const LPCSTR		Normal_Read;
@@ -103,11 +103,11 @@ public:
 	};
 
 public:
-	FILE* GetFileHandle(){ return hFile; }
+	FILE* GetFileHandle(){ return _hFile; }
 	File();
 	~File();
 	File(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
-	bool		IsOpen() const { return hFile != NULL; }
+	bool		IsOpen() const { return _hFile != NULL; }
 
 	SIZE_T		Write(const rt::String_Ref& x){ return Write(x.Begin(), x.GetLength()); }
 	SIZE_T		Write(const rt::String& x){ return Write(x.Begin(), x.GetLength()); }
@@ -136,11 +136,11 @@ public:
 	void		SeekToBegin();
 	void		SeekToEnd();
 	void        Flush();
-	int			GetFD() const { return fileno(hFile); }
+	int			GetFD() const { return fileno(_hFile); }
 
-	const rt::String& GetFilename() const { return Filename; }
-	void	ClearError(){ bErrorFlag = false; }
-	bool	ErrorOccured(){ return bErrorFlag; }
+	const rt::String& GetFilename() const { return _Filename; }
+	void	ClearError(){ _bErrorFlag = false; }
+	bool	ErrorOccured(){ return _bErrorFlag; }
 
 	//void	SetTime_Creation(__time64_t x);
 	//void	SetTime_LastAccess(__time64_t x);
@@ -313,21 +313,22 @@ struct FileBuffer: protected FileMapping
 {
 	INLFUNC FileBuffer(){}
 	INLFUNC FileBuffer(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ Open(filename, count, readonly); }
-	INLFUNC LPVOID	GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
-	INLFUNC LPCVOID	GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
-	INLFUNC bool	Open(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ return FileMapping::Open(filename, count*sizeof(T), readonly); }
-	INLFUNC void	Close(bool also_delete_file = false){ FileMapping::Close(also_delete_file); }
-	INLFUNC bool	IsOpen() const { return _Ptr != NULL; }
-	INLFUNC bool	IsReadonly() const { return _Readonly; }
-	INLFUNC SIZE_T	GetSize() const { return _Size/sizeof(T); }
+	INLFUNC const rt::String& GetFilename() const { return FileMapping::GetFilename(); }
 
-	INLFUNC const rt::String&	GetFilename() const { return FileMapping::GetFilename(); }
-	INLFUNC T*				Begin(){ return (T*)GetBasePtr(); }
-	INLFUNC const T*		Begin() const { return (T*)GetBasePtr(); }
-	INLFUNC T*				End(){ return (T*)GetBasePtr(FileMapping::GetSize()); }
-	INLFUNC const T*		End() const { return (T*)GetBasePtr(FileMapping::GetSize()); }
-	INLFUNC					operator T*(){ return Begin(); }
-	INLFUNC					operator const T*() const { return Begin(); }
+	INLFUNC LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
+	INLFUNC LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
+	INLFUNC bool		Open(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ return FileMapping::Open(filename, count*sizeof(T), readonly); }
+	INLFUNC void		Close(bool also_delete_file = false){ FileMapping::Close(also_delete_file); }
+	INLFUNC bool		IsOpen() const { return _Ptr != NULL; }
+	INLFUNC bool		IsReadonly() const { return _Readonly; }
+	INLFUNC SIZE_T		GetSize() const { return _Size/sizeof(T); }
+
+	INLFUNC T*			Begin(){ return (T*)GetBasePtr(); }
+	INLFUNC const T*	Begin() const { return (T*)GetBasePtr(); }
+	INLFUNC T*			End(){ return (T*)GetBasePtr(FileMapping::GetSize()); }
+	INLFUNC const T*	End() const { return (T*)GetBasePtr(FileMapping::GetSize()); }
+	INLFUNC				operator T*(){ return Begin(); }
+	INLFUNC				operator const T*() const { return Begin(); }
 };
 
 namespace _details
@@ -340,16 +341,19 @@ struct FilePackedEntry
 };
 #pragma pack()
 static const DWORD	FilePackedMagic = 0x50444b43;
-}
+} // namespace _details
+
 
 class FilePacked_Reader
-{	ULONGLONG	_FileSearchName;
+{
+	ULONGLONG	_FileSearchName;
 	ULONGLONG	_FileSearchMask;
 	int			_FileSearchLast;
 protected:
 	os::File	_File;
-	rt::BufferEx<_details::FilePackedEntry>	_Entries;
 	UINT		_FindFile(ULONGLONG name);
+	rt::BufferEx<_details::FilePackedEntry>	_Entries;
+
 public:
 	bool		Open(LPCSTR fn);
 	void		Close();
@@ -387,7 +391,6 @@ public:
 	void Flush(){ _File.Flush(); }
 };
 
-
 class FileList
 {
 	struct _File
@@ -398,6 +401,7 @@ class FileList
 	rt::BufferEx<_File>		_Filenames;
 	rt::String				_Root;
 	rt::String				_TempString;
+
 public:
 	enum
 	{	FLAG_ONLYFIRSTFILE	= 0x1,
@@ -406,6 +410,7 @@ public:
 		FLAG_SKIPHIDDEN		= 0x8,	// File with name begin with '.', or file with hidden attribute
 		FLAG_RECURSIVE		= 0x10,
 	};
+
 protected:
 	UINT	_Populate(const rt::String_Ref& directory, LPCSTR suffix_filter, DWORD flag);	// suffix_filter = ".bmp|.jpg|.png", up to 64 suffixies, each individul filter should short than 16 characters
 
@@ -418,16 +423,15 @@ public:
 #endif
 
 	UINT	GetCount() const;
-	
-	const rt::String& GetFilename(UINT idx) const;	// return the relative path including the filenname
-	
 	bool	IsDirectory(UINT idx) const;
 	void	GetFullpath(UINT idx, rt::String& fn) const;
-	//void	GetFilenameAndExt(UINT idx,rt::String& filename, rt::String& ext) const; // e.g. for relative path ".\a\pic.png", returned filename is "pic", ext is "png"
+
+	const rt::String& GetFilename(UINT idx) const;	// return the relative path including the filenname
 	const rt::String& GetFullpath(UINT idx){ GetFullpath(idx,_TempString); return _TempString; }
 };
 
 #if defined(PLATFORM_WIN) //||  defined(PLATFORM_MAC)
+
 
 class FolderChangingMonitor
 {
@@ -450,8 +454,8 @@ protected:
 
 #if defined(PLATFORM_WIN)
 	static DWORD WINAPI _WorkingThreadFunc(LPVOID p);
-	HANDLE	m_WaitingHandle;
-	HANDLE	m_WorkingThread;
+	HANDLE	_WaitingHandle;
+	HANDLE	_WorkingThread;
 #else
 	ASSERT_STATIC(0);
 #endif
@@ -459,9 +463,10 @@ protected:
 public:
 	FolderChangingMonitor();
 	~FolderChangingMonitor(){ Destroy(); }
-	bool Create(LPCSTR FolderName, bool IncludeSubTree = false, DWORD Filter =	FCE_FILE_OVERWRITTEN );
-	void Destroy();
-	bool IsStarted();
+
+	bool	Create(LPCSTR FolderName, bool IncludeSubTree = false, DWORD Filter =	FCE_FILE_OVERWRITTEN );
+	void	Destroy();
+	bool	IsStarted();
 };
 #endif // #if defined(PLATFORM_WIN) ||  defined(PLATFORM_MAC)
 
@@ -487,63 +492,64 @@ public:
 	void	Empty();
 
 #if defined(PLATFORM_WIN)
-	void	Parse(int argc, WCHAR* argv[]);	// for _tmain
-	void	Parse(LPCWSTR pCmdLine);		// for _twmain
-	explicit CommandLine(int argc, WCHAR* argv[]){ Parse(argc, argv); }
-	explicit CommandLine(LPCWSTR pCmdLine){ Parse(pCmdLine); }
+	void		Parse(int argc, WCHAR* argv[]);	// for _tmain
+	void		Parse(LPCWSTR pCmdLine);		// for _twmain
+	explicit	CommandLine(int argc, WCHAR* argv[]){ Parse(argc, argv); }
+	explicit	CommandLine(LPCWSTR pCmdLine){ Parse(pCmdLine); }
 #endif
 
-	void	ParseURI(const rt::String_Ref& path, const rt::String_Ref& query);
-	void	Parse(int argc, char* argv[]);	// for _tmain
-	void	Parse(LPCSTR pCmdLine);			// for _twmain
-	explicit CommandLine(int argc, char* argv[]){ Parse(argc, argv); }
-	explicit CommandLine(LPCSTR pCmdLine){ Parse(pCmdLine); }
+	void		ParseURI(const rt::String_Ref& path, const rt::String_Ref& query);
+	void		Parse(int argc, char* argv[]);	// for _tmain
+	void		Parse(LPCSTR pCmdLine);			// for _twmain
+	explicit	CommandLine(int argc, char* argv[]){ Parse(argc, argv); }
+	explicit	CommandLine(LPCSTR pCmdLine){ Parse(pCmdLine); }
 
-	void	SubstituteOptions(rt::String& string, const rt::String_Ref& prefix = rt::SS("%"), const rt::String_Ref& suffix = rt::SS("%")) const;
+	void		SubstituteOptions(rt::String& string, const rt::String_Ref& prefix = rt::SS("%"), const rt::String_Ref& suffix = rt::SS("%")) const;
 
 	template<typename T>
-	INLFUNC T GetOptionAs(const rt::String_Ref& opt_name, T default_val) const
-	{	rt::String_Ref str = GetOption(opt_name);
-		if(!str.IsEmpty())str.ToNumber(default_val);
-		return default_val;
-	}
+	INLFUNC T	GetOptionAs(const rt::String_Ref& opt_name, T default_val) const
+				{	rt::String_Ref str = GetOption(opt_name);
+					if(!str.IsEmpty())str.ToNumber(default_val);
+					return default_val;
+				}
 	INLFUNC bool GetOptionAs(const rt::String_Ref& opt_name, bool default_val) const
-	{	rt::String_Ref str = GetOption(opt_name);
-		if(str.IsEmpty())return default_val;
-		return str[0] == 't' || str[0] == '1' || str[0] == 'T';
-	}
+				{	rt::String_Ref str = GetOption(opt_name);
+					if(str.IsEmpty())return default_val;
+					return str[0] == 't' || str[0] == '1' || str[0] == 'T';
+				}
 	template<typename T>
 	INLFUNC T GetOptionAs(const rt::String_Ref& opt_name) const { return GetOptionAs<T>(opt_name, 0); }
 	template<class VEC, int chan>
 	INLFUNC VEC GetOptionAs(const rt::String_Ref& opt_name, const VEC& default_val = 0) const
-	{	rt::String_Ref str = GetOption(opt_name);
-		rt::String_Ref f[chan];
-		VEC ret;
-		UINT co;
-		if(!str.IsEmpty() && (co = str.Split(f,chan,",x|:/*")))
-		{	for(UINT i=0;i<chan;i++)
-				f[rt::min(co,i)].ToNumber(ret[i]);
-			return ret;
-		}
-		return default_val;
-	}
-	LPCSTR	SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
+				{	rt::String_Ref str = GetOption(opt_name);
+					rt::String_Ref f[chan];
+					VEC ret;
+					UINT co;
+					if(!str.IsEmpty() && (co = str.Split(f,chan,",x|:/*")))
+					{	for(UINT i=0;i<chan;i++)
+							f[rt::min(co,i)].ToNumber(ret[i]);
+						return ret;
+					}
+					return default_val;
+				}
+	LPCSTR		SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
 	rt::String_Ref GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = NULL) const;
-	bool	HasOption(const rt::String_Ref& option_name) const;
+	bool		HasOption(const rt::String_Ref& option_name) const;
 
-	UINT	GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
-	LPCSTR	GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
+	UINT		GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
+	LPCSTR		GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
 
-	LPCSTR	GetOriginalLine() const { return _CommandLine; }
+	LPCSTR		GetOriginalLine() const { return _CommandLine; }
 
-	UINT	GetOptionCount()const{ return (UINT)_Options.GetSize(); }
-	LPCSTR	GetOptionName(UINT idx)const{ return _Options[idx].Name; }
-	LPCSTR	GetOptionValue(UINT idx)const{ return _Options[idx].Value; }
-	void	SecureClear();
+	UINT		GetOptionCount()const{ return (UINT)_Options.GetSize(); }
+	LPCSTR		GetOptionName(UINT idx)const{ return _Options[idx].Name; }
+	LPCSTR		GetOptionValue(UINT idx)const{ return _Options[idx].Value; }
+	void		SecureClear();
 
-	void	LoadEnvironmentVariablesAsOptions();
-	void	SetOptionDefault(const rt::String_Ref& opt_name, const rt::String_Ref& value);
-	void	SetOption(const rt::String_Ref& opt_name, const rt::String_Ref& value);
+	void		LoadEnvironmentVariablesAsOptions();
+	void		SetOptionDefault(const rt::String_Ref& opt_name, const rt::String_Ref& value);
+	void		SetOption(const rt::String_Ref& opt_name, const rt::String_Ref& value);
+
 	static const CommandLine& Get();
 	static CommandLine& GetMutable();
 };
@@ -554,25 +560,25 @@ class Process
 {
 protected:
 #if defined(PLATFORM_WIN)
-	HANDLE			m_hProcess;
+	HANDLE			_hProcess;
 #else
-	DWORD			m_PID;
+	DWORD			_PID;
 #endif
-	int				m_ExitCode;
-	UINT			m_ExecutionTime;		// in msec
-	os::Timestamp	m_ExitTime;				// available after call IsRunning and it returns false
+	int				_ExitCode;
+	UINT			_ExecutionTime;		// in msec
+	os::Timestamp	_ExitTime;				// available after call IsRunning and it returns false
 
 public:
 	Process();
-	bool	Launch(LPCSTR cmdline, LPCSTR pWorkDirectory = NULL, LPVOID pEnvVariable = NULL);
-	bool	WaitForEnding(DWORD timeout = INFINITE); // return false when timeout
-	void	Terminate();
-	bool	IsRunning();
+	bool		Launch(LPCSTR cmdline, LPCSTR pWorkDirectory = NULL, LPVOID pEnvVariable = NULL);
+	bool		WaitForEnding(DWORD timeout = INFINITE); // return false when timeout
+	void		Terminate();
+	bool		IsRunning();
 
-	UINT	GetExecutionTime() const { return m_ExecutionTime; }		// available after IsRunning() returns false!	
-	int		GetExitCode() const { return m_ExitCode; }					// available after IsRunning() returns false!	
-	void	SetExitCode(int c){ m_ExitCode = c; }
-	const os::Timestamp& GetExitTime() const { return m_ExitTime; }	// available after IsRunning() returns false!
+	UINT		GetExecutionTime() const { return _ExecutionTime; }		// available after IsRunning() returns false!	
+	int			GetExitCode() const { return _ExitCode; }					// available after IsRunning() returns false!	
+	void		SetExitCode(int c){ _ExitCode = c; }
+	const os::Timestamp& GetExitTime() const { return _ExitTime; }	// available after IsRunning() returns false!
     
 public:
     struct Info

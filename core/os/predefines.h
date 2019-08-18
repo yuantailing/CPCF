@@ -115,15 +115,23 @@ typedef UINT            	  	SIZE_T;
 typedef INT             		SSIZE_T;
 #endif
 
-#define __FUNCTION__   	__func__ 
-#define __thiscall		__attribute__ ((thiscall))
+#define __FUNCTION__   			__func__ 
+#define __thiscall				__attribute__ ((thiscall))
 
 // on PLATFORM_WIN
 #else
 
 typedef ULONGLONG	__uint64;
 
-#endif
+#undef CreateDirectory
+#undef RemoveDirectory
+#undef GetCurrentDirectory
+#undef SetCurrentDirectory
+#undef MoveFile
+#undef FindFirstFile
+#undef FindNextFile
+
+#endif // #ifndef PLATFORM_WIN
 
 
 #ifndef INFINITE
@@ -134,15 +142,16 @@ typedef ULONGLONG	__uint64;
 #define INVALID_HANDLE_VALUE	((HANDLE)INFINITE)
 #endif
 
-typedef float*				LPFLOAT;
-typedef const float*		LPCFLOAT;
-typedef const BYTE*         LPCBYTE;
-typedef const WORD*			LPCWORD;
-typedef const DWORD*		LPCDWORD;
-typedef ULONGLONG			QWORD;
-typedef QWORD*				LPQWORD;
-typedef const QWORD*		LPCQWORD;
+typedef float*					LPFLOAT;
+typedef const float*			LPCFLOAT;
+typedef const BYTE*				LPCBYTE;
+typedef const WORD*				LPCWORD;
+typedef const DWORD*			LPCDWORD;
+typedef ULONGLONG				QWORD;
+typedef QWORD*					LPQWORD;
+typedef const QWORD*			LPCQWORD;
 ///////////////////////////////////////////////////////
+
 
 #ifndef GUID_DEFINED
 #define GUID_DEFINED

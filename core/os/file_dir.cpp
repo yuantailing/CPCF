@@ -60,30 +60,30 @@ const LPCSTR os::File::Normal_AppendText = "a+";
 // MemoryFile
 os::MemoryFileRef::MemoryFileRef()
 {
-	m_pData = NULL;
-	m_CurPos = 0;
-	m_Len = 0;
+	_pData = NULL;
+	_CurPos = 0;
+	_Len = 0;
 }
 
 void os::MemoryFileRef::SetMemoryBuffer(LPVOID pData, SIZE_T Len)
 {
-	m_pData = (LPBYTE)pData;
-	m_Len = Len;
-	m_CurPos = 0;
+	_pData = (LPBYTE)pData;
+	_Len = Len;
+	_CurPos = 0;
 }
 
 SIZE_T os::MemoryFileRef::Write(LPCVOID pBuf, SIZE_T sz)
 {
-	if(sz+m_CurPos <= m_Len)
+	if(sz + _CurPos <= _Len)
 	{
-		memcpy(&m_pData[m_CurPos],pBuf,sz);
-		m_CurPos+=sz;
+		memcpy(&_pData[_CurPos],pBuf,sz);
+		_CurPos += sz;
 		return sz;
 	}
-	else if(m_Len>m_CurPos)
-	{	sz = m_Len-m_CurPos;
-		memcpy(&m_pData[m_CurPos],pBuf,sz);
-		m_CurPos = m_Len;
+	else if(_Len > _CurPos)
+	{	sz = _Len - _CurPos;
+		memcpy(&_pData[_CurPos], pBuf, sz);
+		_CurPos = _Len;
 		return sz;
 	}
 	else
@@ -93,44 +93,44 @@ SIZE_T os::MemoryFileRef::Write(LPCVOID pBuf, SIZE_T sz)
 SIZE_T os::MemoryFileRef::Seek(SSIZE_T offset, UINT where)
 {
 	if(where == Seek_Begin)
-	{	ASSERT(offset<=(int)m_Len);
-		m_CurPos = offset;
+	{	ASSERT(offset<=(int)_Len);
+		_CurPos = offset;
 	}
 	else if(where == Seek_Current)
-	{	ASSERT(offset+(int)m_CurPos>=0);
-		ASSERT(offset+(int)m_CurPos<=(int)m_Len);
-		m_CurPos += offset;
+	{	ASSERT(offset+(int)_CurPos>=0);
+		ASSERT(offset+(int)_CurPos<=(int)_Len);
+		_CurPos += offset;
 	}
 	else
 	{	ASSERT(where == Seek_End);
 		ASSERT(offset<=0);
-		ASSERT(((UINT)-offset)<m_Len);
+		ASSERT(((UINT)-offset)<_Len);
 		
-		m_CurPos = m_Len+offset-1;
+		_CurPos = _Len + offset - 1;
 	}
 
-	return m_CurPos;
+	return _CurPos;
 }
 
 SIZE_T os::MemoryFileRef::GetLength() const
 {
-	return m_Len;
+	return _Len;
 }
 
 
 SIZE_T os::MemoryFileRef::Read(LPVOID pBuf, SIZE_T sz)
 {
-	if(sz+m_CurPos <= m_Len)
+	if(sz + _CurPos <= _Len)
 	{
-		memcpy(pBuf,&m_pData[m_CurPos],sz);
-		m_CurPos+=sz;
+		memcpy(pBuf, &_pData[_CurPos], sz);
+		_CurPos += sz;
 		return sz;
 	}
-	else if(m_Len>m_CurPos)
+	else if(_Len > _CurPos)
 	{	
-		sz = m_Len-m_CurPos;
-		memcpy(pBuf,&m_pData[m_CurPos],sz);
-		m_CurPos = m_Len;
+		sz = _Len - _CurPos;
+		memcpy(pBuf, &_pData[_CurPos], sz);
+		_CurPos = _Len;
 		return sz;
 	}
 	else
@@ -139,32 +139,32 @@ SIZE_T os::MemoryFileRef::Read(LPVOID pBuf, SIZE_T sz)
 
 os::MemoryFile::MemoryFile(SIZE_T Len)
 {
-	m_CurPos = 0;
+	_CurPos = 0;
 	if(Len)
 	{
-		m_pData = _Malloc32AL(BYTE,Len);
-		m_Len = Len;
+		_pData = _Malloc32AL(BYTE,Len);
+		_Len = Len;
 	}
 	else
 	{	
-		m_pData = NULL;
-		m_Len = 0;
+		_pData = NULL;
+		_Len = 0;
 	}
 }
 
 os::MemoryFile::~MemoryFile()
 {
-	_SafeFree32AL(m_pData);
+	_SafeFree32AL(_pData);
 }
 
 void os::MemoryFile::SetBufferSize(SIZE_T Len)
 {
-	if(Len == m_Len)return;
+	if(Len == _Len)return;
 
-	_SafeFree32AL(m_pData);
-	m_pData = _Malloc32AL(BYTE,Len);
-	m_CurPos = 0;
-	m_Len = Len;
+	_SafeFree32AL(_pData);
+	_pData = _Malloc32AL(BYTE,Len);
+	_CurPos = 0;
+	_Len = Len;
 }
 
 
@@ -174,19 +174,19 @@ bool os::File::Open(LPCSTR fn, LPCSTR mode, bool create_path)
 {
 	ASSERT(fn);
 	ASSERT(!IsOpen());
-	bErrorFlag = false;
+	_bErrorFlag = false;
 
 	if(create_path)CreateDirectories(fn);
 
 #ifdef	PLATFORM_WIN
-	hFile = _wfopen(__UTF16(fn), __UTF16(mode));
+	_hFile = _wfopen(__UTF16(fn), __UTF16(mode));
 #else
-	hFile = fopen(fn, mode);
+	_hFile = fopen(fn, mode);
 #endif
 
 	if(IsOpen())
 	{	
-		ResolveRelativePath(fn, Filename);
+		ResolveRelativePath(fn, _Filename);
 		return true;
 	}
 	else
@@ -196,12 +196,12 @@ bool os::File::Open(LPCSTR fn, LPCSTR mode, bool create_path)
 			file.Close();
 
 			#ifdef	PLATFORM_WIN
-				hFile = _wfopen(__UTF16(fn), __UTF16(mode));
+				_hFile = _wfopen(__UTF16(fn), __UTF16(mode));
 			#else
-				hFile = fopen(fn, mode);
+				_hFile = fopen(fn, mode);
 			#endif
 		}
-		if(IsOpen())ResolveRelativePath(fn, Filename);
+		if(IsOpen())ResolveRelativePath(fn, _Filename);
 		return IsOpen();
 	}
 }
@@ -209,14 +209,14 @@ bool os::File::Open(LPCSTR fn, LPCSTR mode, bool create_path)
 
 os::File::File()
 {	
-	hFile = NULL; 
-	bErrorFlag=false;
+	_hFile = NULL; 
+	_bErrorFlag=false;
 }
 
 os::File::File(LPCSTR fn, LPCSTR mode, bool create_path)
 {
-	hFile = NULL; 
-	bErrorFlag=false; 
+	_hFile = NULL; 
+	_bErrorFlag=false; 
 	Open(fn,mode,create_path);
 }
 
@@ -227,8 +227,8 @@ os::File::~File()
 
 bool os::File::IsEOF()
 {
-	ASSERT(hFile != NULL); 
-	return feof(hFile);
+	ASSERT(_hFile != NULL); 
+	return feof(_hFile);
 }
 
 bool os::File::_GetFileStat(LPCSTR p, struct _stat& st)
@@ -252,7 +252,7 @@ bool os::File::_GetFileStat(LPCSTR p, struct _stat& st)
 bool os::File::_GetFileStat(struct _stat& stat) const
 {
 #ifdef	PLATFORM_WIN
-		return 0 == _fstat(fileno(hFile), &stat);
+		return 0 == _fstat(fileno(_hFile), &stat);
 #else
 		return 0 == fstat(fileno(hFile), &stat);
 #endif
@@ -348,7 +348,7 @@ bool os::File::SetFileTime(__time64_t last_access, __time64_t last_modify) const
 	_utimbuf	 ft;
 	ft.actime = (time_t)last_access?last_access:s.st_atime;
 	ft.modtime = (time_t)last_modify?last_modify:s.st_mtime;
-	return 0 == _futime(fileno(hFile), &ft);
+	return 0 == _futime(fileno(_hFile), &ft);
 #else//if defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
 	timeval tm[2];
 	tm[0].tv_sec = (time_t)(last_access?last_access:s.st_atime);
@@ -655,33 +655,33 @@ bool os::File::CreateDirectories(LPCSTR pathin, bool file_mode)
 SIZE_T os::File::Read(LPVOID lpBuf,SIZE_T nCount)
 {
 	ASSERT(IsOpen());
-	SIZE_T read = (UINT)fread(lpBuf, 1, nCount, hFile);
+	SIZE_T read = (UINT)fread(lpBuf, 1, nCount, _hFile);
 	if( read == nCount ){}
-	else{ rt::_CastToNonconst(this)->bErrorFlag = true; }
+	else{ rt::_CastToNonconst(this)->_bErrorFlag = true; }
 	return read;
 }
 
 SIZE_T os::File::Write(LPCVOID lpBuf,SIZE_T nCount)
 {
 	ASSERT(IsOpen());
-	SIZE_T write = fwrite(lpBuf, 1, nCount, hFile);
+	SIZE_T write = fwrite(lpBuf, 1, nCount, _hFile);
 	if( write == nCount ){}
-	else{ rt::_CastToNonconst(this)->bErrorFlag = true; }
+	else{ rt::_CastToNonconst(this)->_bErrorFlag = true; }
 	return write;
 }
 
 void os::File::Flush()
 {
 	ASSERT(IsOpen());
-	fflush(hFile);
+	fflush(_hFile);
 }
 
 void os::File::Close()
 {
 	if(IsOpen())
 	{
-		fclose(hFile);
-		hFile = NULL;
+		fclose(_hFile);
+		_hFile = NULL;
 	}
 }
 
@@ -705,15 +705,15 @@ void os::File::Truncate(SIZE_T len)
 SIZE_T os::File::GetCurrentPosition() const
 { 
 	ASSERT(IsOpen());
-	return ftell(hFile);
+	return ftell(_hFile);
 }
 
 SIZE_T os::File::Seek(SSIZE_T offset,UINT nFrom)
 {
 	ASSERT(IsOpen());
 	ASSERT(offset<0x7fffffff);
-	fseek(hFile, (long)offset, nFrom);
-	return ftell(hFile);
+	fseek(_hFile, (long)offset, nFrom);
+	return ftell(_hFile);
 }
 
 void os::File::SeekToBegin()
@@ -2076,9 +2076,9 @@ bool os::Process::WaitForEnding(DWORD timeout) // return false when timeout
 
 os::Process::Process()
 {
-	m_ExecutionTime = 0;
+	_ExecutionTime = 0;
 #if defined(PLATFORM_WIN)
-	m_hProcess = INVALID_HANDLE_VALUE;
+	_hProcess = INVALID_HANDLE_VALUE;
 #else
 #endif
 }
@@ -2097,7 +2097,7 @@ bool os::Process::Launch(LPCSTR cmdline, LPCSTR pWorkDirectory, LPVOID pEnvVaria
 	siStartInfo.cb = sizeof(STARTUPINFO);
 	siStartInfo.dwFlags = 0;
 
-	m_ExitCode = STILL_ACTIVE;
+	_ExitCode = STILL_ACTIVE;
 	// Create the child process. 
 	bool ret;
 	ret = CreateProcessW(	NULL, 
@@ -2114,7 +2114,7 @@ bool os::Process::Launch(LPCSTR cmdline, LPCSTR pWorkDirectory, LPVOID pEnvVaria
 	if(ret)
 	{	::SetPriorityClass(GetCurrentProcess(),ABOVE_NORMAL_PRIORITY_CLASS);
 
-		m_hProcess = piProcInfo.hProcess;
+		_hProcess = piProcInfo.hProcess;
 		CloseHandle( piProcInfo.hThread );
 		return true;
 	}
@@ -2129,7 +2129,7 @@ void os::Process::Terminate()
 	if(IsRunning())
 	{
 #if defined(PLATFORM_WIN)
-		::TerminateProcess(m_hProcess,-1);
+		::TerminateProcess(_hProcess,-1);
 #else
 #endif
 		IsRunning();
@@ -2139,18 +2139,18 @@ void os::Process::Terminate()
 bool os::Process::IsRunning()
 {
 #if defined(PLATFORM_WIN)
-	if(m_hProcess!=INVALID_HANDLE_VALUE)
+	if(_hProcess!=INVALID_HANDLE_VALUE)
 	{
 		bool exited = false;
-		VERIFY(::GetExitCodeProcess(m_hProcess,(LPDWORD)&m_ExitCode));
-		exited = (m_ExitCode!=STILL_ACTIVE);
+		VERIFY(::GetExitCodeProcess(_hProcess,(LPDWORD)&_ExitCode));
+		exited = (_ExitCode!=STILL_ACTIVE);
 
 		if(exited)
 		{	
 			FILETIME creat,exit,foo;
-			GetProcessTimes(m_hProcess,&creat,&exit,&foo,&foo);
-			m_ExitTime = (*((__time64_t*)&exit))/10000LL - 11644473600000LL;
-			m_ExecutionTime = (UINT)((((ULONGLONG&)exit) - ((ULONGLONG&)creat))/10000);
+			GetProcessTimes(_hProcess,&creat,&exit,&foo,&foo);
+			_ExitTime = (*((__time64_t*)&exit))/10000LL - 11644473600000LL;
+			_ExecutionTime = (UINT)((((ULONGLONG&)exit) - ((ULONGLONG&)creat))/10000);
 
 			return false;
 		}
@@ -2166,13 +2166,13 @@ bool os::Process::IsRunning()
 
 bool os::FolderChangingMonitor::IsStarted()
 {
-	return m_WorkingThread != NULL;
+	return _WorkingThread != NULL;
 }
 
 os::FolderChangingMonitor::FolderChangingMonitor()
 {	
-	m_WaitingHandle = INVALID_HANDLE_VALUE; 
-	m_WorkingThread = NULL;
+	_WaitingHandle = INVALID_HANDLE_VALUE; 
+	_WorkingThread = NULL;
 	_CoalescingInterval = 0;
 }
 
@@ -2182,8 +2182,8 @@ DWORD WINAPI os::FolderChangingMonitor::_WorkingThreadFunc(LPVOID p)
 	FolderChangingMonitor* This  = ((FolderChangingMonitor*)p);
 	for(;;)
 	{	DWORD ret;
-		ret = WaitForSingleObject(This->m_WaitingHandle,INFINITE);
-		VERIFY(FindNextChangeNotification(This->m_WaitingHandle));
+		ret = WaitForSingleObject(This->_WaitingHandle,INFINITE);
+		VERIFY(FindNextChangeNotification(This->_WaitingHandle));
 		if(ret == WAIT_OBJECT_0)
 		{
 			if(This->_CoalescingInterval)
@@ -2191,9 +2191,9 @@ DWORD WINAPI os::FolderChangingMonitor::_WorkingThreadFunc(LPVOID p)
 				tick.LoadCurrentTick();
 				while(tick.TimeLapse() <= This->_CoalescingInterval)
 				{
-					ret = WaitForSingleObject(This->m_WaitingHandle,rt::min(200, This->_CoalescingInterval));
+					ret = WaitForSingleObject(This->_WaitingHandle,rt::min(200, This->_CoalescingInterval));
 					if(ret == WAIT_OBJECT_0)
-					{	VERIFY(FindNextChangeNotification(This->m_WaitingHandle));
+					{	VERIFY(FindNextChangeNotification(This->_WaitingHandle));
 					}
 					else break;
 				}
@@ -2205,14 +2205,14 @@ DWORD WINAPI os::FolderChangingMonitor::_WorkingThreadFunc(LPVOID p)
 
 bool os::FolderChangingMonitor::Create(LPCSTR Folder,bool IncludeSubTree, DWORD filter)
 {
-	ASSERT(m_WaitingHandle == INVALID_HANDLE_VALUE);
+	ASSERT(_WaitingHandle == INVALID_HANDLE_VALUE);
 
-	m_WaitingHandle = FindFirstChangeNotificationW(__UTF16(Folder),IncludeSubTree,filter);
-	if(m_WaitingHandle != INVALID_HANDLE_VALUE)
+	_WaitingHandle = FindFirstChangeNotificationW(__UTF16(Folder),IncludeSubTree,filter);
+	if(_WaitingHandle != INVALID_HANDLE_VALUE)
 	{
-		m_WorkingThread = ::CreateThread(NULL,0,_WorkingThreadFunc,this,0,NULL);
-		::SetThreadPriority(m_WorkingThread,THREAD_PRIORITY_ABOVE_NORMAL);
-		ASSERT( m_WorkingThread );
+		_WorkingThread = ::CreateThread(NULL,0,_WorkingThreadFunc,this,0,NULL);
+		::SetThreadPriority(_WorkingThread,THREAD_PRIORITY_ABOVE_NORMAL);
+		ASSERT( _WorkingThread );
 		return true;
 	}
 	return false;
@@ -2220,13 +2220,13 @@ bool os::FolderChangingMonitor::Create(LPCSTR Folder,bool IncludeSubTree, DWORD 
 
 void os::FolderChangingMonitor::Destroy()
 {
-	if( m_WorkingThread )
-	{	::TerminateThread(m_WorkingThread,0);
-		m_WorkingThread = NULL;
+	if( _WorkingThread )
+	{	::TerminateThread(_WorkingThread,0);
+		_WorkingThread = NULL;
 	}
-	if( m_WaitingHandle != INVALID_HANDLE_VALUE )
-	{	FindCloseChangeNotification(m_WaitingHandle);
-		m_WaitingHandle = INVALID_HANDLE_VALUE;
+	if( _WaitingHandle != INVALID_HANDLE_VALUE )
+	{	FindCloseChangeNotification(_WaitingHandle);
+		_WaitingHandle = INVALID_HANDLE_VALUE;
 	}
 }
 
