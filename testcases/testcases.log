@@ -50,6 +50,11 @@ Overflow
 12345678
 Strings: {"string0","string1","string2"}
 Strings copied: {"string0","string1","string2","string3"}
+{57097,64218,18685,37624,14930,5901,47532,3015,7620,10155}
+Top-1: 3015
+Top-3: 7620
+Top-6: 18685
+Top-10: 64218
 === UnitTest<buffer>: END =====
 
 === UnitTest<sortedpush>: BEGIN ===

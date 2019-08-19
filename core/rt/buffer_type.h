@@ -215,6 +215,36 @@ public:
 		_xt::ctor(p, x);
 		return p - Begin();
 	}
+	INLFUNC t_Val& FindTopKth(SIZE_T k)	// Find Top-k Smallest value over unordered array (original values will be moved around)
+	{	struct _Find	// https://www.geeksforgeeks.org/kth-smallestlargest-element-unsorted-array/  [ Method 4 (QuickSelect) ]
+		{	static SIZE_T partition(t_Val* arr, SIZE_T l, SIZE_T r) 
+			{	t_Val x(arr[r]);
+				SIZE_T i = l;
+				for(SIZE_T j = l; j <= r - 1; j++) 
+				{ 	if(x < arr[j])continue;
+					rt::Swap(arr[i], arr[j]);
+					i++; 
+				} 
+				rt::Swap(arr[i], arr[r]);
+				return i; 
+			} 		
+			static t_Val& kth(t_Val* arr, SIZE_T l, SIZE_T r, SIZE_T k)
+			{	if(k > 0 && k <= r - l + 1) 
+				{ 	SIZE_T pos = partition(arr, l, r); 
+					if (pos-l == k-1) 
+						return arr[pos]; 
+					if (pos-l > k-1)
+						return kth(arr, l, pos-1, k); 
+					return kth(arr, pos+1, r, k-pos+l-1);
+				} 
+				ASSERT(0);	// k is more than number of elements in array 
+				return arr[0];
+			}
+		};
+		ASSERT(k>0);
+		ASSERT(GetSize() >= k);
+		return _Find::kth(_p, 0, GetSize()-1, k);
+	}
 	INLFUNC void RandomBits(DWORD seed = rand())
 	{	Randomizer rng(seed);
 		t_Index int_size = GetSize()*sizeof(t_Val)/4;

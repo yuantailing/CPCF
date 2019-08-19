@@ -1125,6 +1125,15 @@ void rt::UnitTests::buffer()
 	rt::BufferEx<rt::String>	non_pod_copy(non_pod);
 	non_pod_copy.push_back("string3");
 	_LOG("Strings copied: "<<non_pod_copy);
+
+	rt::Buffer<WORD> a;
+	a.SetSize(10);
+	a.RandomBits(0);
+	_LOG(a);
+	_LOG("Top-1: "<<a.FindTopKth(1));
+	_LOG("Top-3: "<<a.FindTopKth(3));
+	_LOG("Top-6: "<<a.FindTopKth(6));
+	_LOG("Top-10: "<<a.FindTopKth(10));
 }
 
 void rt::UnitTests::encoding()
