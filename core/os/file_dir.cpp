@@ -693,12 +693,12 @@ SIZE_T os::File::GetLength() const
 	return (SIZE_T)s.st_size;
 }
 
-void os::File::Truncate(SIZE_T len)
+int os::File::Truncate(SIZE_T len)
 {
 #if defined(PLATFORM_WIN)
-	_chsize(GetFD(), (long)len);
+	return _chsize(GetFD(), (long)len);
 #else
-	ftruncate(GetFD(), len);
+	return ftruncate(GetFD(), len);
 #endif
 }
 
@@ -744,8 +744,10 @@ void os::File::GetCurrentDirectory(rt::String& out)
 	}
 #else
 	out.SetLength(1024);
-	getcwd(out,out.GetLength());
-	out.RecalculateLength();
+	if (getcwd(out, out.GetLength()))
+		out.RecalculateLength();
+	else
+		out.Empty();
 #endif
 }
 

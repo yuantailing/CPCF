@@ -130,7 +130,7 @@ public:
 	void		Close();
 	bool		Open(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
 	SIZE_T		GetLength() const;
-	void		Truncate(SIZE_T len);
+	int			Truncate(SIZE_T len); // returns 0 on success, and returns -1 on error.
 	SIZE_T		GetCurrentPosition() const;
 	SIZE_T		Seek(SSIZE_T offset,UINT nFrom = Seek_Begin);
 	void		SeekToBegin();
