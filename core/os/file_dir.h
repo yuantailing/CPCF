@@ -112,16 +112,16 @@ public:
 	SIZE_T		Write(const rt::String_Ref& x){ return Write(x.Begin(), x.GetLength()); }
 	SIZE_T		Write(const rt::String& x){ return Write(x.Begin(), x.GetLength()); }
 	SIZE_T		Write(LPCSTR str){ return Write(str, strlen(str)); }
+	SIZE_T		Write(char x){ return Write(&x,1); }
 	template<typename t_POD>
 	SIZE_T		WritePOD(const t_POD& x){ return Write((LPCVOID)&x,sizeof(t_POD)); }
-	SIZE_T		Write(char x){ return Write(&x,1); }
 	template<typename t_StrExprJson>
 	SIZE_T		Write(const t_StrExprJson& x)
-	{	SIZE_T  len = x.GetLength();
-		LPSTR   buf = (LPSTR)alloca(len);
-		VERIFY(len == x.CopyTo(buf));
-		return Write(buf, len);
-	}
+				{	SIZE_T  len = x.GetLength();
+					LPSTR   buf = (LPSTR)alloca(len);
+					VERIFY(len == x.CopyTo(buf));
+					return Write(buf, len);
+				}
 	bool		IsEOF();
 	template<typename t_POD>
 	SIZE_T		ReadPOD(t_POD& x){ return Read((LPVOID)&x,sizeof(t_POD)); }
@@ -130,7 +130,7 @@ public:
 	void		Close();
 	bool		Open(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
 	SIZE_T		GetLength() const;
-	int			Truncate(SIZE_T len); // returns 0 on success, and returns -1 on error.
+	bool		Truncate(SIZE_T len);
 	SIZE_T		GetCurrentPosition() const;
 	SIZE_T		Seek(SSIZE_T offset,UINT nFrom = Seek_Begin);
 	void		SeekToBegin();
@@ -138,9 +138,8 @@ public:
 	void        Flush();
 	int			GetFD() const { return fileno(_hFile); }
 
-	const rt::String& GetFilename() const { return _Filename; }
-	void	ClearError(){ _bErrorFlag = false; }
-	bool	ErrorOccured(){ return _bErrorFlag; }
+	void		ClearError(){ _bErrorFlag = false; }
+	bool		ErrorOccured(){ return _bErrorFlag; }
 
 	//void	SetTime_Creation(__time64_t x);
 	//void	SetTime_LastAccess(__time64_t x);
@@ -163,6 +162,14 @@ public:
 	static bool	SetPathTime(LPCSTR pathname, __time64_t last_access, __time64_t last_modify);	// zero for not set
 	static bool	MoveFile(LPCSTR from, LPCSTR to, bool overwrite = true);	// will try move if fail, try copy & delete
 
+	static bool LoadText(LPCSTR fn, rt::String& out, UINT expire_sec = rt::TypeTraits<UINT>::MaxVal());
+	static bool SaveText(LPCSTR fn, const rt::String_Ref& in, bool add_utf8_signature = true, bool append = false);
+	static bool LoadBinary(LPCSTR fn, rt::String& out, UINT expire_sec = rt::TypeTraits<UINT>::MaxVal());
+	static bool SaveBinary(LPCSTR fn, const rt::String_Ref& in);
+
+	static bool CopyPath(const rt::String_Ref& dest, const rt::String_Ref& src, DWORD opt = CPOPT_MIRROR);
+	static bool RemovePath(const rt::String_Ref& src);
+
 	//static	bool Copy(LPCSTR fn,LPCSTR new_fn,bool no_overwrite = false){ return ::CopyFile(fn,new_fn,no_overwrite); }
 	//static	bool Move(LPCSTR fn,LPCSTR new_fn,bool no_overwrite = false){ return ::MoveFileEx(fn,new_fn,MOVEFILE_COPY_ALLOWED|(no_overwrite?0:MOVEFILE_REPLACE_EXISTING)); }
 	//static	DWORD GetAttributes(LPCSTR fn){ return ::GetFileAttributes(fn); }
@@ -176,14 +183,7 @@ public:
 
 	static ULONGLONG	GetFileSize(LPCSTR pathname);
 	ULONGLONG			GetFileSize() const;
-
-	static bool LoadText(LPCSTR fn, rt::String& out, UINT expire_sec = rt::TypeTraits<UINT>::MaxVal());
-	static bool SaveText(LPCSTR fn, const rt::String_Ref& in, bool add_utf8_signature = true, bool append = false);
-	static bool LoadBinary(LPCSTR fn, rt::String& out, UINT expire_sec = rt::TypeTraits<UINT>::MaxVal());
-	static bool SaveBinary(LPCSTR fn, const rt::String_Ref& in);
-
-	static bool CopyPath(const rt::String_Ref& dest, const rt::String_Ref& src, DWORD opt = CPOPT_MIRROR);
-	static bool RemovePath(const rt::String_Ref& src);
+	const rt::String&	GetFilename() const { return _Filename; }
 };
 
 extern ULONGLONG GetFreeDiskSpace(LPCSTR path, ULONGLONG* pTotal = NULL); // in MB
@@ -192,7 +192,6 @@ extern void		 SetAppSandboxAsCurrentDirectory(LPCSTR app_name);
 
 ///////////////////////////////////////////
 // FileRead
-
 template<typename T = BYTE>
 class FileRead
 {
@@ -216,9 +215,8 @@ public:
 
 class FileReadLine
 {
-	bool	GetNextLine(rt::String& line); // use rt::String_Ref instead
-protected:
 	static const int FRL_BUFSIZE = 256*1024;	// each line should smaller than half of this
+protected:
 	rt::BufferEx<char>	_buf;
 	UINT				_bufused;
 #if defined(PLATFORM_WIN)
@@ -236,11 +234,11 @@ public:
 	ULONGLONG	CurPos() const { return _lastpos; }
 	bool		Open(LPCSTR fn);
 	void		Close();
+	bool		GetNextLine(rt::String_Ref& line){ return GetNextLineWithQuote(line, 0); }
+	bool		GetNextLineWithQuote(rt::String_Ref& line, char quote = '"');
 	template<typename T>
 	bool		ReadBlock(const T*& obj){ return ReadBlock((LPCVOID&)obj, sizeof(T)); }
 	bool		ReadBlock(LPCVOID& p, UINT size);
-	bool		GetNextLine(rt::String_Ref& line){ return GetNextLineWithQuote(line, 0); }
-	bool		GetNextLineWithQuote(rt::String_Ref& line, char quote = '"');
 };
 
 class FileWriteLine
@@ -263,11 +261,11 @@ public:
 	bool		WriteLine(LPCSTR line){ return WriteLine(rt::String_Ref(line)); }
 	template<typename T>
 	bool		WriteLine(const T& line)
-	{	SIZE_T len = line.GetLength();
-		LPSTR buf = (LPSTR)alloca(len);
-		VERIFY(line.CopyTo(buf) == len);
-		return WriteLine(rt::String_Ref(buf,len));
-	}
+				{	SIZE_T len = line.GetLength();
+					LPSTR buf = (LPSTR)alloca(len);
+					VERIFY(line.CopyTo(buf) == len);
+					return WriteLine(rt::String_Ref(buf,len));
+				}
 	bool		Write(LPCVOID p, UINT size);
 	bool		Flush();
 	bool		WriteUTF8Sign();
@@ -283,52 +281,52 @@ class FileMapping
 {
 protected:
 #if defined(PLATFORM_WIN)
-	HANDLE				_hFile;
-	HANDLE				_hFileMapping;
-	rt::String			_Filename;
+	HANDLE		_hFile;
+	HANDLE		_hFileMapping;
+	rt::String	_Filename;
 #else
-	File				_File;
+	File		_File;
 #endif
 
-	bool				_Readonly;
-	LPVOID				_Ptr;
-	SIZE_T				_Size;
+	bool		_Readonly;
+	LPVOID		_Ptr;
+	SIZE_T		_Size;
 public:
 	FileMapping();
+	~FileMapping(){ Close(); }
+	const rt::String& GetFilename() const;
+
 	bool		Open(LPCSTR filename, SIZE_T length = 0, bool readonly = true, bool create_new = true);
 	void		Close(bool also_delete_file = false);
 
-	INLFUNC bool		IsOpen() const { return _Ptr != NULL; }
-	INLFUNC LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
-	INLFUNC LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
-	INLFUNC SIZE_T		GetSize() const { return _Size; }
-	INLFUNC bool		IsReadonly() const { return _Readonly; }
-
-	~FileMapping(){ Close(); }
-	const rt::String& GetFilename() const;
+	bool		IsOpen() const { return _Ptr != NULL; }
+	LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
+	LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
+	SIZE_T		GetSize() const { return _Size; }
+	bool		IsReadonly() const { return _Readonly; }
 };
 
 template<typename T>
 struct FileBuffer: protected FileMapping
 {
-	INLFUNC FileBuffer(){}
-	INLFUNC FileBuffer(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ Open(filename, count, readonly); }
-	INLFUNC const rt::String& GetFilename() const { return FileMapping::GetFilename(); }
+	FileBuffer(){}
+	FileBuffer(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ Open(filename, count, readonly); }
+	const rt::String& GetFilename() const { return FileMapping::GetFilename(); }
 
-	INLFUNC LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
-	INLFUNC LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
-	INLFUNC bool		Open(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ return FileMapping::Open(filename, count*sizeof(T), readonly); }
-	INLFUNC void		Close(bool also_delete_file = false){ FileMapping::Close(also_delete_file); }
-	INLFUNC bool		IsOpen() const { return _Ptr != NULL; }
-	INLFUNC bool		IsReadonly() const { return _Readonly; }
-	INLFUNC SIZE_T		GetSize() const { return _Size/sizeof(T); }
+	LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
+	LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
+	bool		Open(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ return FileMapping::Open(filename, count*sizeof(T), readonly); }
+	void		Close(bool also_delete_file = false){ FileMapping::Close(also_delete_file); }
+	bool		IsOpen() const { return _Ptr != NULL; }
+	bool		IsReadonly() const { return _Readonly; }
+	SIZE_T		GetSize() const { return _Size/sizeof(T); }
 
-	INLFUNC T*			Begin(){ return (T*)GetBasePtr(); }
-	INLFUNC const T*	Begin() const { return (T*)GetBasePtr(); }
-	INLFUNC T*			End(){ return (T*)GetBasePtr(FileMapping::GetSize()); }
-	INLFUNC const T*	End() const { return (T*)GetBasePtr(FileMapping::GetSize()); }
-	INLFUNC				operator T*(){ return Begin(); }
-	INLFUNC				operator const T*() const { return Begin(); }
+	T*			Begin(){ return (T*)GetBasePtr(); }
+	const T*	Begin() const { return (T*)GetBasePtr(); }
+	T*			End(){ return (T*)GetBasePtr(FileMapping::GetSize()); }
+	const T*	End() const { return (T*)GetBasePtr(FileMapping::GetSize()); }
+				operator T*(){ return Begin(); }
+				operator const T*() const { return Begin(); }
 };
 
 namespace _details
@@ -366,23 +364,24 @@ public:
 	bool		Load(ULONGLONG name, rt::String& out);
 	template<typename T>
 	bool		Load(ULONGLONG name, rt::Buffer<T>& out)
-	{	int idx;
-		return	(idx = _FindFile(name)) != INFINITE &&
-				GetFileSize(idx) % sizeof(T) == 0 &&
-				out.SetSize(GetFileSize(idx)/sizeof(T)) &&
-				Read(idx, out.Begin());
-	}
+				{	int idx;
+					return	(idx = _FindFile(name)) != INFINITE &&
+							GetFileSize(idx) % sizeof(T) == 0 &&
+							out.SetSize(GetFileSize(idx)/sizeof(T)) &&
+							Read(idx, out.Begin());
+				}
 	template<typename T>
 	bool		Load(ULONGLONG name, T* out)
-	{	int idx;
-		return	(idx = _FindFile(name)) != INFINITE &&
-				sizeof(T) == GetFileSize(idx) &&
-				Read(idx, out);
-	}
+				{	int idx;
+					return	(idx = _FindFile(name)) != INFINITE &&
+							sizeof(T) == GetFileSize(idx) &&
+							Read(idx, out);
+				}
 };
 
 class FilePacked_Writer
-{	os::File	_File;
+{
+	os::File	_File;
 public:
 	void Close(){ _File.Close(); }
 	bool Open(LPCSTR fn); // Read only, or write only
@@ -488,70 +487,68 @@ protected:
 public:
 	CommandLine();
 	~CommandLine();
-
-	void	Empty();
-
-#if defined(PLATFORM_WIN)
-	void		Parse(int argc, WCHAR* argv[]);	// for _tmain
-	void		Parse(LPCWSTR pCmdLine);		// for _twmain
-	explicit	CommandLine(int argc, WCHAR* argv[]){ Parse(argc, argv); }
-	explicit	CommandLine(LPCWSTR pCmdLine){ Parse(pCmdLine); }
-#endif
-
-	void		ParseURI(const rt::String_Ref& path, const rt::String_Ref& query);
-	void		Parse(int argc, char* argv[]);	// for _tmain
-	void		Parse(LPCSTR pCmdLine);			// for _twmain
-	explicit	CommandLine(int argc, char* argv[]){ Parse(argc, argv); }
-	explicit	CommandLine(LPCSTR pCmdLine){ Parse(pCmdLine); }
-
-	void		SubstituteOptions(rt::String& string, const rt::String_Ref& prefix = rt::SS("%"), const rt::String_Ref& suffix = rt::SS("%")) const;
-
-	template<typename T>
-	INLFUNC T	GetOptionAs(const rt::String_Ref& opt_name, T default_val) const
-				{	rt::String_Ref str = GetOption(opt_name);
-					if(!str.IsEmpty())str.ToNumber(default_val);
-					return default_val;
-				}
-	INLFUNC bool GetOptionAs(const rt::String_Ref& opt_name, bool default_val) const
-				{	rt::String_Ref str = GetOption(opt_name);
-					if(str.IsEmpty())return default_val;
-					return str[0] == 't' || str[0] == '1' || str[0] == 'T';
-				}
-	template<typename T>
-	INLFUNC T GetOptionAs(const rt::String_Ref& opt_name) const { return GetOptionAs<T>(opt_name, 0); }
-	template<class VEC, int chan>
-	INLFUNC VEC GetOptionAs(const rt::String_Ref& opt_name, const VEC& default_val = 0) const
-				{	rt::String_Ref str = GetOption(opt_name);
-					rt::String_Ref f[chan];
-					VEC ret;
-					UINT co;
-					if(!str.IsEmpty() && (co = str.Split(f,chan,",x|:/*")))
-					{	for(UINT i=0;i<chan;i++)
-							f[rt::min(co,i)].ToNumber(ret[i]);
-						return ret;
-					}
-					return default_val;
-				}
-	LPCSTR		SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
-	rt::String_Ref GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = NULL) const;
-	bool		HasOption(const rt::String_Ref& option_name) const;
-
-	UINT		GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
-	LPCSTR		GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
-
-	LPCSTR		GetOriginalLine() const { return _CommandLine; }
-
-	UINT		GetOptionCount()const{ return (UINT)_Options.GetSize(); }
-	LPCSTR		GetOptionName(UINT idx)const{ return _Options[idx].Name; }
-	LPCSTR		GetOptionValue(UINT idx)const{ return _Options[idx].Value; }
-	void		SecureClear();
-
-	void		LoadEnvironmentVariablesAsOptions();
-	void		SetOptionDefault(const rt::String_Ref& opt_name, const rt::String_Ref& value);
-	void		SetOption(const rt::String_Ref& opt_name, const rt::String_Ref& value);
-
 	static const CommandLine& Get();
 	static CommandLine& GetMutable();
+
+#if defined(PLATFORM_WIN)
+	void			Parse(int argc, WCHAR* argv[]);	// for _tmain
+	void			Parse(LPCWSTR pCmdLine);		// for _twmain
+	explicit		CommandLine(int argc, WCHAR* argv[]){ Parse(argc, argv); }
+	explicit		CommandLine(LPCWSTR pCmdLine){ Parse(pCmdLine); }
+#endif
+
+	void			Empty();
+	void			ParseURI(const rt::String_Ref& path, const rt::String_Ref& query);
+	void			Parse(int argc, char* argv[]);	// for _tmain
+	void			Parse(LPCSTR pCmdLine);			// for _twmain
+	explicit		CommandLine(int argc, char* argv[]){ Parse(argc, argv); }
+	explicit		CommandLine(LPCSTR pCmdLine){ Parse(pCmdLine); }
+
+	void			SubstituteOptions(rt::String& string, const rt::String_Ref& prefix = rt::SS("%"), const rt::String_Ref& suffix = rt::SS("%")) const;
+
+	template<typename T>
+	INLFUNC T		GetOptionAs(const rt::String_Ref& opt_name, T default_val) const
+					{	rt::String_Ref str = GetOption(opt_name);
+						if(!str.IsEmpty())str.ToNumber(default_val);
+						return default_val;
+					}
+	INLFUNC bool	GetOptionAs(const rt::String_Ref& opt_name, bool default_val) const
+					{	rt::String_Ref str = GetOption(opt_name);
+						if(str.IsEmpty())return default_val;
+						return str[0] == 't' || str[0] == '1' || str[0] == 'T';
+					}
+	template<typename T>
+	INLFUNC T		GetOptionAs(const rt::String_Ref& opt_name) const { return GetOptionAs<T>(opt_name, 0); }
+	template<class VEC, int chan>
+	INLFUNC VEC		GetOptionAs(const rt::String_Ref& opt_name, const VEC& default_val = 0) const
+					{	rt::String_Ref str = GetOption(opt_name);
+						rt::String_Ref f[chan];
+						VEC ret;
+						UINT co;
+						if(!str.IsEmpty() && (co = str.Split(f,chan,",x|:/*")))
+						{	for(UINT i=0;i<chan;i++)
+								f[rt::min(co,i)].ToNumber(ret[i]);
+							return ret;
+						}
+						return default_val;
+					}
+	LPCSTR			SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
+	rt::String_Ref	GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = NULL) const;
+	bool			HasOption(const rt::String_Ref& option_name) const;
+
+	UINT			GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
+	LPCSTR			GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
+
+	LPCSTR			GetOriginalLine() const { return _CommandLine; }
+
+	UINT			GetOptionCount()const{ return (UINT)_Options.GetSize(); }
+	LPCSTR			GetOptionName(UINT idx)const{ return _Options[idx].Name; }
+	LPCSTR			GetOptionValue(UINT idx)const{ return _Options[idx].Value; }
+	void			SecureClear();
+
+	void			LoadEnvironmentVariablesAsOptions();
+	void			SetOptionDefault(const rt::String_Ref& opt_name, const rt::String_Ref& value);
+	void			SetOption(const rt::String_Ref& opt_name, const rt::String_Ref& value);
 };
 
 //////////////////////////////////////////////
@@ -570,6 +567,7 @@ protected:
 
 public:
 	Process();
+
 	bool		Launch(LPCSTR cmdline, LPCSTR pWorkDirectory = NULL, LPVOID pEnvVariable = NULL);
 	bool		WaitForEnding(DWORD timeout = INFINITE); // return false when timeout
 	void		Terminate();
@@ -578,7 +576,7 @@ public:
 	UINT		GetExecutionTime() const { return _ExecutionTime; }		// available after IsRunning() returns false!	
 	int			GetExitCode() const { return _ExitCode; }					// available after IsRunning() returns false!	
 	void		SetExitCode(int c){ _ExitCode = c; }
-	const os::Timestamp& GetExitTime() const { return _ExitTime; }	// available after IsRunning() returns false!
+	LONGLONG	GetExitTime() const { return _ExitTime; }	// available after IsRunning() returns false!
     
 public:
     struct Info

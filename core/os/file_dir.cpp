@@ -693,12 +693,12 @@ SIZE_T os::File::GetLength() const
 	return (SIZE_T)s.st_size;
 }
 
-int os::File::Truncate(SIZE_T len)
+bool os::File::Truncate(SIZE_T len)
 {
 #if defined(PLATFORM_WIN)
-	return _chsize(GetFD(), (long)len);
+	return _chsize(GetFD(), (long)len) == 0;
 #else
-	return ftruncate(GetFD(), len);
+	return ftruncate(GetFD(), len) == 0;
 #endif
 }
 
