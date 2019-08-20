@@ -692,7 +692,8 @@ namespace _details
 
 ///////////////////////////////////////////////////////
 // Safe delete Objects
-#define _SafeRelease(x)		{ if(x){x->Release(); x=NULL;} }
+#define _SafeRelease(x)				{ if(x){x->Release(); x=NULL;} }
+#define _SafeRelease_ConstPtr(x)	{ if(x)(x)->Release(); }
 
 #if defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
 #define _SafeCFRelease(x)	{ if(x){::CFRelease(x); x=NULL;} }
