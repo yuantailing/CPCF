@@ -1228,6 +1228,7 @@ public:
 		else return false;
 	}
 	FORCEINL ~String(){ _SafeFree32AL(_p); }
+	FORCEINL LPSTR DetachBuffer(){ LPSTR p = _p; _len_reserved = _len = 0; _p = NULL; return p; }
 	FORCEINL String& Empty(){ SetLength(0); return *this; }
 	FORCEINL String& SecureEmpty(){ _len = 0; rt::Zero(_p, _len_reserved); return *this; }
 public:
