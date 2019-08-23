@@ -619,7 +619,8 @@ struct _InvokeThisCall
 				(std::forward<arg_types>(args)...);
 		}
 	};
-}
+
+} // namespace _details
 
 #define THISCALL_POLYMORPHISM_DECLARE(return_type, name, ...)			\
 						struct __ThisCallPolymorphism_ ## name			\
@@ -632,30 +633,37 @@ struct _InvokeThisCall
 
 //////////////////////////////////////////////////////
 // Stringify Enum
+namespace _details
+{
 template<typename T>
-struct EnumStringify;
+struct _EnumStringify;
+} // namespace _details
 
 // Must be defined in global scope !!!
-#define STRINGIFY_ENUM_BEGIN(type, ns)	namespace rt { \
-										using namespace ns; \
-										template<> \
-										struct EnumStringify<type>	\
-										{	LPCSTR _str;			\
-											EnumStringify(int x){	\
-												switch((type)x){	\
+#define STRINGIFY_ENUM_BEGIN(type, ns)	namespace rt {						\
+										namespace _details {				\
+										template<>							\
+										struct _EnumStringify<::ns::type>	\
+										{	LPCSTR _str;					\
+											_EnumStringify(::ns::type x){	\
+												using namespace ::ns;		\
+												switch(x){					\
 
 #define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
 
-#define STRINGIFY_ENUM_END(type, ns)			}; _str = NULL; } \
+#define STRINGIFY_ENUM_END(type, ns)			}; _str = NULL; }						\
 											operator LPCSTR() const { return _str; }	\
-										};}	\
-										namespace ns { \
-										template<class t_Ostream> \
-										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x) \
-										{	LPCSTR str = rt::EnumStringify<type>(x); \
-											if(str)return Ostream<<str; \
-											else return Ostream<< #type "("<<(int)x<<')'; \
+										};}}											\
+										namespace ns {									\
+										template<class t_Ostream>						\
+										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x)	\
+										{	LPCSTR str = rt::_details::_EnumStringify<type>(x);		\
+											if(str)return Ostream<<str;								\
+											else return Ostream<< #type "("<<(int)x<<')';			\
 										}}
+
+template<typename T>
+INLFUNC LPCSTR EnumStringify(T x){ return rt::_details::_EnumStringify<T>(x); }
 									
 } // namespace rt
 
