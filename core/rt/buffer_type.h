@@ -48,14 +48,14 @@ namespace _details
 		static FORCEINL void dtor(t_Val& x){ x.~t_Val(); }
 		static FORCEINL void dtor(t_Val*p, t_Val*end){ for(;p<end;p++) p->~t_Val(); }
 	};
-	template<typename t_Val>
-	struct _xtor<false, t_Val>
-	{	static FORCEINL void ctor(t_Val*p){}
-		static FORCEINL void ctor(t_Val*p, t_Val*end){}
-		static FORCEINL void ctor(t_Val*p, const t_Val& x){ rt::CopyByteTo(x, *p); }
-		static FORCEINL void dtor(t_Val& x){}
-		static FORCEINL void dtor(t_Val*p, t_Val*end){}
-	};
+		template<typename t_Val>
+		struct _xtor<false, t_Val>
+		{	static FORCEINL void ctor(t_Val*p){}
+			static FORCEINL void ctor(t_Val*p, t_Val*end){}
+			static FORCEINL void ctor(t_Val*p, const t_Val& x){ rt::CopyByteTo(x, *p); }
+			static FORCEINL void dtor(t_Val& x){}
+			static FORCEINL void dtor(t_Val*p, t_Val*end){}
+		};
 };
 
 template<typename t_Val, typename t_Index = SIZE_T>

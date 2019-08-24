@@ -1482,6 +1482,11 @@ public:
 	{	SetLength(rt::max<SSIZE_T>(0, ((SSIZE_T)GetLength()) - n));
 		return *this;
 	}
+	INLFUNC bool EndClosure(char closure_symb = ']') // false indicate the closure is empty
+	{	ASSERT(!IsEmpty());
+		if(Last() == ',' || Last() == '.' || Last() == ';'){ Last() = closure_symb; return true; }
+		*this += closure_symb; return false;
+	}
 };
 //template<class t_Ostream>
 //t_Ostream& operator<<(t_Ostream& Ostream, const rt::String & vec)
