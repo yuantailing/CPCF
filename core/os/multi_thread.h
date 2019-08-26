@@ -99,7 +99,7 @@ protected:
 	bool			_bWantExit;
 	DWORD			_ExitCode;
 	DWORD			_Run();
-	bool			_Create(UINT stack_size, bool suspended);
+	bool			_Create(UINT stack_size, ULONGLONG CPU_affinity);
 	static void		__release_handle(HANDLE hThread);
 
 public:
@@ -115,16 +115,13 @@ public:
 	void	TerminateForcely();
 	void	DetachThread(){ if(_hThread){ __release_handle(_hThread); _hThread = NULL; } }
 	void	SetPriority(UINT p = PRIORITY_HIGH);
-	void	Suspend();
-	void	Resume();
-	bool	SetAffinityMask(SIZE_T x);
 	UINT	GetId();
 
-	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param = NULL, bool suspended = false, UINT stack_size = 0);
-	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, bool suspended = false, UINT stack_size = 0);
+	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
+	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
 
 	template<typename T>
-	bool	Create(T threadroute, bool suspended = false, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
+	bool	Create(T&& threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
     {	__MFPTR_Obj = NULL;
 		ASSERT(_hThread == NULL);
 		struct _call { 
@@ -137,7 +134,7 @@ public:
 		__CB_Func = _call::_func;
 		__CB_Param = _New(T(threadroute));
 		ASSERT(__CB_Param);		
-		if(_Create(stack_size, suspended))return true;
+		if(_Create(stack_size, CPU_affinity))return true;
 		_SafeDel_ConstPtr((T*)__CB_Param);
 		return false;
 	}

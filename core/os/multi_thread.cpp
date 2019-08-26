@@ -432,7 +432,7 @@ os::Thread::~Thread()
 	ASSERT(_hThread == NULL);
 }
 
-bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, bool suspended, UINT stack_size)
+bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, ULONGLONG cpu_aff, UINT stack_size)
 {
 	ASSERT(_hThread == NULL);
 
@@ -441,10 +441,10 @@ bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, 
 	__MFPTR_Func = on_run;
 	__CB_Param = param;
 
-	return _Create(stack_size, suspended);
+	return _Create(stack_size, cpu_aff);
 }
 
-bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, bool suspended, UINT stack_size)
+bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, ULONGLONG cpu_aff, UINT stack_size)
 {
 	ASSERT(_hThread == NULL);
 
@@ -453,7 +453,7 @@ bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, bool suspende
 	__MFPTR_Obj = NULL;
 	__MFPTR_Func.Zero();
 
-	return _Create(stack_size, suspended);
+	return _Create(stack_size, cpu_aff);
 }
 
 DWORD os::Thread::_Run()
@@ -616,7 +616,7 @@ os::Event::~Event()
 #import <mach/thread_act.h>
 #endif
 
-bool os::Thread::_Create(UINT stack_size, bool suspended)
+bool os::Thread::_Create(UINT stack_size, ULONGLONG CPU_affinity)
 {
 	ASSERT(_hThread == NULL);
 	_bWantExit = false;
@@ -624,9 +624,23 @@ bool os::Thread::_Create(UINT stack_size, bool suspended)
 	pthread_attr_t attr;
 	pthread_attr_t* set_attr = NULL;
 
-	if(stack_size)
-	{	pthread_attr_init(&attr);
-		pthread_attr_setstacksize(&attr, rt::max((int)PTHREAD_STACK_MIN,(int)stack_size));
+	if(stack_size || CPU_affinity != 0xffffffffffffffffULL)
+	{
+		pthread_attr_init(&attr);
+		
+		if(stack_size)
+			pthread_attr_setstacksize(&attr, rt::max((int)PTHREAD_STACK_MIN,(int)stack_size));
+		
+		if(CPU_affinity != 0xffffffffffffffffULL)
+		{
+			cpu_set_t cpuset;
+			rt::Zero(cpuset);
+			for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
+				if(CPU_affinity&(1<<i))
+					CPU_SET(i, &cpuset);
+		
+			pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpuset);
+		}
 		set_attr = &attr;
 	}
 
@@ -635,16 +649,8 @@ bool os::Thread::_Create(UINT stack_size, bool suspended)
 		{	return (LPVOID)(unsigned long)((Thread*)p)->_Run();
 	}	};
 
-    if(suspended)
-    {
-        if(0 == pthread_create_suspended_np((pthread_t*)&_hThread, set_attr, _call::_func, this))
-            return true;
-    }
-    else
-    {
-        if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
-            return true;
-    }
+    if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
+        return true;
 
 	_hThread = NULL;
 	return false;
@@ -675,17 +681,6 @@ void os::Thread::SetPriority(UINT p)
 	pthread_setschedparam(*(pthread_t*)&_hThread, SCHED_OTHER, &sp);
 }
 
-void os::Thread::Suspend()
-{
-    thread_suspend(GetId());
-}
-
-void os::Thread::Resume()
-{
-    thread_resume(GetId());
-}
-
-
 void os::Thread::TerminateForcely()
 {
 	if(_hThread)
@@ -698,28 +693,6 @@ void os::Thread::TerminateForcely()
 		_hThread = NULL;
 	}
 }
-
-bool os::Thread::SetAffinityMask(SIZE_T x)
-{
-#if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
-    thread_affinity_policy_data_t tags[64];
-    int count = 0;
-    for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
-        if(x&(((SIZE_T)1)<<i))
-            tags[count++].affinity_tag = i;
-    return 0 == thread_policy_set(GetId(), THREAD_AFFINITY_POLICY, (thread_policy_t)&tags, count);
-#else
-    cpu_set_t cpuset;
-    rt::Zero(cpuset);
-    for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
-        if(x&(1<<i))
-            CPU_SET(i, &cpuset);
-    
-    pthread_setaffinity_np(*(pthread_t*)&_hThread, sizeof(cpu_set_t), &cpuset);
-    return true;
-#endif
-}
-
 
 void os::Thread::__release_handle(HANDLE hThread)
 {
