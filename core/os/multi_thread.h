@@ -121,7 +121,7 @@ public:
 	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
 
 	template<typename T>
-	bool	Create(T& threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
+	bool	Create(T threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
 			{	__MFPTR_Obj = NULL;
 				ASSERT(_hThread == NULL);
 				struct _call { 
