@@ -121,23 +121,22 @@ public:
 	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
 
 	template<typename T>
-	bool	Create(T&& threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
-    {	__MFPTR_Obj = NULL;
-		ASSERT(_hThread == NULL);
-		struct _call { 
-			static DWORD _func(LPVOID p)
-            {   T& cb = *(T*)p;
-                cb();
-				_SafeDel_ConstPtr((T*)p);
-				return 0;
-			}};
-		__CB_Func = _call::_func;
-		__CB_Param = _New(T(threadroute));
-		ASSERT(__CB_Param);		
-		if(_Create(stack_size, CPU_affinity))return true;
-		_SafeDel_ConstPtr((T*)__CB_Param);
-		return false;
-	}
+	bool	Create(T& threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
+			{	__MFPTR_Obj = NULL;
+				ASSERT(_hThread == NULL);
+				struct _call { 
+					static DWORD _func(LPVOID p)
+					{   (*(T*)p)();
+						_SafeDel_ConstPtr((T*)p);
+						return 0;
+					}};
+				__CB_Func = _call::_func;
+				__CB_Param = _New(T(threadroute));
+				ASSERT(__CB_Param);		
+				if(_Create(stack_size, CPU_affinity))return true;
+				_SafeDel_ConstPtr((T*)__CB_Param);
+				return false;
+			}
 
     static UINT GetCurrentId();
 	static void SetLabel(UINT thread_label);
