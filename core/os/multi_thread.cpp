@@ -527,7 +527,7 @@ void os::Thread::__release_handle(HANDLE hThread)
 	::CloseHandle(hThread);
 }
 
-bool os::Thread::_Create(UINT stack_size)
+bool os::Thread::_Create(UINT stack_size, ULONGLONG CPU_affinity)
 {
 	ASSERT(_hThread == NULL);
 	_bWantExit = false;
@@ -538,27 +538,16 @@ bool os::Thread::_Create(UINT stack_size)
 	}	};
 
 	_hThread = ::CreateThread(NULL, stack_size, _call::_func, this, 0, &_ThreadId);
+	SetThreadAffinityMask(_hThread, (DWORD_PTR&)CPU_affinity);
 	return _hThread != NULL;
 }
 
-SIZE_T os::Thread::GetId()
+UINT os::Thread::GetId()
 {
 	return _ThreadId;
 }
 
-void os::Thread::Suspend()
-{
-	ASSERT(_hThread != NULL);
-	::SuspendThread(_hThread);
-}
-
-void os::Thread::Resume()
-{
-	ASSERT(_hThread != NULL);
-	::ResumeThread(_hThread);
-}
-
-SIZE_T os::Thread::GetCurrentId()
+UINT os::Thread::GetCurrentId()
 {
 	return (SIZE_T)::GetCurrentThreadId();
 }
@@ -577,12 +566,6 @@ void os::Thread::TerminateForcely()
 		_hThread = NULL;
 	}
 }
-
-bool os::Thread::SetAffinityMask(SIZE_T x)
-{
-	return 0 != SetThreadAffinityMask(_hThread, ((DWORD_PTR&)x));
-}
-
 
 os::CriticalSection::CriticalSection()
 {
