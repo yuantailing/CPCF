@@ -994,76 +994,66 @@ FORCEINL void Swap(T& a, T& b)
 // Advanced Bits Operations
 namespace rt
 {
-
-// count leading zeros	
-#if defined(PLATFORM_WIN) || defined(PLATFORM_LINUX)
-	INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__lzcnt16(x); }
-	#if defined(PLATFORM_WIN)	
-	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt(x); }
-	#else
-	INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__lzcnt32(x); }
-	#endif
+	// count leading zeros
+	template<typename T> INLFUNC UINT LeadingZeroBits(T x);
+#if defined(PLATFORM_WIN)
+	template<> INLFUNC UINT LeadingZeroBits(WORD x) { DWORD index; return _BitScanReverse(&index, (DWORD)x) ? 16U - 1U - (UINT)index : 16U; }
+	template<> INLFUNC UINT LeadingZeroBits(DWORD x) { DWORD index; return _BitScanReverse(&index, x) ? 32U - 1U - (UINT)index : 32U; }
 	#if defined(PLATFORM_64BIT)
-	INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__lzcnt64(x); }
+	template<> INLFUNC UINT LeadingZeroBits(ULONGLONG x) { DWORD index; return _BitScanReverse64(&index, x) ? 64U - 1U - (UINT)index : 64U; }
 	#endif
-#elif defined(PLATFORM_MAC)
-    INLFUNC UINT LeadingZeroBits(WORD x){ return (UINT)__builtin_clz((DWORD)x) - 16; }
-    INLFUNC UINT LeadingZeroBits(DWORD x){ return (UINT)__builtin_clz(x); }
-    INLFUNC UINT LeadingZeroBits(ULONGLONG x){ return (UINT)__builtin_clzll(x); }
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	template<> INLFUNC UINT LeadingZeroBits(WORD x) { if (0 == x) return 16; return (UINT)__builtin_clz((DWORD)x) - 16; }
+	template<> INLFUNC UINT LeadingZeroBits(DWORD x) { if (0 == x) return 32; return (UINT)__builtin_clz(x); }
+	template<> INLFUNC UINT LeadingZeroBits(ULONGLONG x) { if (0 == x) return 64; return (UINT)__builtin_clzll(x); }
 #else
 #pragma message ("Advanced Bits Operations count-leading-zeros is not available")
 #endif	
 
-// count leading zeros	
+	// count trailing zeros
+	template<typename T> INLFUNC UINT TrailingZeroBits(T x);
 #if defined(PLATFORM_WIN)
-	INLFUNC UINT TrailingZeroBits(WORD x)
-				 {	    DWORD trailing_zero = 0;
-						return _BitScanForward(&trailing_zero, x)?trailing_zero:16;
-				 }
-	INLFUNC UINT TrailingZeroBits(DWORD x)
-				 {	    DWORD trailing_zero = 0;
-						return _BitScanForward(&trailing_zero, x)?trailing_zero:32;
-				 }
+	template<> INLFUNC UINT TrailingZeroBits(WORD x) { DWORD index; return _BitScanForward(&index, (DWORD)x) ? (UINT)index : 16U; }
+	template<> INLFUNC UINT TrailingZeroBits(DWORD x) { DWORD index; return _BitScanForward(&index, x) ? (UINT)index : 32U; }
 	#if defined(PLATFORM_64BIT)
-	INLFUNC UINT TrailingZeroBits(ULONGLONG x)
-				 {	    DWORD trailing_zero = 0;
-						return _BitScanForward64(&trailing_zero, x)?trailing_zero:64;
-				 }
+	template<> INLFUNC UINT TrailingZeroBits(ULONGLONG x) { DWORD index; return _BitScanForward64(&index, x) ? (UINT)index : 64U; }
 	#endif
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-    INLFUNC UINT TrailingZeroBits(WORD x){ return rt::min((UINT)__builtin_ctz((DWORD)x), 16U); }
-    INLFUNC UINT TrailingZeroBits(DWORD x){ return (UINT)__builtin_ctz(x); }
-    INLFUNC UINT TrailingZeroBits(ULONGLONG x){ return (UINT)__builtin_ctzll(x); }
+	template<> INLFUNC UINT TrailingZeroBits(WORD x) { if (0 == x) return 16; return (UINT)__builtin_ctz((DWORD)x); }
+	template<> INLFUNC UINT TrailingZeroBits(DWORD x) { if (0 == x) return 32; return (UINT)__builtin_ctz(x); }
+	template<> INLFUNC UINT TrailingZeroBits(ULONGLONG x) { if (0 == x) return 64; return (UINT)__builtin_ctzll(x); }
 #else
 #pragma message ("Advanced Bits Operations count-trailing-zeros is not available")
 #endif	
 
-// count 1s
+	// count 1s
+	template<typename T> INLFUNC UINT NonzeroBits(T x);
 #if defined(PLATFORM_WIN)
-	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__popcnt16(x); }
-	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__popcnt(x); }
+	template<> INLFUNC UINT NonzeroBits(WORD x) { return (UINT)__popcnt16(x); }
+	template<> INLFUNC UINT NonzeroBits(DWORD x) { return (UINT)__popcnt(x); }
 	#if defined(PLATFORM_64BIT)
-	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__popcnt64(x); }
+	template<> INLFUNC UINT NonzeroBits(ULONGLONG x) { return (UINT)__popcnt64(x); }
 	#endif
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-	INLFUNC UINT NonzeroBits(WORD x){ return (UINT)__builtin_popcount((DWORD)x); }
-	INLFUNC UINT NonzeroBits(DWORD x){ return (UINT)__builtin_popcount(x); }
-	INLFUNC UINT NonzeroBits(ULONGLONG x){ return (UINT)__builtin_popcountll(x); }
+	template<> INLFUNC UINT NonzeroBits(WORD x) { return (UINT)__builtin_popcount((DWORD)x); }
+	template<> INLFUNC UINT NonzeroBits(DWORD x) { return (UINT)__builtin_popcount(x); }
+	template<> INLFUNC UINT NonzeroBits(ULONGLONG x) { return (UINT)__builtin_popcountll(x); }
 #else
 #pragma message ("Advanced Bits Operations count-pop-bits is not available")
 #endif
 
-// count leading zeros	
+	// count leading zeros
+	template<typename T> INLFUNC T ByteOrderSwap(T x);
 #if defined(PLATFORM_WIN)
-	INLFUNC WORD  ByteOrderSwap(WORD x){ return _byteswap_ushort(x); }
-	INLFUNC DWORD ByteOrderSwap(DWORD x){ return _byteswap_ulong((unsigned long)x); }
+	template<> INLFUNC WORD ByteOrderSwap(WORD x) { return _byteswap_ushort(x); }
+	template<> INLFUNC DWORD ByteOrderSwap(DWORD x) { return _byteswap_ulong(x); }
 	#if defined(PLATFORM_64BIT)
-	INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x){ return (ULONGLONG)_byteswap_uint64((ULONGLONG&)x); }
+	template<> INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x) { return _byteswap_uint64(x); }
 	#endif
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-    INLFUNC WORD  ByteOrderSwap(WORD x){ return (WORD)__builtin_bswap32(((DWORD)x)<<16); }
-    INLFUNC DWORD ByteOrderSwap(DWORD x){ return (DWORD)__builtin_bswap32((int32_t&)x); }
-    INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x){ return (ULONGLONG)__builtin_bswap64((ULONGLONG&)x); }
+	template<> INLFUNC WORD ByteOrderSwap(WORD x) { return __builtin_bswap16(x); }
+	template<> INLFUNC DWORD ByteOrderSwap(DWORD x) { return __builtin_bswap32(x); }
+	template<> INLFUNC ULONGLONG ByteOrderSwap(ULONGLONG x) { return __builtin_bswap64(x); }
 #else
 #pragma message ("Advanced Bits Operations byte-order-swap is not available")
 #endif	
