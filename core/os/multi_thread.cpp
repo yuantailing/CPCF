@@ -432,7 +432,7 @@ os::Thread::~Thread()
 	ASSERT(_hThread == NULL);
 }
 
-bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, UINT stack_size)
+bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, bool suspended, UINT stack_size)
 {
 	ASSERT(_hThread == NULL);
 
@@ -441,10 +441,10 @@ bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, 
 	__MFPTR_Func = on_run;
 	__CB_Param = param;
 
-	return _Create(stack_size);
+	return _Create(stack_size, suspended);
 }
 
-bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stack_size)
+bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, bool suspended, UINT stack_size)
 {
 	ASSERT(_hThread == NULL);
 
@@ -453,7 +453,7 @@ bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, UINT stack_si
 	__MFPTR_Obj = NULL;
 	__MFPTR_Func.Zero();
 
-	return _Create(stack_size);
+	return _Create(stack_size, suspended);
 }
 
 DWORD os::Thread::_Run()
@@ -612,8 +612,11 @@ os::Event::~Event()
 //////////////////////////////////////////////////////////
 // All linux/BSD implementations
 #include <pthread.h>
+#if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
+#import <mach/thread_act.h>
+#endif
 
-bool os::Thread::_Create(UINT stack_size)
+bool os::Thread::_Create(UINT stack_size, bool suspended)
 {
 	ASSERT(_hThread == NULL);
 	_bWantExit = false;
@@ -632,14 +635,22 @@ bool os::Thread::_Create(UINT stack_size)
 		{	return (LPVOID)(unsigned long)((Thread*)p)->_Run();
 	}	};
 
-	if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
-		return true;
+    if(suspended)
+    {
+        if(0 == pthread_create_suspended_np((pthread_t*)&_hThread, set_attr, _call::_func, this))
+            return true;
+    }
+    else
+    {
+        if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
+            return true;
+    }
 
 	_hThread = NULL;
 	return false;
 }
 
-SIZE_T os::Thread::GetCurrentId()
+UINT os::Thread::GetCurrentId()
 {
 #if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
 	return (SIZE_T)pthread_mach_thread_np(pthread_self());
@@ -648,7 +659,7 @@ SIZE_T os::Thread::GetCurrentId()
 #endif
 }
 
-SIZE_T os::Thread::GetId()
+UINT os::Thread::GetId()
 {
 #if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
 	return (SIZE_T)pthread_mach_thread_np(*(pthread_t*)&_hThread);
@@ -666,14 +677,12 @@ void os::Thread::SetPriority(UINT p)
 
 void os::Thread::Suspend()
 {
-	ASSERT(_hThread == NULL);
-	ASSERT(0); // not implemented
+    thread_suspend(GetId());
 }
 
 void os::Thread::Resume()
 {
-	ASSERT(_hThread == NULL);
-	ASSERT(0); // not implemented
+    thread_resume(GetId());
 }
 
 
@@ -692,8 +701,23 @@ void os::Thread::TerminateForcely()
 
 bool os::Thread::SetAffinityMask(SIZE_T x)
 {
-	ASSERT(0);
-	return false;
+#if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
+    thread_affinity_policy_data_t tags[64];
+    int count = 0;
+    for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
+        if(x&(((SIZE_T)1)<<i))
+            tags[count++].affinity_tag = i;
+    return 0 == thread_policy_set(GetId(), THREAD_AFFINITY_POLICY, (thread_policy_t)&tags, count);
+#else
+    cpu_set_t cpuset;
+    rt::Zero(cpuset);
+    for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
+        if(x&(1<<i))
+            CPU_SET(i, &cpuset);
+    
+    pthread_setaffinity_np(*(pthread_t*)&_hThread, sizeof(cpu_set_t), &cpuset);
+    return true;
+#endif
 }
 
 

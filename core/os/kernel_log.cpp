@@ -449,7 +449,7 @@ namespace _details
         static rt::String _prev;
         
         rt::String_Ref logstr(log);
-        if(logstr.Last() == '\r')
+        if(!logstr.IsEmpty() && logstr.Last() == '\r')
         {   EnterCSBlock(_LogCS);
             if(_prev == logstr)return;
             _prev = logstr;

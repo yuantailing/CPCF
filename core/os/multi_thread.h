@@ -99,7 +99,7 @@ protected:
 	bool			_bWantExit;
 	DWORD			_ExitCode;
 	DWORD			_Run();
-	bool			_Create(UINT stack_size);
+	bool			_Create(UINT stack_size, bool suspended);
 	static void		__release_handle(HANDLE hThread);
 
 public:
@@ -118,31 +118,31 @@ public:
 	void	Suspend();
 	void	Resume();
 	bool	SetAffinityMask(SIZE_T x);
-	SIZE_T	GetId();
+	UINT	GetId();
 
-	static	SIZE_T	GetCurrentId();
-
-	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, UINT stack_size = 0);
-	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, UINT stack_size = 0);
+	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param = NULL, bool suspended = false, UINT stack_size = 0);
+	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, bool suspended = false, UINT stack_size = 0);
 
 	template<typename T>
-	bool	Create(T threadroute, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
-	{	__MFPTR_Obj = NULL;
+	bool	Create(T threadroute, bool suspended = false, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
+    {	__MFPTR_Obj = NULL;
 		ASSERT(_hThread == NULL);
 		struct _call { 
 			static DWORD _func(LPVOID p)
-			{	(*((T*)p))();
+            {   T& cb = *(T*)p;
+                cb();
 				_SafeDel_ConstPtr((T*)p);
 				return 0;
 			}};
 		__CB_Func = _call::_func;
 		__CB_Param = _New(T(threadroute));
 		ASSERT(__CB_Param);		
-		if(_Create(stack_size))return true;
+		if(_Create(stack_size, suspended))return true;
 		_SafeDel_ConstPtr((T*)__CB_Param);
 		return false;
 	}
 
+    static UINT GetCurrentId();
 	static void SetLabel(UINT thread_label);
 	static UINT GetLabel();
 };
