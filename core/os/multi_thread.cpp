@@ -624,6 +624,41 @@ bool os::Thread::_Create(UINT stack_size, ULONGLONG CPU_affinity)
 	pthread_attr_t attr;
 	pthread_attr_t* set_attr = NULL;
 
+    struct _call
+    {    static LPVOID _func(LPVOID p)
+        {    return (LPVOID)(unsigned long)((Thread*)p)->_Run();
+        }    };
+
+#if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
+    if(stack_size)
+    {
+        pthread_attr_init(&attr);
+        if(stack_size)
+            pthread_attr_setstacksize(&attr, rt::max((int)PTHREAD_STACK_MIN,(int)stack_size));
+        set_attr = &attr;
+    }
+    
+    if(CPU_affinity != 0xffffffffffffffffULL)
+    {
+        if(pthread_create_suspended_np((pthread_t*)&_hThread, set_attr, _call::_func, this))
+        {
+            _hThread = NULL;
+            return false;
+        }
+        
+        mach_port_t mach_thread = pthread_mach_thread_np(*(pthread_t*)&_hThread);
+        thread_affinity_policy_data_t policyData[64];
+        int count = 0;
+        for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
+            if(CPU_affinity&(1ULL<<i))
+                policyData[count].affinity_tag = i;
+        
+        thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY, (thread_policy_t)&policyData, count);
+        thread_resume(mach_thread);
+        return true;
+    }
+    
+#else
 	if(stack_size || CPU_affinity != 0xffffffffffffffffULL)
 	{
 		pthread_attr_init(&attr);
@@ -636,18 +671,14 @@ bool os::Thread::_Create(UINT stack_size, ULONGLONG CPU_affinity)
 			cpu_set_t cpuset;
 			rt::Zero(cpuset);
 			for(UINT i=0; i<sizeof(SIZE_T)*8; i++)
-				if(CPU_affinity&(1<<i))
+				if(CPU_affinity&(1ULL<<i))
 					CPU_SET(i, &cpuset);
 		
 			pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpuset);
 		}
 		set_attr = &attr;
 	}
-
-	struct _call
-	{	static LPVOID _func(LPVOID p)
-		{	return (LPVOID)(unsigned long)((Thread*)p)->_Run();
-	}	};
+#endif
 
     if(0 == pthread_create((pthread_t*)&_hThread, set_attr, _call::_func, this))
         return true;
