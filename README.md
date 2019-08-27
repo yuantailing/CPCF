@@ -1,12 +1,15 @@
 # CPCF
 
-It is a C++ library provides primitives for building cross-platform native systems and applications. It is refactored from a collection of codes accumulated when I was doing research on Computer Graphics/Vision and Distributed Systems in MSR and ICT/CAS since 2002. The library favors performance (more speed, less resource) over simplicity and maintainability, use with caution. 
+It is a C++ library provides primitives for building cross-platform native systems and applications. It is refactored from a collection of codes accumulated when I was doing research on Computer Graphics/Vision and Distributed Systems in ICT/CAS, MSRA and MSR since 2002. 
+
+The library favors performance (more speed, less resource) over simplicity and maintainability, use with caution. It is designed for all major platforms: Windows, Linux, MacOSX and mobile platforms iOS and Andriod. Only three desktop platforms are intensively tested. iOS should be fine, Andriod is not tested for a long time. 
+
 
 ### Major Components
 
 ##### Data Manipulation
 * `rt::TypeTraits` Extensible type traits framework
-* `rt::String/String_Ref` Memory efficient strings operations and expression (not NULL-terminated)
+* `rt::String/String_Ref` Memory efficient strings operations and expression (based on string without trailing NULL)
 * `rt::JsonObject`, `J()` Memory efficient simply Json parser and composer
 * `rt::XMLParser`, `rt::XMLComposer` XML parser and composer support xpath expression
 * `rt::Buffer` Simple linear container with assuming *move* syntax
@@ -16,12 +19,12 @@ It is a C++ library provides primitives for building cross-platform native syste
 ##### Advanced Data Manipulation
 * `mkl::RandomNumberGenerator` High quality pseudo random numbers
 * `mkl::Vector<>/Matrix<>` High performance numeric computation. Least square solver, matrix decomposition and sparse linear equations.
-* `ipp::Signal<>` High performance signal processing operations
 * `ipp::Image<>` High performance image processing operations for both LDR and HDR
 * `ipp::ImageDecoder/Encoder` Image codec supports GIF/PNG/JPG/PFM/EXR
 
 ##### OS Primitives
 * `_LOG`, `_LOG_XXX` Runtime logging solution for various IDEs and devices
+* `os::File` File and Directory manipulation
 * `os::UTF8Encode/Decode` Multilingual string support
 * `os::Base64`, `os::Base32`, `os::Base16`, `os::UrlEnocde/Decode` Binary data encoding
 * `os::Timestamp` High precision time and date representation
