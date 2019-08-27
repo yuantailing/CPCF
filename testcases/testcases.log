@@ -332,7 +332,7 @@ D742E420DEB730A3BB3B6476F0FE9E7A675B = txie886ypwra7esvchvfi@myf9knb
    "haha",
    "@"
 ]
-Json Size: 507 = 507
+Json Size: 506 = 506
 {
    "Key:Complex": "complex\" key",
    "name": "this is name",
@@ -371,7 +371,7 @@ Json Size: 507 = 507
    "std": "std::string",
    "bin": <21/1234567890ABCDEFGHIJK>,
    "raw": null,
-   "empty": [0]
+   "empty": []
 }
 complex\" key
 this is name
@@ -418,7 +418,7 @@ other [array] = [{
 std [string] = std::string
 bin [binary] = 1234567890ABCDEFGHIJK
 raw [null] = null
-empty [array] = [0]
+empty [array] = []
 jake
 mary
 
@@ -565,7 +565,7 @@ Write Tail
 1970/01/01 12:21:00.000
 Day: 0 == 0
 Day: 2 == 2
-Timelapse: 5
+Timelapse: 6
 2001/04/03 13:45:03.000
 2011/07/13 00:00:00.000
 FromInternetTimeFormat: 1994/11/15 12:45:26.000

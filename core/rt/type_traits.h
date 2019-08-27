@@ -628,7 +628,7 @@ struct _InvokeThisCall
 							typedef ReturnType (__thiscall __ThisCallPolymorphism_ ## name::* FUNC_CALL)(__VA_ARGS__); \
 							ReturnType ThisCallFunction(__VA_ARGS__);}	\
 
-#define THISCALL_POLYMORPHISM_INVOKE(name, This, Func, ...)	rt::_details::_InvokeThisCall<__ThisCallPolymorphism_ ## name>::Invoke(This, Func, __VA_ARGS__)
+#define THISCALL_POLYMORPHISM_INVOKE(name, This, Func, ...)	rt::_details::_InvokeThisCall<__ThisCallPolymorphism_ ## name>::Invoke(This, Func, ##__VA_ARGS__)
 #define THISCALL_MFPTR		rt::__ThisCallMemberFunctionPointer
 
 //////////////////////////////////////////////////////

@@ -364,7 +364,7 @@ operator + (const _SE<t_Left,t_Right>& x, const _JVar<LEFT, T>& p)
 
 #define J(x)					rt::_JTag(#x)
 #define J_IF(cond, definition)	((cond) ? (definition) : decltype(definition)())
-#define JA(...)					((rt::_JArray<>(), __VA_ARGS__))
+#define JA(...)					((rt::_JArray<>(), ##__VA_ARGS__))
 #define JB(x)					(rt::_JObj((x), true))
 
 

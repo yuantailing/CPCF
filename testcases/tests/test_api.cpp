@@ -92,7 +92,7 @@ void rt::UnitTests::json()
 		J(std) = std_string,
 		J(bin) = JB("1234567890ABCDEFGHIJK"),
 		J(raw) = rt::_JObj(""),
-		J(empty) = JA(0)
+		J(empty) = JA()
 	);
 
 	char buf[1024];
