@@ -338,10 +338,10 @@ HttpSession::HttpSession()
 	m_Port = 0;
 	_RecvBufferPool.SetSize(16);
 	_Timeout = rt::TypeTraits<int>::MaxVal();
-	m_pEventCallback = NULL;
-	m_pEventCallbackSaved = NULL;
-	m_pDataCallback = NULL;
-	SetCommonHeaders(NULL);
+	m_pEventCallback = nullptr;
+	m_pEventCallbackSaved = nullptr;
+	m_pDataCallback = nullptr;
+	SetCommonHeaders(nullptr);
 	m_LastResponseStage = HTTPCLIENT_EVENT_NONE;
 }
 
@@ -368,7 +368,7 @@ bool HttpSession::RequestProxyTunnel()
 	if(!_TcpConn.Send(buf,len))
 	{
 		if(_TcpConn.IsLastOperationTimeout() && m_pEventCallback)
-			m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
+			m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
 		return false;
 	}
 
@@ -389,14 +389,14 @@ bool HttpSession::RequestProxyTunnel()
 			else
 			{
 				if(m_pEventCallback)
-					m_pEventCallback(NULL,HTTPCLIENT_EVENT_PROTOCAL_ERROR,m_pEventCallbackCookie);
+					m_pEventCallback(nullptr, HTTPCLIENT_EVENT_PROTOCAL_ERROR, m_pEventCallbackCookie);
 				return false;
 			}
 		}
 	}
 
 	if(_TcpConn.IsLastOperationTimeout() && m_pEventCallback)
-		m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
+		m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
 
 	return false;
 }
@@ -537,8 +537,8 @@ UINT HttpSession::_RecvUntil(LPCSTR end_token, bool remove_parsed)
 		if(_Timing.TimeLapse() > _Timeout)
 		{	
 			if(m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			return INFINITE;
 		}
@@ -548,8 +548,8 @@ UINT HttpSession::_RecvUntil(LPCSTR end_token, bool remove_parsed)
 		)
 		{	CloseSocket();
 			if(_TcpConn.IsLastOperationTimeout() && m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			return INFINITE;
 		}
@@ -593,7 +593,7 @@ LPBYTE HttpSession::GetResponse()
 		return (LPBYTE)&_RecvBuffer(_ResponseStart + _RecvBuffer_Removed);
 	}
 	else
-		return NULL;
+		return nullptr;
 }
 
 UINT HttpSession::GetResponseLength() const
@@ -634,8 +634,8 @@ bool HttpSession::_RecvUpTo(UINT size_byte)
 		if(_Timing.TimeLapse() > _Timeout)
 		{
 			if(m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			return false;
 		}
@@ -646,8 +646,8 @@ bool HttpSession::_RecvUpTo(UINT size_byte)
 		)
 		{	CloseSocket();
 			if(_TcpConn.IsLastOperationTimeout() && m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			return false; 
 		}
@@ -684,8 +684,8 @@ bool HttpSession::_RecvUntilClose()
 		if(_Timing.TimeLapse() > _Timeout)
 		{
 			if(m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			return false;
 		}
@@ -696,8 +696,8 @@ bool HttpSession::_RecvUntilClose()
 		)
 		{	CloseSocket();
 			if(_TcpConn.IsLastOperationTimeout() && m_pEventCallback)
-			{	m_pEventCallback(NULL,HTTPCLIENT_EVENT_TIMEOUT,m_pEventCallbackCookie);
-				m_pEventCallback = NULL;
+			{	m_pEventCallback(nullptr, HTTPCLIENT_EVENT_TIMEOUT, m_pEventCallbackCookie);
+				m_pEventCallback = nullptr;
 			}
 			break;
 		}
@@ -820,7 +820,7 @@ void HttpSession::ResponseHeader::ParseHeader(LPCSTR header_text)
 		if (GetHeaderField(value, "content-disposition") && value.GetLength() > 0)
 		{
 			LPCSTR dispos = value.Begin();
-			LPCSTR end = NULL;
+			LPCSTR end = nullptr;
 			int fn_end, fn_start;
 			if(	dispos && (end = strstr(dispos, "\r\n")) &&
 				(fn_start = (int)rt::String_Ref(dispos, end).FindString("filename=")) > 0 &&
@@ -1429,7 +1429,7 @@ bool HttpNavigator::NavigateTo(LPCSTR pURL, int max_redirection_times, const cha
 	else
 		m_NavigatedDestination = rt::String_Ref("http://",7) + pURL;
 
-	bool bIsPost = pPostData != NULL;
+	bool bIsPost = pPostData != nullptr;
 
 	rt::String addtionalHeaderString;
 	if (bIsPost)
@@ -1475,9 +1475,9 @@ bool HttpNavigator::NavigateTo(LPCSTR pURL, int max_redirection_times, const cha
 				while(pdoc && (pdoc = strstr(pdoc,"http-equiv")))
 				{
 					LPSTR next = pdoc+10;
-					LPSTR pclose = NULL;
-					LPSTR pUrl = NULL;
-					LPSTR pEndUrl = NULL;
+					LPSTR pclose = nullptr;
+					LPSTR pUrl = nullptr;
+					LPSTR pEndUrl = nullptr;
 
 					if( (pclose = strchr(pdoc, '>')) &&
 						(*pclose = '\0', true) &&

@@ -465,7 +465,7 @@ public:
 			if(co)
 			{	_SC::_len = co;
 				_SC::_p = _Malloc32AL(t_Val,co);
-				return NULL != _SC::_p;
+				return nullptr != _SC::_p;
 			}
 		}
 		return true;

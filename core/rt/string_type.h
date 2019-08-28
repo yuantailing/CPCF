@@ -125,7 +125,7 @@ struct CharacterSet_ControlChar: public CharacterSet
 };
 
 struct CharacterSet_Alphabet: public CharacterSet
-{	FORCEINL CharacterSet_Alphabet(LPCSTR sep_additional = NULL)
+{	FORCEINL CharacterSet_Alphabet(LPCSTR sep_additional = nullptr)
 	{	for(int i='a'; i<='z'; i++)_Set[i-1] = true;
 		for(int i='A'; i<='Z'; i++)_Set[i-1] = true;
 		if(sep_additional)while(*sep_additional)_Set[((int)*sep_additional++)-1] = true;
@@ -133,14 +133,14 @@ struct CharacterSet_Alphabet: public CharacterSet
 };
 
 struct CharacterSet_LowerCase: public CharacterSet
-{	FORCEINL CharacterSet_LowerCase(LPCSTR sep_additional = NULL)
+{	FORCEINL CharacterSet_LowerCase(LPCSTR sep_additional = nullptr)
 	{	for(int i='a'; i<='z'; i++)_Set[i-1] = true;
 		if(sep_additional)while(*sep_additional)_Set[((int)*sep_additional++)-1] = true;
 	}
 };
 
 struct CharacterSet_UpperCase: public CharacterSet
-{	FORCEINL CharacterSet_UpperCase(LPCSTR sep_additional = NULL)
+{	FORCEINL CharacterSet_UpperCase(LPCSTR sep_additional = nullptr)
 	{	for(int i='A'; i<='Z'; i++)_Set[i-1] = true;
 		if(sep_additional)while(*sep_additional)_Set[((int)*sep_additional++)-1] = true;
 	}
@@ -161,7 +161,7 @@ struct CharacterSet_Number: public CharacterSet_Digits
 
 
 struct CharacterSet_AlphabetDigits: public CharacterSet
-{	FORCEINL CharacterSet_AlphabetDigits(LPCSTR sep_additional = NULL)
+{	FORCEINL CharacterSet_AlphabetDigits(LPCSTR sep_additional = nullptr)
 	{	for(int i='0'; i<='9'; i++)_Set[i-1] = true;
 		for(int i='a'; i<='z'; i++)_Set[i-1] = true;
 		for(int i='A'; i<='Z'; i++)_Set[i-1] = true;
@@ -170,7 +170,7 @@ struct CharacterSet_AlphabetDigits: public CharacterSet
 };
 
 struct CharacterSet_Symbol: public CharacterSet_AlphabetDigits		// C/C++ Symbol
-{	FORCEINL CharacterSet_Symbol(LPCSTR sep_additional = NULL):CharacterSet_AlphabetDigits(sep_additional)
+{	FORCEINL CharacterSet_Symbol(LPCSTR sep_additional = nullptr):CharacterSet_AlphabetDigits(sep_additional)
 	{	_Set[((int)'_')-1] = true;
 	}
 };
@@ -184,14 +184,14 @@ namespace _details
 	struct _StringPtrStore
 	{	char*	_p;
 		SIZE_T	_len;
-		FORCEINL bool			IsEmpty() const { return this == NULL || _p==NULL || _len<2; }
-		FORCEINL void			Empty(){ _p = NULL; _len = 0; }
+		FORCEINL bool			IsEmpty() const { return this == nullptr || _p==nullptr || _len<2; }
+		FORCEINL void			Empty(){ _p = nullptr; _len = 0; }
 	};
 	template<SIZE_T SIZE_RESERVED>
 	struct _StringArrayStore
 	{	char	_p[SIZE_RESERVED+1];
 		SIZE_T	_len;
-		FORCEINL bool	IsEmpty() const { return this == NULL || _len<2; }
+		FORCEINL bool	IsEmpty() const { return this == nullptr || _len<2; }
 		FORCEINL void	Empty(){ _len = 0; }
 		static const SIZE_T	_len_reserved = SIZE_RESERVED;
 	};
@@ -244,8 +244,8 @@ public:
 public:
 	FORCEINL t_String_Ref SubStrTail(SIZE_T len) const { return len > GetLength() ? *this : t_String_Ref(_SC::_p+GetLength()-len, len); }
 	FORCEINL t_String_Ref SubStrHead(SIZE_T len) const { return t_String_Ref(_SC::_p,rt::min(len,GetLength())); }
-	FORCEINL t_String_Ref SubStr(SIZE_T start, SIZE_T len) const { return start < GetLength() ? t_String_Ref(_SC::_p+start,rt::min(len,GetLength()-start)) : NULL; }
-	FORCEINL t_String_Ref SubStr(SIZE_T start) const { return start < GetLength() ? t_String_Ref(_SC::_p+start, GetLength()-start) : NULL; }
+	FORCEINL t_String_Ref SubStr(SIZE_T start, SIZE_T len) const { return start < GetLength() ? t_String_Ref(_SC::_p+start,rt::min(len,GetLength()-start)) : nullptr; }
+	FORCEINL t_String_Ref SubStr(SIZE_T start) const { return start < GetLength() ? t_String_Ref(_SC::_p+start, GetLength()-start) : nullptr; }
 	FORCEINL bool	StartsWith(const t_String_Ref& prefix) const
 	{	return	(GetLength() >= prefix.GetLength()) &&
 				SubStr(0,prefix.GetLength()) == prefix;
@@ -834,7 +834,7 @@ public:
     FORCEINL ~String_Ref(){}
 	template<typename SS, typename SR>
 	FORCEINL String_Ref(const String_Base<SS,SR>& x){ _SC::_p = (LPSTR)x._p; _SC::_len = x._len; }
-	FORCEINL String_Ref(){ _SC::_p = NULL; _len = 0; }
+	FORCEINL String_Ref(){ _SC::_p = nullptr; _len = 0; }
 	FORCEINL String_Ref(const String_Ref& x){ *this = x; }
 	FORCEINL String_Ref(const char* x){ operator = (x); }
 	FORCEINL String_Ref(const char* p, SIZE_T len){ _SC::_p = (char*)p; _SC::_len = len+1; }
@@ -845,7 +845,7 @@ public:
 	template <template<class, class, class> class std_string, class _Traits, class _Alloc>
 	FORCEINL String_Ref(const std_string<char, _Traits, _Alloc>& str)
 	{	if(str.size()){	_SC::_p = (LPSTR)str.c_str(); _SC::_len = str.size()+1; }
-		else{ _SC::_p = NULL; _SC::_len = 0; }
+		else{ _SC::_p = nullptr; _SC::_len = 0; }
 	}
 	FORCEINL const String_Ref& operator = (const char* x)
 	{	if(x)
@@ -1048,12 +1048,12 @@ public:
 public:
 	template<typename T1, typename T2>
 	FORCEINL String_AddExpr(T1& l, T2& r)
-		:_left(l),_right(r),_pString(NULL),_len(-1)
+		:_left(l),_right(r),_pString(nullptr),_len(-1)
 	{}
 	FORCEINL ~String_AddExpr(){ _SafeFree32AL(_pString); }
 	FORCEINL const char* Begin() const { return rt::_CastToNonconst(this)->GetSafeString(); }
 	FORCEINL const char* GetSafeString() 
-	{	if(_pString == NULL)
+	{	if(_pString == nullptr)
 		{	GetLength();
 			_pString = _Malloc32AL(char,_len+1);
 			ASSERT(_pString);
@@ -1064,7 +1064,7 @@ public:
 	}
 	FORCEINL const char* Begin(){ return GetSafeString(); }
 	FORCEINL String_Ref GetRef()
-	{	if(_pString == NULL)
+	{	if(_pString == nullptr)
 		{	SIZE_T len = GetLength();
 			_pString = _Malloc32AL(char,len+1);
 			ASSERT(_pString);
@@ -1228,19 +1228,19 @@ public:
 		else return false;
 	}
 	FORCEINL ~String(){ _SafeFree32AL(_p); }
-	FORCEINL LPSTR DetachBuffer(){ LPSTR p = _p; _len_reserved = _len = 0; _p = NULL; return p; }
+	FORCEINL LPSTR DetachBuffer(){ LPSTR p = _p; _len_reserved = _len = 0; _p = nullptr; return p; }
 	FORCEINL String& Empty(){ SetLength(0); return *this; }
 	FORCEINL String& SecureEmpty(){ _len = 0; rt::Zero(_p, _len_reserved); return *this; }
 public:
-	FORCEINL String(){ _len_reserved = 0; _p = NULL; _len = 0; }
-	FORCEINL String(const String& x){ _len_reserved = 0; _p = NULL; _len = 0; *this = (String_Ref&)x; }
-	FORCEINL String(const String_Ref& x){ _len_reserved = 0; _p = NULL; _len = 0; *this = x; }
-	FORCEINL String(const char* x){ _len_reserved = 0; _p = NULL; _len = 0; operator = (x); }
-	FORCEINL String(const char* p, SIZE_T len){ _len_reserved = 0; _p = NULL; _len = 0; *this = String_Ref(p,len); }
-	FORCEINL String(const char* p, const char* end){ _len_reserved = 0; _p = NULL; _len = 0; *this = String_Ref(p,end); }
-    FORCEINL String(const char c, int count){ _len_reserved = 0; _p = NULL; _len = 0; for (int i = 0; i < count; i++) *this += c; }
+	FORCEINL String(){ _len_reserved = 0; _p = nullptr; _len = 0; }
+	FORCEINL String(const String& x){ _len_reserved = 0; _p = nullptr; _len = 0; *this = (String_Ref&)x; }
+	FORCEINL String(const String_Ref& x){ _len_reserved = 0; _p = nullptr; _len = 0; *this = x; }
+	FORCEINL String(const char* x){ _len_reserved = 0; _p = nullptr; _len = 0; operator = (x); }
+	FORCEINL String(const char* p, SIZE_T len){ _len_reserved = 0; _p = nullptr; _len = 0; *this = String_Ref(p,len); }
+	FORCEINL String(const char* p, const char* end){ _len_reserved = 0; _p = nullptr; _len = 0; *this = String_Ref(p,end); }
+    FORCEINL String(const char c, int count){ _len_reserved = 0; _p = nullptr; _len = 0; for (int i = 0; i < count; i++) *this += c; }
 	template<typename T>
-	FORCEINL String(const T& string_expr){ _p = NULL; _len_reserved = _len = 0; (*this) = string_expr; }
+	FORCEINL String(const T& string_expr){ _p = nullptr; _len_reserved = _len = 0; (*this) = string_expr; }
 
 	FORCEINL const String& operator = (const char* x){ *this = String_Ref(x); return *this; }
 	FORCEINL const String& operator = (char* x){ *this = String_Ref(x); return *this; }
@@ -1818,7 +1818,7 @@ struct GUID:public ::rt::tos::S_<>
 {
 	INLFUNC GUID(const ::GUID& guid)
 	{
-		if((&guid) != NULL)
+		if((&guid) != nullptr)
         {	LPCSTR print_template = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x";
 			_len = 1+sprintf(_string,print_template, guid.Data1,guid.Data2,guid.Data3,
 							 guid.Data4[0],guid.Data4[1],guid.Data4[2],guid.Data4[3],

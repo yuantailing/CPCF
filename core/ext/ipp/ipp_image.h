@@ -208,7 +208,7 @@ public:
 	FORCEINL LPVOID         GetBits(){ return _p; }
 	FORCEINL LPCVOID		GetBits() const { return _p; }
 
-	FORCEINL Signal_Ref(const t_Val* p = NULL, UINT len = 0){ _p = (t_Val*)p; _len = len; }
+	FORCEINL Signal_Ref(const t_Val* p = nullptr, UINT len = 0){ _p = (t_Val*)p; _len = len; }
 	FORCEINL Signal_Ref(const Signal_Ref& x):Signal_Ref(x._p, x._len){}
 
 	template<typename T,UINT ch>
@@ -220,7 +220,7 @@ public:
 	FORCEINL Ref GetRef(UINT x,UINT len) const { ASSERT(x+len<=GetLength()); return Ref(&_p[x],len); }
 	FORCEINL Ref GetRef_Inside(UINT border) const {	ASSERT(border*2<GetLength()); return GetSubSignal(border,GetLength()-border*2);	}
 
-	FORCEINL bool IsEmpty() const { _p == NULL || _len == 0; }
+	FORCEINL bool IsEmpty() const { _p == nullptr || _len == 0; }
 
 	FORCEINL operator LPValueType (){ return _p; }
 	FORCEINL operator LPCValueType () const { return _p; }
@@ -237,7 +237,7 @@ class Signal: public Signal_Ref<t_Val, Channel>
 	FORCEINL void __SafeFree()
 	{	
 #ifdef PLATFORM_INTEL_IPP_SUPPORT
-		if(_SC::_p){ IPPCALL(ippsFree)(_SC::_p); _SC::_p=NULL; }
+		if(_SC::_p){ IPPCALL(ippsFree)(_SC::_p); _SC::_p=nullptr; }
 #else
 		_SafeFree32AL(_SC::_p);
 #endif
@@ -272,7 +272,7 @@ public:
 #else
 				_SC::_p = rt::mem32AL::Malloc32AL(co*sizeof(_SC::t_Val));
 #endif
-				if(_SC::_p == NULL){ _SC::_len = 0; return false; }
+				if(_SC::_p == nullptr){ _SC::_len = 0; return false; }
 			}
 			_SC::_len = co;
 			return true;
@@ -308,7 +308,7 @@ public:
 	FORCEINL LPVOID			GetBits(){ return _p; }
 	FORCEINL LPCVOID		GetBits() const { return _p; }
 
-	FORCEINL Volume_Ref(const t_Val* p = NULL, UINT w = 0,UINT h = 0,UINT d = 0,UINT step_wh = 0,UINT step_h = 0){ _p = (t_Val*)p; Width = w; Height = h; Depth = d; StepSize_WH = step_wh; StepSize_H = step_h; }
+	FORCEINL Volume_Ref(const t_Val* p = nullptr, UINT w = 0,UINT h = 0,UINT d = 0,UINT step_wh = 0,UINT step_h = 0){ _p = (t_Val*)p; Width = w; Height = h; Depth = d; StepSize_WH = step_wh; StepSize_H = step_h; }
 	FORCEINL Volume_Ref(const Volume_Ref& x):Volume_Ref(x._p, x.Width, x.Height, x.Depth, x.StepSize_WH, x.StepSize_H){}
 
 	template<typename T,UINT ch>
@@ -325,7 +325,7 @@ public:
 
 	FORCEINL t_Val& operator()(int x, int y, int z){ return *(x + (t_Val*)&((LPBYTE)_p)[y*StepSize_H + z*StepSize_WH]); }
 	FORCEINL const t_Val& operator()(int x, int y, int z) const { return *(x + (const t_Val*)&((LPCBYTE)_p)[x + y*StepSize_H + z*StepSize_WH]); }
-	FORCEINL bool IsEmpty() const { _p == NULL || Width == 0 || Height == 0 || Depth == 0; }
+	FORCEINL bool IsEmpty() const { _p == nullptr || Width == 0 || Height == 0 || Depth == 0; }
 };
 
 template<typename t_Value,UINT Channel>
@@ -398,9 +398,9 @@ protected:
 	FORCEINL const t_Value*	GetValueAddress(UINT x, UINT y)const{ return (const t_Value*)GetPixelAddress(x,y); }
 
 public:
-	FORCEINL void Attach(LPCVOID p = NULL, UINT w = 0, UINT h = 0, UINT step = 0){ Step_Bytes = step?step:w*Channel*sizeof(t_Value); Width = w; Height = h; lpData = (t_Val*)p; }
+	FORCEINL void Attach(LPCVOID p = nullptr, UINT w = 0, UINT h = 0, UINT step = 0){ Step_Bytes = step?step:w*Channel*sizeof(t_Value); Width = w; Height = h; lpData = (t_Val*)p; }
 	FORCEINL void Attach(const Image_Ref& x){ Attach(x.lpData, x.Width, x.Height, x.Step_Bytes); }
-	Image_Ref(LPCVOID p = NULL, UINT w = 0, UINT h = 0, UINT step = 0){ Attach(p,w,h,step); }
+	Image_Ref(LPCVOID p = nullptr, UINT w = 0, UINT h = 0, UINT step = 0){ Attach(p,w,h,step); }
 	Image_Ref(const Image_Ref& x){ Attach(x); }
 	operator const IppiSize& () const { return (IppiSize&)(*this); }
 	template<typename T,int ch>
@@ -415,7 +415,7 @@ public:
 	FORCEINL UINT			GetStep() const { return Step_Bytes; }	// in Bytes
 	FORCEINL LPVOID			GetBits(){ return lpData; }
 	FORCEINL LPCVOID		GetBits() const { return lpData; }
-	FORCEINL bool			IsEmpty() const { return lpData == NULL || Width == 0 || Height == 0; }
+	FORCEINL bool			IsEmpty() const { return lpData == nullptr || Width == 0 || Height == 0; }
 	FORCEINL t_Val &		operator ()(UINT x, UINT y){ return *(t_Val*)(&((LPBYTE)lpData)[y*Step_Bytes+x*sizeof(t_Val)]); }
 	FORCEINL const t_Val &	operator ()(UINT x, UINT y) const{ return *(t_Val*)(&((LPBYTE)lpData)[y*Step_Bytes+x*sizeof(t_Val)]); }
 	FORCEINL t_Val*			GetPixelAddress(UINT x, UINT y){ return &(*this)(x,y); }
@@ -1024,7 +1024,7 @@ public:
 	FORCEINL void Deviation(rt::Vec<t_Val2,chan_num>& dev) const
 	{	rt::Vec<Ipp64f,chan_num>	d;
 		switch(chan_num) {
-		case 1: ipp_cpp::ippiMean_StdDev_C1R(IPPARG_IMG(*this),*this,NULL,d); break;
+		case 1: ipp_cpp::ippiMean_StdDev_C1R(IPPARG_IMG(*this), *this, nullptr, d); break;
 		case 3: ASSERT(0); break;
 		case 4: ASSERT(0); break;
 		}
@@ -2185,13 +2185,13 @@ class Image:public Image_Ref<t_Value, Channel>
 	typedef Image_Ref<t_Value, Channel>	Ref;
     typedef Image_Ref<t_Value, Channel>	_SC;
 
-	void Attach(LPCVOID p = NULL, UINT w = 0, UINT h = 0, UINT step = 0){ ASSERT(0); }
+	void Attach(LPCVOID p = nullptr, UINT w = 0, UINT h = 0, UINT step = 0){ ASSERT(0); }
 	void Attach(const Image_Ref<t_Value, Channel>& x){ ASSERT(0); }
 
 	FORCEINL void	__SafeFree()
 	{	
 #ifdef PLATFORM_INTEL_IPP_SUPPORT
-		if(Ref::lpData){ IPPCALL(ippiFree)(Ref::lpData); Ref::lpData = NULL; }	
+		if(Ref::lpData){ IPPCALL(ippiFree)(Ref::lpData); Ref::lpData = nullptr; }	
 #else
 		_SafeFree32AL(Ref::lpData);
 #endif	// #ifdef PLATFORM_INTEL_IPP_SUPPORT
@@ -2247,7 +2247,7 @@ public:
 				step_size = (int)_EnlargeTo32AL(sizeof(t_Value)*Channel*w);
 				Ref::lpData = (typename Ref::t_Val*)rt::mem32AL::Malloc32AL(step_size*h, true);
 #endif  // PLATFORM_INTEL_IPP_SUPPORT
-				if(Ref::lpData == NULL)
+				if(Ref::lpData == nullptr)
 				{	Ref::Width=Ref::Height=0;
 					return false;
 				}
@@ -2323,7 +2323,7 @@ public:
 		}
 		else return Load(f,(UINT)f.GetSize());
 	}
-	FORCEINL bool	Load(LPCVOID data, UINT data_len, UINT* pOriginalChannel = NULL)
+	FORCEINL bool	Load(LPCVOID data, UINT data_len, UINT* pOriginalChannel = nullptr)
 	{	ImageDecoder	dec;
 		if(	data_len &&
 			dec.Decode(data,data_len) &&

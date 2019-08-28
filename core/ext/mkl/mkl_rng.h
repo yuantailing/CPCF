@@ -44,7 +44,7 @@ protected:
 	void				_ReleaseRNStream()
 	{	if( pStreamObj )
 		{	vslDeleteStream( &pStreamObj );
-			pStreamObj = NULL;
+			pStreamObj = nullptr;
 	}	}
 public:
 	enum 
@@ -55,14 +55,14 @@ public:
 		BRNG_MCG59 = 	VSL_BRNG_MCG59,		   //	SS		1.5 Fails 	0-45%	1.40E+17
 		BRNG_WH    =	VSL_BRNG_WH			   //	SS		1 Fails		0-60%	1.20E+24
 	};
-	RandomNumberGenerator(int _BRNG_Id = BRNG_MCG31){ pStreamObj = NULL; ResetBRGN(0,_BRNG_Id); }
+	RandomNumberGenerator(int _BRNG_Id = BRNG_MCG31){ pStreamObj = nullptr; ResetBRGN(0,_BRNG_Id); }
 	~RandomNumberGenerator(){ _ReleaseRNStream(); };
 	RandomNumberGenerator(RandomNumberGenerator& in)  // the copy constructor
 	{	BRNG_Id = in.BRNG_Id;
 		if( in.pStreamObj )
 			vslCopyStream(&pStreamObj,in.pStreamObj);
 		else
-			pStreamObj = NULL;
+			pStreamObj = nullptr;
 	}
 
 	void ResetBRGN(DWORD seed = 0, int New_BRNG_Id = -1 )

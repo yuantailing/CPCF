@@ -91,7 +91,7 @@ public:
 	t_Index GetSize() const { return _len; }
 
 public:
-	INLFUNC Buffer_Ref(){ _p=NULL; _len=0; }
+	INLFUNC Buffer_Ref(){ _p=nullptr; _len=0; }
 	INLFUNC Buffer_Ref(const Buffer_Ref<t_Val>& x){ _p = x._p; _len = x._len; }
 	INLFUNC Buffer_Ref(const t_Val*	p, t_Index len){ _p = (t_Val*)p; _len = len; }
 	INLFUNC Buffer_Ref GetSub(t_Index start, t_Index size){ return Buffer_Ref(_p+start, size); }
@@ -370,7 +370,7 @@ public:
 		
 		return false;
 	}
-	INLFUNC t_Val* Detach(){ auto* p = _SC::_p; _SC::_p = NULL; _SC::_len = 0; return p; }
+	INLFUNC t_Val* Detach(){ auto* p = _SC::_p; _SC::_p = nullptr; _SC::_len = 0; return p; }
 };
 
 template<typename t_Val>
@@ -511,7 +511,7 @@ public:
 	INLFUNC t_Val* push_back_n(SIZE_T count)
 	{	
 		SIZE_T sz = _SC::GetSize();
-		return ChangeSize(sz + count)?&_SC::_p[sz]:NULL;
+		return ChangeSize(sz + count)?&_SC::_p[sz]:nullptr;
 	}
 	INLFUNC void erase(const t_Val* p)
 	{	ASSERT(p < _SC::End());
@@ -566,7 +566,7 @@ public:
 				_SC::_p = (t_Val*)pNew;
 				_len_reserved = co;
 			}
-			return (bool)(pNew!=NULL);
+			return (bool)(pNew!=nullptr);
 		}
 		return true;
 	}
@@ -894,7 +894,7 @@ protected:
 	_Block*			pLastBlock;	
 public:
 	CircularBuffer()
-	{	_Buffer = NULL;
+	{	_Buffer = nullptr;
 		SetSize(0);
 	}
 	~CircularBuffer(){ _SafeFree32AL(_Buffer); }
@@ -906,11 +906,11 @@ public:
 			ASSERT(_Buffer);
 		}
 		else
-		{	_Buffer = NULL;
+		{	_Buffer = nullptr;
 			_BufferSize = 0;
 		}
 		Back = NewBlock = 0;
-		pLastBlock = NULL;
+		pLastBlock = nullptr;
 	}
 	LPBYTE Push(SIZE_T size_max)
 	{	size_max = _EnlargeTo32AL(size_max);
@@ -926,7 +926,7 @@ public:
 		{	p = (_Block*)_Buffer;
 			NewBlock = block_size;
 		}
-		else return NULL;
+		else return nullptr;
 
 		p->PayloadSize = size_max;
 		p->Next = INFINITE;
@@ -943,7 +943,7 @@ public:
 			_Block* p = (_Block*)(_Buffer + Back);
 			if(p == pLastBlock)
 			{	ASSERT(p->Next == INFINITE);
-				pLastBlock = NULL;
+				pLastBlock = nullptr;
 				NewBlock = Back = 0;
 			}
 			else
@@ -961,12 +961,12 @@ public:
 	}
 	const Block* Peek() const
 	{
-		Block* p = (Back != NewBlock)?(Block*)(_Buffer + Back + sizeof(_BlockHeader) - sizeof(SIZE_T)):NULL;
+		Block* p = (Back != NewBlock)?(Block*)(_Buffer + Back + sizeof(_BlockHeader) - sizeof(SIZE_T)):nullptr;
 		if(p && p->Length>0)
 		{	return p;
 		}
 		else
-			return NULL;
+			return nullptr;
 	}
 };
 

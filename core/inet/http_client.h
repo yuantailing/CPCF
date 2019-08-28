@@ -104,8 +104,8 @@ public:
 public:
     typedef	bool (*FUNC_EVENT_CALLBACK)(LPVOID param, UINT event, LPVOID cookie);
     typedef	int (*FUNC_DATA_CALLBACK)(LPCBYTE data, UINT data_len, UINT start_pos, bool fin, LPVOID cookie);	// return >0 to remove exiting response data from internal buffer, -1 for stopping downloading
-    bool				SendRequest(LPCSTR pURL, DWORD verb = HTTP_VERB_GET, LPCSTR additional_header = NULL, UINT additional_header_len = 0, LPCSTR optional = NULL, UINT optional_len = 0);
-    void				SetExpectedServerPublicKey(LPCVOID data = NULL, UINT data_size = 0){ _SecureConn.SetExpectedServerPublicKey(data, data_size); }
+    bool				SendRequest(LPCSTR pURL, DWORD verb = HTTP_VERB_GET, LPCSTR additional_header = nullptr, UINT additional_header_len = 0, LPCSTR optional = nullptr, UINT optional_len = 0);
+    void				SetExpectedServerPublicKey(LPCVOID data = nullptr, UINT data_size = 0){ _SecureConn.SetExpectedServerPublicKey(data, data_size); }
     bool				HasCertificateError(){ return _SecureConn.HasCertificateError(); }
 
 protected:
@@ -182,7 +182,7 @@ public:
     const InetAddr& GetProxy() { return m_ProxyServer; }
 
     void	SetItemEventCallback(FUNC_EVENT_CALLBACK cb, LPVOID cookie){ m_pEventCallbackSaved = cb; m_pEventCallbackCookie = cookie; }
-    bool	Request_Get(LPCSTR pURL, LPCSTR additional_header = NULL, UINT additional_header_len = 0);	// no automatic redirection (3xx) handling
+    bool	Request_Get(LPCSTR pURL, LPCSTR additional_header = nullptr, UINT additional_header_len = 0);	// no automatic redirection (3xx) handling
     bool	Request_Post(LPCSTR pURL, LPCBYTE data, UINT sz=0, LPCSTR data_type = "text/plain", LPCSTR charset = "utf-8", bool keep_alive = true);
     bool	Request_PostFile(LPCSTR pURL, LPCBYTE data, UINT sz, LPCSTR local_filename, bool keep_alive = true); // as multipart/form-data
     struct DataBuf
@@ -192,7 +192,7 @@ public:
     bool	Request_Post(LPCSTR pURL, const DataBuf* pBufs, UINT BufCount, LPCSTR data_type = "text/plain", LPCSTR charset = "utf-8", bool keep_alive = true);
 
     void	SetDataCallback(FUNC_DATA_CALLBACK cb, LPVOID cookie){ m_pDataCallback = cb; m_pDataCallbackCookie = cookie; }
-    bool	Request_GetPartial(LPCSTR pURL, int start, int length = -1, LPCSTR additional_header = NULL, UINT additional_header_len = 0);
+    bool	Request_GetPartial(LPCSTR pURL, int start, int length = -1, LPCSTR additional_header = nullptr, UINT additional_header_len = 0);
     
     bool	SetBindingAddress(LPCSTR dotted_ip);	// return false if the address is not available
     bool    SetBindingAddress(const InetAddr& addr);
@@ -225,7 +225,7 @@ class HttpRequestAsync
     os::Thread	_thread;
     HttpSession	_http;
 public:
-    HttpRequestAsync(LPCSTR url = NULL);
+    HttpRequestAsync(LPCSTR url = nullptr);
     ~HttpRequestAsync();
     bool Request(LPCSTR url);
     void Wait(DWORD timeout = INFINITE);
@@ -287,7 +287,7 @@ public:
     void	SetHangingTimeout(DWORD msec){ _Http.SetHangingTimeout(msec); }
     void	SetResponseTimeout(DWORD msec){ _Http.SetResponseTimeout(msec); }
     void	SetItemEventCallback(HttpSession::FUNC_EVENT_CALLBACK cb, LPVOID cookie){ _Http.SetItemEventCallback(cb, cookie); }
-	void	SetTask(LPCSTR url, LPCSTR filepath, LPCSTR cookie = NULL, bool resume = true);
+	void	SetTask(LPCSTR url, LPCSTR filepath, LPCSTR cookie = nullptr, bool resume = true);
 	void	SetProxy(LPCSTR url);
 	void	SetAddtionalHeader(LPCSTR header, UINT header_len) { _AddtionalHeader = header; }
     void	Start(bool async = false);
@@ -330,7 +330,7 @@ public:
     void				SetResponseTimeout(DWORD msec){ m_HttpSession.SetResponseTimeout(msec); }	// limit the total time of fulfilling the request 
     void				CancelResponseWaiting(){ m_HttpSession.CancelResponseWaiting(); }
     // automatic redirection (3xx) handling, cookie storage
-    bool				NavigateTo(LPCSTR pURL, int max_redirection_times = 8, const char *pPostData = NULL, int postDataLen = 0, HttpSession::_tagHttpVerb customVerb_for_post = HttpSession::HTTP_VERB_POST, bool bWaitResponse = true);
+    bool				NavigateTo(LPCSTR pURL, int max_redirection_times = 8, const char *pPostData = nullptr, int postDataLen = 0, HttpSession::_tagHttpVerb customVerb_for_post = HttpSession::HTTP_VERB_POST, bool bWaitResponse = true);
     rt::String_Ref		GetNavigateDestination() const { return m_NavigatedDestination; };	// final redirected URL
     HttpNavigator(){}
 

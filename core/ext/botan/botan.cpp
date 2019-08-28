@@ -218,7 +218,7 @@ bool TLS::Create()
 	}
 	catch(Botan::Stream_IO_Error &e)
 	{
-		if (strstr(e.what(), "Server certificate is not valid") != NULL)
+		if (strstr(e.what(), "Server certificate is not valid") != nullptr)
 			_CertificateError = true;
 	}
 	catch(...){}

@@ -89,7 +89,7 @@ void os::GarbageCollection::DeleteObject(LPVOID x, DWORD TTL_msec, os::GarbageCo
 {
 	ASSERT(delete_func);
 
-	if(x == NULL)return;
+	if(x == nullptr)return;
 	if(TTL_msec == 0)
 	{	delete_func(x);
 		return;
@@ -98,7 +98,7 @@ void os::GarbageCollection::DeleteObject(LPVOID x, DWORD TTL_msec, os::GarbageCo
 	{	EnterCSBlock(_details::g_GCB._PendingGarbagCCS);
 		if(_details::g_GCB._GarbagDeletionThread.IsRunning()){}
 		else
-		{	_details::g_GCB._GarbagDeletionThread.Create(_DeletionThread,NULL);
+		{	_details::g_GCB._GarbagDeletionThread.Create(_DeletionThread, nullptr);
 		}
 
 #ifdef PLATFORM_DEBUG_BUILD
@@ -174,7 +174,7 @@ LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
 	else
 	{
 		if(size >= size+32+1+sizeof(size_t))
-			return NULL;
+			return nullptr;
 
 		p = new(std::nothrow) BYTE[size+32+1+sizeof(size_t)];
 	}
@@ -218,7 +218,7 @@ LPVOID Malloc32AL(size_t size, bool allow_fail)   //size in byte
 		_LOG("\n\nOut of memory: Failed to allocate "<<((size+41)/1024)<<"KB memory block!\7\n");
 #endif
 		ASSERT(0);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -265,7 +265,7 @@ void Free32AL(LPCVOID ptr_in)
 		}
 		else{ Prefix_Err_Detected = true; }
 
-		LPCSTR emsg = NULL;
+		LPCSTR emsg = nullptr;
 		if(Prefix_Err_Detected && Suffix_Err_Detected)
 		{	emsg = ("Both low and high");	}
 		else if( Prefix_Err_Detected )
@@ -313,7 +313,7 @@ _TMA& _GetTMA()
 
 LPVOID TrackMemoryAllocation(LPVOID p, SIZE_T sz, bool no_ctor, LPCSTR type, UINT co, LPCSTR fn, LPCSTR func, UINT line)
 {
-	if(_TMA_Exit || p == NULL)return p;
+	if(_TMA_Exit || p == nullptr)return p;
 
 	EnterCSBlock(_GetTMA()._CS);
 	ASSERT(_GetTMA()._TrackedMemory.find((SIZE_T&)p) == _GetTMA()._TrackedMemory.end());
@@ -421,8 +421,8 @@ bool os::Thread::WaitForEnding(UINT time_wait_ms, bool terminate_if_timeout)
 
 os::Thread::Thread()
 {
-	__MFPTR_Obj = NULL;
-	__CB_Func = NULL;
+	__MFPTR_Obj = nullptr;
+	__CB_Func = nullptr;
 	_hThread = NULL;
 	_ExitCode = INFINITE;
 }
@@ -436,7 +436,7 @@ bool os::Thread::Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param, 
 {
 	ASSERT(_hThread == NULL);
 
-	__CB_Func = NULL;
+	__CB_Func = nullptr;
 	__MFPTR_Obj = obj;
 	__MFPTR_Func = on_run;
 	__CB_Param = param;
@@ -450,7 +450,7 @@ bool os::Thread::Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie, ULONGLONG cpu
 
 	__CB_Func = x;
 	__CB_Param = thread_cookie;
-	__MFPTR_Obj = NULL;
+	__MFPTR_Obj = nullptr;
 	__MFPTR_Func.Zero();
 
 	return _Create(stack_size, cpu_aff);
@@ -605,7 +605,7 @@ bool os::Thread::_Create(UINT stack_size, ULONGLONG CPU_affinity)
 	_bWantExit = false;
 
 	pthread_attr_t attr;
-	pthread_attr_t* set_attr = NULL;
+	pthread_attr_t* set_attr = nullptr;
 
     struct _call
     {    static LPVOID _func(LPVOID p)

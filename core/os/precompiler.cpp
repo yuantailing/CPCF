@@ -341,7 +341,7 @@ TRY_NEXT_TOKEN:
 
 void Precompiler::_SubsituteMacrosInline(const rt::String_Ref& content, rt::String& output)
 {
-	const rt::String* val = NULL;
+	const rt::String* val = nullptr;
 
 	if(content.IsEmpty())return;
 	
@@ -481,10 +481,10 @@ Precompiler::Precompiler(const rt::String_Ref& macro_prefix, const rt::String_Re
 	_ErrorCount = 0;
 	_WarningCount = 0;
 	_SuppressWarnings = false;
-	_pFileLoader = NULL;
+	_pFileLoader = nullptr;
 	_FileLoaderAllowFallback = true;
 
-	_pPredefined = NULL;
+	_pPredefined = nullptr;
 }
 
 void Precompiler::SetIncludeSearchDirectories(const rt::String_Ref& dirs)
@@ -555,7 +555,7 @@ bool PrecompilerPredefinedMacros::IsDefined(const rt::String_Ref& macro) const
 const rt::String* PrecompilerPredefinedMacros::Get(const rt::String_Ref& macro) const
 {
 	auto it = _PredefinedMacros.find(macro);
-	if(it == _PredefinedMacros.end())return NULL;
+	if(it == _PredefinedMacros.end())return nullptr;
 	return &it->second;
 }
 

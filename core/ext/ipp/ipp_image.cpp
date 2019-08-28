@@ -336,7 +336,7 @@ bool ImageDecoder::DecodeHeader(LPCBYTE pData, UINT DataLen, DWORD image_codec)
 		m_DecodedImageStep = 0;
 		m_BufferUsedLen = 0;
 
-		m_JcProps.JPGFile = NULL;
+		m_JcProps.JPGFile = nullptr;
 		m_JcProps.JPGBytes = rt::_CastToNonconst(pData);
 		m_JcProps.JPGSizeBytes = DataLen;
 		if(ijlRead(&m_JcProps, IJL_JBUFF_READPARAMS)!=IJL_OK)
@@ -470,8 +470,8 @@ bool ImageDecoder::Decode(LPCVOID pDataIn, UINT DataLen, DWORD image_codec)
 		};
 
 		_read_function _png_io(pData, DataLen);
-		png_structp png_ptr = NULL;
-		png_infop info_ptr = NULL;
+		png_structp png_ptr = nullptr;
+		png_infop info_ptr = nullptr;
         /* initialize stuff */
 		if(	(png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)) &&
 			(info_ptr = png_create_info_struct(png_ptr))
@@ -526,7 +526,7 @@ bool ImageDecoder::Decode(LPCVOID pDataIn, UINT DataLen, DWORD image_codec)
 		m_DecodedImageStep = 0;
 		m_BufferUsedLen = 0;
 
-		m_JcProps.JPGFile = NULL;
+		m_JcProps.JPGFile = nullptr;
 		m_JcProps.JPGBytes = rt::_CastToNonconst(pData);
 		m_JcProps.JPGSizeBytes = DataLen;
 		if(ijlRead(&m_JcProps, IJL_JBUFF_READPARAMS)!=IJL_OK)
@@ -675,8 +675,8 @@ bool ImageDecoder::Decode(LPCVOID pDataIn, UINT DataLen, DWORD image_codec)
 				if(	img.ImageDesc.Top < 0 || img.ImageDesc.Left < 0 || 
 					img.ImageDesc.Left + img.ImageDesc.Width > m_DecodedImageWidth ||
 					img.ImageDesc.Top + img.ImageDesc.Height > m_DecodedImageHeight ||
-					cmo == NULL ||
-					img.RasterBits == NULL
+					cmo == nullptr ||
+					img.RasterBits == nullptr
 				)
 				{	goto GIF_DECODE_FAILED;
 				}
@@ -776,8 +776,8 @@ bool ImageEncoder::Encode(LPCBYTE pData,int Channel,int Width,int Height,int Ste
 		};
 
 		_write_function _png_io(m_TempBuffer, (UINT)m_TempBuffer.GetSize());
-		png_structp png_ptr = NULL;
-		png_infop info_ptr = NULL;
+		png_structp png_ptr = nullptr;
+		png_infop info_ptr = nullptr;
         /* initialize stuff */
 		if(	(png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)) &&
 			(info_ptr = png_create_info_struct(png_ptr))
@@ -844,7 +844,7 @@ bool ImageEncoder::Encode(LPCBYTE pData,int Channel,int Width,int Height,int Ste
 			return false;
 		}
 
-		m_JcProps.JPGFile = NULL;
+		m_JcProps.JPGFile = nullptr;
 		m_JcProps.JPGBytes = m_TempBuffer;
 		m_JcProps.JPGSizeBytes = (int)m_TempBuffer.GetSize();
 

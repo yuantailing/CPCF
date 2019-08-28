@@ -24,7 +24,7 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 	for(int i=0;i<now_co;i++)
 	{
 		os::Process::Info& n = now[i];
-		os::Process::Info* match = NULL;
+		os::Process::Info* match = nullptr;
 		for(int j=0;j<prev_co;j++)
 		{
 			if(n.PID == prev[j].PID)
@@ -46,7 +46,7 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 	for(int i=0;i<prev_co;i++)
 	{
 		os::Process::Info& n = prev[i];
-		os::Process::Info* match = NULL;
+		os::Process::Info* match = nullptr;
 		for(int j=0;j<now_co;j++)
 		{
 			if(n.PID == now[j].PID)
@@ -56,7 +56,7 @@ void diff_infoset(os::Process::Info* prev, int prev_co, os::Process::Info* now, 
 			}
 		}
 
-		if(match==NULL)
+		if(match == nullptr)
 		{
 			result += rt::SS("DEL,") + n.Name.GetFilename() + ',' + rt::tos::Timestamp<>(n.StartTime) + '\n';
 		}

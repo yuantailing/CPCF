@@ -117,12 +117,12 @@ public:
 	void	SetPriority(UINT p = PRIORITY_HIGH);
 	UINT	GetId();
 
-	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
-	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = NULL, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
+	bool	Create(LPVOID obj, const THISCALL_MFPTR& on_run, LPVOID param = nullptr, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
+	bool	Create(FUNC_THREAD_ROUTE x, LPVOID thread_cookie = nullptr, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0);
 
 	template<typename T>
 	bool	Create(T threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0) // Caller should ensure the lifetime of variables captured by the lambda function
-			{	__MFPTR_Obj = NULL;
+			{	__MFPTR_Obj = nullptr;
 				ASSERT(_hThread == NULL);
 				struct _call { 
 					static DWORD _func(LPVOID p)
@@ -610,10 +610,10 @@ public:
 	static void Exit();
 };
 
-#define _SafeDel_Delayed(x, TTL_msec)		{ if(x){ os::GarbageCollection::DeleteObj(x,TTL_msec); x=NULL; } }
-#define _SafeDelArray_Delayed(x,TTL_msec)	{ if(x){ os::GarbageCollection::DeleteArray(x,TTL_msec); x=NULL; } }
-#define _SafeFree32AL_Delayed(x,TTL_msec)	{ if(x){ os::GarbageCollection::Delete32AL(x,TTL_msec); x=NULL; } }
-#define _SafeRelease_Delayed(x, TTL_msec)	{ if(x){ os::GarbageCollection::ReleaseObj(x,TTL_msec); x=NULL; } }
+#define _SafeDel_Delayed(x, TTL_msec)		{ if(x){ os::GarbageCollection::DeleteObj(x,TTL_msec); x=nullptr; } }
+#define _SafeDelArray_Delayed(x,TTL_msec)	{ if(x){ os::GarbageCollection::DeleteArray(x,TTL_msec); x=nullptr; } }
+#define _SafeFree32AL_Delayed(x,TTL_msec)	{ if(x){ os::GarbageCollection::Delete32AL(x,TTL_msec); x=nullptr; } }
+#define _SafeRelease_Delayed(x, TTL_msec)	{ if(x){ os::GarbageCollection::ReleaseObj(x,TTL_msec); x=nullptr; } }
 
 ///////////////////////////////////////////////////
 // One managing thread is doing Update/Commit/GetBack
@@ -657,7 +657,7 @@ class DroppableQueue // The Max using time of the object from Get should < the i
 	t_Obj				_Bufs[4];
 public:
 	INLFUNC const t_Obj* Consume_Begin() // fail when empty
-	{	if(_Head == _Tail)return NULL;
+	{	if(_Head == _Tail)return nullptr;
 		return &_Bufs[_Head&3];
 	}
 	INLFUNC void Consume_End(){	_Head++; }
@@ -718,9 +718,9 @@ public:
     FORCEINL UINT GetCapacity() const { return _Buf.GetSize(); }
     FORCEINL T* Head()
     {	UINT size = _SizeInConsumerView();
-        return (size && _BufFin[_Head&_IndexMask])?&_Buf[_Head&_IndexMask]:NULL;
+        return (size && _BufFin[_Head&_IndexMask])?&_Buf[_Head&_IndexMask]:nullptr;
     }
-    FORCEINL bool Consume()	// remove the head, return true if there is more items. use while((p = Head())==NULL); to fetch the next
+    FORCEINL bool Consume()	// remove the head, return true if there is more items. use while((p = Head())==nullptr); to fetch the next
     {
     #if defined(PLATFORM_DEBUG_BUILD)
         UINT size = _SizeInConsumerView();
@@ -733,12 +733,12 @@ public:
         ASSERT(c>=0);
         return c != 0;
     }
-    FORCEINL T* Produce_Begin(bool* pIsFirstOne = NULL)
+    FORCEINL T* Produce_Begin(bool* pIsFirstOne = nullptr)
     {	INT c = os::AtomicIncrement(&_Count);
         if(pIsFirstOne)*pIsFirstOne = (c == 1);
         if(c>(INT)_Buf.GetSize())
         {	os::AtomicDecrement(&_Count);
-            return NULL;
+            return nullptr;
         }	
         UINT new_tail = os::AtomicIncrement((volatile INT*)&_Tail);
         UINT pos = (new_tail-1)&_IndexMask;
@@ -750,7 +750,7 @@ public:
         _BufFin[p - _Buf] = 1; 
     }
     template<typename T2>
-    FORCEINL bool Produce(T2& x, bool* pIsFirstOne = NULL)
+    FORCEINL bool Produce(T2& x, bool* pIsFirstOne = nullptr)
     {	T* p = Produce_Begin(pIsFirstOne);
         if(p)
         {	*p = x;
@@ -773,7 +773,7 @@ class _TSM_Updater
 	t_MTMutable&	_MTM;
 	bool			_UpdateBegin;
 public:
-	INLFUNC _TSM_Updater(t_MTMutable& x, bool just_try = false):_MTM(x){ _UpdateBegin = _MTM.BeginUpdate(just_try); _Cloned = NULL; }
+	INLFUNC _TSM_Updater(t_MTMutable& x, bool just_try = false):_MTM(x){ _UpdateBegin = _MTM.BeginUpdate(just_try); _Cloned = nullptr; }
 
 	INLFUNC bool		IsUpdating() const { return _UpdateBegin; }
 	INLFUNC bool		IsModified() const { return (bool)_Cloned; }
@@ -781,7 +781,7 @@ public:
 	INLFUNC auto&		GetModified() const { ASSERT(_Cloned); return *_Cloned; }
 	
 	INLFUNC bool		ReadyModify(bool from_new = false){ if(!_Cloned)_Cloned = from_new?_MTM.New():_MTM.Clone(); return (bool)_Cloned; }
-	INLFUNC void		Revert(){ ASSERT(_UpdateBegin); _SafeDel(_Cloned); _MTM.EndUpdate(NULL); _UpdateBegin = false; }
+	INLFUNC void		Revert(){ ASSERT(_UpdateBegin); _SafeDel(_Cloned); _MTM.EndUpdate(nullptr); _UpdateBegin = false; }
 	INLFUNC void		Commit(){ ASSERT(_UpdateBegin); _MTM.EndUpdate(_Cloned); _UpdateBegin = false; }
 	INLFUNC t_Object*	operator ->(){ ASSERT(_UpdateBegin); ReadyModify(); return _Cloned; }
 	INLFUNC t_Object&	Get(){ ASSERT(_UpdateBegin); ReadyModify(); return *_Cloned; }
@@ -804,7 +804,7 @@ protected:
 					{	if(just_try)return _cs.TryLock();
 						_cs.Lock(); return true;
 					}
-	INLFUNC void	EndUpdate(T* pNew = NULL) // NULL indicates no change
+	INLFUNC void	EndUpdate(T* pNew = nullptr) // nullptr indicates no change
 					{	if(pNew)
 						{	T* pOld = _p;
 							_p = pNew;
@@ -814,7 +814,7 @@ protected:
 					}
 public:
 	typedef T			t_Object;
-	INLFUNC	ThreadSafeMutable(){ _p = NULL; }
+	INLFUNC	ThreadSafeMutable(){ _p = nullptr; }
 	INLFUNC ~ThreadSafeMutable(){ Clear();	}
 
 	INLFUNC const T&	Get() const { static T _t; return _p?*_p:_t; }
@@ -1070,7 +1070,7 @@ public:
 		else
 		{	// this may happen when the writer is much faster then the sync thread
 			os::AtomicIncrement(&stat_ClaimFailure);
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -1139,7 +1139,7 @@ protected:
 		void Exit(){};
 		bool Write(LPCVOID p, UINT size)
 		{	const LogE& e = *((LogE*)p);
-			os::_details::LogWriteDefault(e.text, &e.text[e.log_len], e.line, &e.text[e.log_len + e.filename_len], e.type, NULL);
+			os::_details::LogWriteDefault(e.text, &e.text[e.log_len], e.line, &e.text[e.log_len + e.filename_len], e.type, nullptr);
 			return true;
 		}
 	};

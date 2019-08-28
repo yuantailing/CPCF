@@ -692,11 +692,11 @@ namespace _details
 
 ///////////////////////////////////////////////////////
 // Safe delete Objects
-#define _SafeRelease(x)				{ if(x){x->Release(); x=NULL;} }
+#define _SafeRelease(x)				{ if(x){x->Release(); x=nullptr;} }
 #define _SafeRelease_ConstPtr(x)	{ if(x)rt::_CastToNonconst(x)->Release(); }
 
 #if defined(PLATFORM_MAC) || defined(PLATFORM_IOS)
-#define _SafeCFRelease(x)	{ if(x){::CFRelease(x); x=NULL;} }
+#define _SafeCFRelease(x)	{ if(x){::CFRelease(x); x=nullptr;} }
 #endif
 ///////////////////////////////////////////////////////
 
@@ -773,10 +773,10 @@ extern bool IsMemoryExceptionEnabledInThread();
 
 #endif
 
-#define _SafeFree8AL(ptr)			{ _SafeFree8AL_ConstPtr(ptr); ptr = NULL; }
-#define _SafeFree32AL(ptr)			{ _SafeFree32AL_ConstPtr(ptr); ptr = NULL; }
-#define _SafeDel(ptr)				{ _SafeDel_ConstPtr(ptr); ptr = NULL; }
-#define _SafeDelArray(ptr)			{ _SafeDelArray_ConstPtr(ptr); ptr = NULL; }
+#define _SafeFree8AL(ptr)			{ _SafeFree8AL_ConstPtr(ptr); ptr = nullptr; }
+#define _SafeFree32AL(ptr)			{ _SafeFree32AL_ConstPtr(ptr); ptr = nullptr; }
+#define _SafeDel(ptr)				{ _SafeDel_ConstPtr(ptr); ptr = nullptr; }
+#define _SafeDelArray(ptr)			{ _SafeDelArray_ConstPtr(ptr); ptr = nullptr; }
 
 #define _EnlargeTo32AL(num)			((((num) + 0x7)&(~((SIZE_T)0x7))))
 #define _Alloca32AL(sz)				(_EnlargeTo32AL((SIZE_T)alloca(sz + 4)))
@@ -1137,8 +1137,8 @@ public:
 
 	INLFUNC T* operator = (T*x){ _p = x; return x; }
 
-	INLFUNC bool	IsEmpty() const { return _p == NULL; }  
-	INLFUNC void	Empty(){ _p=NULL; }
+	INLFUNC bool	IsEmpty() const { return _p == nullptr; }  
+	INLFUNC void	Empty(){ _p=nullptr; }
 	INLFUNC void	SafeDel(){ _SafeDel(_p); }
 	INLFUNC void	SafeRelease(){ _SafeRelease(_p); }
 };

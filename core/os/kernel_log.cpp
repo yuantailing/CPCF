@@ -215,7 +215,7 @@ rt::String_Ref GetLogFilename()
 #ifndef PLATFORM_DISABLE_LOG
 	return _details::_LogFile.GetFilename();
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -552,7 +552,7 @@ void LogWriteDefault(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int typ
 
 
 static FUNC_LOG_WRITE	__LogWrtieFunc = LogWriteDefault;
-static LPVOID			__LogWrtieFuncCookie = NULL;
+static LPVOID			__LogWrtieFuncCookie = nullptr;
 static bool				__LogWrtieNoConsoleDisplay = false;
 
 void SetLogWriteFunction(FUNC_LOG_WRITE func, LPVOID cookie)
@@ -563,11 +563,11 @@ void SetLogWriteFunction(FUNC_LOG_WRITE func, LPVOID cookie)
 	}
 	else
 	{	__LogWrtieFunc = LogWriteDefault;
-		__LogWrtieFuncCookie = NULL;
+		__LogWrtieFuncCookie = nullptr;
 	}
 }
 
-static LPVOID					__ConsoleLogWriteCookie = NULL;
+static LPVOID					__ConsoleLogWriteCookie = nullptr;
 static FUNC_CONSOLE_LOG_WRITE	__ConsoleLogWriteFunc = __ConsoleLogWriteDefault;
 
 void __ConsoleLogWrite(LPCSTR log, int type){ __ConsoleLogWriteFunc(log, type, __ConsoleLogWriteCookie); }
@@ -579,7 +579,7 @@ void SetConsoleLogWriteFunction(FUNC_CONSOLE_LOG_WRITE func, LPVOID cookie)
 		__ConsoleLogWriteCookie = cookie;
 	}
 	else
-	{	__ConsoleLogWriteCookie = NULL;
+	{	__ConsoleLogWriteCookie = nullptr;
 		__ConsoleLogWriteFunc = __ConsoleLogWriteDefault;
 	}
 }

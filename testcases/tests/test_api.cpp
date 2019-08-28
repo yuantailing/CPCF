@@ -460,7 +460,7 @@ void rt::UnitTests::multithread()
 	{	test_multithread_event.Reset();
 
 		os::Thread	th;
-		th.Create(_call_event::_wait_thread,NULL);
+		th.Create(_call_event::_wait_thread, nullptr);
 		_LOG("Thread Run: "<<th.IsRunning());
 		os::Sleep(4000);
 		
@@ -1103,7 +1103,7 @@ void rt::UnitTests::buffer()
 	memcpy(p,str,str.GetLength());
 	cyc.SetBlockSize(p, str.GetLength()-1);
 
-	if(cyc.Push(277) == NULL)_LOG("Overflow");
+	if(cyc.Push(277) == nullptr)_LOG("Overflow");
 
 	_LOG(rt::String_Ref((LPCSTR)cyc.Peek()->Data, cyc.Peek()->Length));
 	cyc.Pop();
@@ -1292,7 +1292,7 @@ void rt::UnitTests::pcqueue()
 			for(UINT i=0;i<DATA_SIZE*NUM_PRODUCER;i++)
 			{	
 				UINT* pv;
-				while((pv = t->pcq.Head()) == NULL);
+				while((pv = t->pcq.Head()) == nullptr);
 				t->Data[*pv] ++;
 				t->pcq.Consume();
 				

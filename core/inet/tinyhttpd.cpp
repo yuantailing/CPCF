@@ -88,12 +88,12 @@ LPCSTR inet::TinyHttpd::_GetMIME(const rt::String_Ref& filename)
 		//ext.TruncateLeft(1);
 		return _Ext2MIME(ext.Begin(), (int)ext.GetLength());
 	}
-	return NULL;
+	return nullptr;
 }
 
 inet::TinyHttpd::TinyHttpd(void)
 {
-	_pEndPoints = NULL;
+	_pEndPoints = nullptr;
 
 	m_IOHangTimeout = 1000;
 	m_Concurrency = 0;
@@ -132,7 +132,7 @@ bool inet::TinyHttpd::Start(const InetAddr* pBindAddress, int address_count, int
 	for(int i=0;i<address_count;i++)
 	{
 		listening_port& port = m_Listeners[socket_ok];
-		port.m_pHttpd = NULL;
+		port.m_pHttpd = nullptr;
 		port.m_Socket = (SOCKET)socket(AF_INET, SOCK_STREAM, 0); //getprotobyname("tcp")->p_proto);
 		if(port.m_Socket != INVALID_SOCKET)
 		{
@@ -381,7 +381,7 @@ LPBYTE inet::HttpResponse::GetWorkSpace(UINT sz, bool preserve_existing_content)
 	{	if(_Workspace.SetSize(sz))return _Workspace;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 

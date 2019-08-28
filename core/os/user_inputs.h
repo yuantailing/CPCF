@@ -268,13 +268,13 @@ protected:
 public:
 	static UserInputEventPump* Get(){ return g_pSingletone; }
 	UserInputEventPump();
-	~UserInputEventPump(){ Term(); g_pSingletone = NULL; }
+	~UserInputEventPump(){ Term(); g_pSingletone = nullptr; }
 	void	AddSubscriber(UserInputSubscriber* h, DWORD device_interested = UIDEV_MASK_ALL);
 	void	RemoveSubscriber(UserInputSubscriber* h);
 	void	Term();
     
     void    SendEvent(UserInputEvent& e);
-    void    SendEvent_Command(DWORD cmdid, LPVOID param = NULL);
+    void    SendEvent_Command(DWORD cmdid, LPVOID param = nullptr);
 
 
 	INLFUNC const UserInputEvent* GetCurrentEvent() const { return _pCurrentEvent; }

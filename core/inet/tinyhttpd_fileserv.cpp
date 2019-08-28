@@ -30,7 +30,7 @@ LPBYTE HttpServerFiles::_AddFile(const rt::String_Ref& path, UINT datalen, LPCST
 		rt::Zero(p->data + pathlen + 1,datalen);
 		return p->data + pathlen + 1;
 	}
-	else return NULL;
+	else return nullptr;
 }
 
 void HttpServerFiles::AddFile(const rt::String_Ref& path, LPCVOID pdata, UINT datalen, LPCSTR mime)
@@ -90,7 +90,7 @@ HttpServerFiles::~HttpServerFiles()
 
 HttpServerFiles::HttpServerFiles()
 {
-	_HttpDataConv = NULL;
+	_HttpDataConv = nullptr;
 }
 
 void HttpServerFiles::RemoveAllFiles()
@@ -124,7 +124,7 @@ bool HttpServerFiles::OnRequest(HttpResponse& response)
 bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 {
 	rt::String_Ref uri = resp.GetLnPath(this);
-	LPBYTE buf = NULL;
+	LPBYTE buf = nullptr;
 	UINT	fsz;
 
 	ASSERT_NONRECURSIVE;
@@ -137,7 +137,7 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 		if(resp.HttpVerb == HTTP_GET)
 		{
 			os::FileList	flist;
-			flist.Populate(a, NULL, os::FileList::FLAG_SKIPHIDDEN);
+			flist.Populate(a, nullptr, os::FileList::FLAG_SKIPHIDDEN);
 
 			resp.SendChuncked_Begin(TinyHttpd::_MIMEs[TinyHttpd::MIME_HTML], _MaxAge);
 			{
@@ -348,7 +348,7 @@ void HttpVirtualPath::SetMappedPath(LPCSTR p, bool readonly)
 
 HttpVirtualPath::HttpVirtualPath()
 {
-	_HttpDataConv = NULL;
+	_HttpDataConv = nullptr;
 	_MaxAge = 0;
 	_ReadOnly = true;
 }

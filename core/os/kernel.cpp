@@ -1028,9 +1028,9 @@ bool GetDeviceUID(rt::String& str)
 #if defined(PLATFORM_WIN)
 	str = "win";
 	HANDLE tk;
-	TOKEN_USER* tu = NULL;
+	TOKEN_USER* tu = nullptr;
 	DWORD ret_len = 0;
-	LPSTR sid = NULL;
+	LPSTR sid = nullptr;
 	if(	::OpenProcessToken(::GetCurrentProcess(), TOKEN_READ, &tk) &&
 		(::GetTokenInformation(tk, TokenUser, NULL, 0, &ret_len)||true) &&
 		(tu = (TOKEN_USER*)_Malloc32AL(BYTE,ret_len)) &&

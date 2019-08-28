@@ -126,7 +126,7 @@ protected:
 	bool	_UndefineMacro(const rt::String_Ref& macro);
 
 public:
-	Precompiler(const rt::String_Ref& macro_prefix = NULL, const rt::String_Ref& macro_suffix = NULL, const rt::String_Ref& macro_connect = "##");
+	Precompiler(const rt::String_Ref& macro_prefix = nullptr, const rt::String_Ref& macro_suffix = nullptr, const rt::String_Ref& macro_connect = "##");
 	~Precompiler(){ Empty(); }
 
 	void	PrintError(LPCSTR msg);
@@ -138,7 +138,7 @@ public:
 
 	void	SetSourceFilename(const rt::String_Ref& fn){ _SourceCodeFilename = fn; }
 
-	void	Compile(LPCSTR filename, const rt::String_Ref& source = NULL);
+	void	Compile(LPCSTR filename, const rt::String_Ref& source = nullptr);
 	const	rt::String_Ref& GetCompiled() const;
 
 	UINT	GetErrorCount() const { return _ErrorCount; };

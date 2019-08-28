@@ -237,13 +237,13 @@ public:
 public:
 	FileZip();
 	~FileZip(){ Close(); }
-	bool	IsOpen() const { return _pZipFile!=NULL; }
+	bool	IsOpen() const { return _pZipFile!=nullptr; }
 	bool	Open(LPCSTR fn, LPCSTR openflag = File::Normal_Read, bool load_indexed = true);
 	bool	Open(rt::_File* pFile, LPCSTR mode, bool load_indexed = true);
 	void	Close();	// save and close
 	bool	Save();		// just save, no squeeze
 	bool	Squeeze();	// squeeze space after some deletion
-	File*	GetBaseFile(){ return _BaseFile.IsOpen()?&_BaseFile:NULL; }
+	File*	GetBaseFile(){ return _BaseFile.IsOpen()?&_BaseFile:nullptr; }
 
 	int		FindFile(const rt::String_Ref& pathname);	// -1 if not found, returned index will be invalidate when File List is changed
 														// by AddFile and RemoveFile
@@ -334,7 +334,7 @@ protected:
 
 public:
 	FileGzip();
-	bool			IsOpen() const { return _pZipFile!=NULL; }
+	bool			IsOpen() const { return _pZipFile!=nullptr; }
 	bool			Open(LPCSTR fn);
 	bool			Open(rt::_File* pFile);
 	void			Close();

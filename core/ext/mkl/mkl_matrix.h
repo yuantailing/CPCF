@@ -108,7 +108,7 @@ public:
 	INLFUNC const t_Val& operator ()(const T i,const T2 j) const{ return  t_NotTransposed?lpData[j*LeadingDimen+i]:lpData[i*LeadingDimen+j]; }
 
 	INLFUNC Matrix_Ref(t_Val* p, MKL_SIZE rc, MKL_SIZE cc, MKL_SIZE leading){ lpData=p; col_count=cc; row_count=rc; LeadingDimen=leading; Padding=row_count - (t_NotTransposed?row_count:col_count); }
-	INLFUNC Matrix_Ref(){ lpData=NULL; col_count=0; row_count=0; Padding=0; LeadingDimen = 0; }
+	INLFUNC Matrix_Ref(){ lpData=nullptr; col_count=0; row_count=0; Padding=0; LeadingDimen = 0; }
 	INLFUNC ~Matrix_Ref(){}
 	INLFUNC MKL_SIZE GetSize() const{ return col_count*row_count; }
 	INLFUNC MKL_SIZE GetRowCount() const { return t_NotTransposed?row_count:col_count; }
@@ -415,7 +415,7 @@ public:
 
 	//Linear Least Squares
 	//This*x=B  --> This change to singlar vectors, B change to solution
-	bool SolveLinearLeastSquares_SVD( Matrix_Ref<t_Val,true>& B , UINT* pRank = NULL, t_Val rank_condition = ((t_Val)0.0001) )
+	bool SolveLinearLeastSquares_SVD( Matrix_Ref<t_Val,true>& B , UINT* pRank = nullptr, t_Val rank_condition = ((t_Val)0.0001) )
 	{	ASSERT_STATIC(t_NotTransposed); // row major matrix is not supported
 		ASSERT(rt::max(GetColCount(),GetRowCount()) == B.GetRowCount());
 		UINT s_len = rt::min(GetColCount(),GetRowCount());
@@ -431,20 +431,20 @@ public:
 									*this,GetLeadingDim(),B,B.GetLeadingDim(),
 									Workspc,rank_condition,(int*)pRank,&Workspc[s_len],Workspc.GetSize()-s_len);
 	}
-	INLFUNC bool SolveLinearLeastSquares_SVD(t_VecComp_Ref&b, UINT* pRank = NULL, t_Val rank_condition = ((t_Val)0.0001))
+	INLFUNC bool SolveLinearLeastSquares_SVD(t_VecComp_Ref&b, UINT* pRank = nullptr, t_Val rank_condition = ((t_Val)0.0001))
 	{	return SolveLinearLeastSquares_SVD(	Matrix_Ref<t_Val,true>(b,b.GetSize(),1,b.GetSize()),
 											pRank, rank_condition); 
 	}
 
 	//Singular Value Decomposition of a general rectangular matrix.
 	//This = USV'
-	bool GeneralSVD( Vector<t_Val>& EigenValue, DWORD ReplaceFlag = mkl::Replace_U_in_This, Matrix<t_Val>* pU_Matrix=NULL, Matrix<t_Val>* pV_Matrix=NULL )
+	bool GeneralSVD( Vector<t_Val>& EigenValue, DWORD ReplaceFlag = mkl::Replace_U_in_This, Matrix<t_Val>* pU_Matrix=nullptr, Matrix<t_Val>* pV_Matrix=nullptr)
 	{	UINT m = GetRowCount();
 		UINT n = GetColCount();
 		UINT order = rt::min(m,n);
 
-		if(ReplaceFlag==Replace_U_in_This)ASSERT(pU_Matrix==NULL);
-		if(ReplaceFlag==Replace_V_in_This)ASSERT(pV_Matrix==NULL);
+		if(ReplaceFlag==Replace_U_in_This)ASSERT(pU_Matrix==nullptr);
+		if(ReplaceFlag==Replace_V_in_This)ASSERT(pV_Matrix==nullptr);
 
 		if(EigenValue.SetSize(order)){}else{ return false; }
 		if(pU_Matrix)
@@ -458,9 +458,9 @@ public:
 			info = ::mkl::mkl_cpp::mkl_gesvd((ReplaceFlag==Replace_U_in_This)?'O':(pU_Matrix?'S':'N'),
                                              (ReplaceFlag==Replace_V_in_This)?'O':(pV_Matrix?'S':'N'),
 											 m,n,*this,GetLeadingDim(),EigenValue,
-											 pU_Matrix?(pU_Matrix->GetCol(0).Begin()):NULL,
+											 pU_Matrix?(pU_Matrix->GetCol(0).Begin()):nullptr,
 											 pU_Matrix?(pU_Matrix->GetLeadingDim()):1,
-											 pV_Matrix?(pV_Matrix->GetCol(0).Begin()):NULL,
+											 pV_Matrix?(pV_Matrix->GetCol(0).Begin()):nullptr,
 											 pV_Matrix?(pV_Matrix->GetLeadingDim()):1,
 											 &opti_work_size,-1);
 			if(info){ return false; }
@@ -470,9 +470,9 @@ public:
 		info = ::mkl::mkl_cpp::mkl_gesvd((ReplaceFlag==Replace_U_in_This)?'O':(pU_Matrix?'S':'N'),
                                          (ReplaceFlag==Replace_V_in_This)?'O':(pV_Matrix?'S':'N'),
 										 m,n,*this,GetLeadingDim(),EigenValue,
-										 pU_Matrix?(pU_Matrix->GetCol(0).Begin()):NULL,
+										 pU_Matrix?(pU_Matrix->GetCol(0).Begin()):nullptr,
 										 pU_Matrix?(pU_Matrix->GetLeadingDim()):1,
-										 pV_Matrix?(pV_Matrix->GetCol(0).Begin()):NULL,
+										 pV_Matrix?(pV_Matrix->GetCol(0).Begin()):nullptr,
 										 pV_Matrix?(pV_Matrix->GetLeadingDim()):1,
 										 workspc,workspc.GetSize());
 		if(info)
@@ -503,7 +503,7 @@ public:
 	// EigenVectors in rows
 	HRESULT PartialSolveSymmetricEigen(	UINT TermStart,UINT TermEnd, 
 										Vector<t_Val>&  EigenValue, 
-										Matrix<t_Val>* EigenVectors = NULL)
+										Matrix<t_Val>* EigenVectors = nullptr)
 	{	ASSERT(IsSquare());
 		ASSERT( TermStart>=0 && TermStart<=TermEnd && TermEnd<GetColCount() );
 		TermStart++;   TermEnd++;   // MKL has 1-based index
@@ -527,10 +527,10 @@ public:
 		// query optimized working space
 		{
 			t_Val opti_workspace_size = 0;
-			info = ::mkl::mkl_cpp::mkl_syevx(	(EigenVectors!=NULL)?'V':'N','I','U',
+			info = ::mkl::mkl_cpp::mkl_syevx(	(EigenVectors!=nullptr)?'V':'N','I','U',
 												GetColCount(),*this,GetLeadingDim(),0,0,
 												TermStart,TermEnd,abstol,&m,EigenValue,
-												EigenVectors?EigenVectors->GetVec().Begin():NULL,
+												EigenVectors?EigenVectors->GetVec().Begin():nullptr,
 												EigenVectors?EigenVectors->GetLeadingDim():0,
 												&opti_workspace_size,-1,&ifail_iWork[GetColCount()+1],ifail_iWork);
 			if(info){ return false; }
@@ -538,7 +538,7 @@ public:
 			else{ return false; }
 		}
 	
-		info = ::mkl::mkl_cpp::mkl_syevx(	(EigenVectors!=NULL)?'V':'N','I','U',
+		info = ::mkl::mkl_cpp::mkl_syevx(	(EigenVectors!=nullptr)?'V':'N','I','U',
 											GetColCount(),*this,GetLeadingDim(),0,0,
 											TermStart,TermEnd,abstol,&m,EigenValue,
 											*EigenVectors,EigenVectors?EigenVectors->GetLeadingDim():0,
@@ -562,7 +562,7 @@ public:
 	// EigenVectors in rows
 	bool PartialSolveSymmetricEigen_Robust(	UINT TermStart,UINT TermEnd, 
 												Vector<t_Val>& EigenValue, 
-												Matrix<t_Val>* EigenVectors = NULL)
+												Matrix<t_Val>* EigenVectors = nullptr)
 	{	ASSERT(IsSquare());
 		ASSERT( TermStart>=0 && TermStart<=TermEnd && TermEnd<GetColCount() );
 		TermStart++;   TermEnd++;   // MKL has 1-based index
@@ -587,7 +587,7 @@ public:
 		{
 			t_Val opti_workspace_size = 0;
 			int   opti_iwork_size = 0;
-			info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=NULL)?'V':'N','I','U',
+			info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=nullptr)?'V':'N','I','U',
 												GetColCount(),*this,GetLeadingDim(),0,0,
 												TermStart,TermEnd,abstol,&m,EigenValue,
 												*EigenVectors,EigenVectors?EigenVectors->GetLeadingDim():0,isuppz,
@@ -597,7 +597,7 @@ public:
 			if(iwork.SetSize((UINT)opti_iwork_size)){}else{ return false; }
 		}
 
-		info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=NULL)?'V':'N','I','U',
+		info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=nullptr)?'V':'N','I','U',
 											GetColCount(),*this,GetLeadingDim(),0,0,
 											TermStart,TermEnd,abstol,&m,EigenValue,
 											*EigenVectors,EigenVectors?EigenVectors->GetLeadingDim():0,isuppz,
@@ -615,7 +615,7 @@ public:
 	// EigenVectors in rows
 	bool PartialSolveSymmetricEigen_Robust(	Vector<t_Val>& EigenValue, 
 												t_Val EigenvalueMin = EPSILON,
-												Matrix<t_Val>* EigenVectors = NULL,
+												Matrix<t_Val>* EigenVectors = nullptr,
 												t_Val EigenvalueMax = FLT_MAX)
 	{	ASSERT(IsSquare());
 		ASSERT( EigenvalueMin<EigenvalueMax );
@@ -639,10 +639,10 @@ public:
 		{
 			t_Val opti_workspace_size = 0;
 			int   opti_iwork_size = 0;
-			info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=NULL)?'V':'N','V','U',
+			info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=nullptr)?'V':'N','V','U',
 												GetColCount(),*this,GetLeadingDim(),EigenvalueMin,EigenvalueMax,
 												0,0,abstol,&m,EigenValue,
-												EigenVectors?((t_Val*)(*EigenVectors)):NULL,
+												EigenVectors?((t_Val*)(*EigenVectors)):nullptr,
 												EigenVectors?EigenVectors->GetLeadingDim():1,isuppz,
 												&opti_workspace_size,-1,&opti_iwork_size,-1);
 			if(info){ return false; }
@@ -650,10 +650,10 @@ public:
 			if(iwork.SetSize((UINT)opti_iwork_size)){}else{ return false; }
 		}
 	
-		info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=NULL)?'V':'N','V','U',
+		info = ::mkl::mkl_cpp::mkl_syevr(	(EigenVectors!=nullptr)?'V':'N','V','U',
 											GetColCount(),*this,GetLeadingDim(),EigenvalueMin,EigenvalueMax,
 											0,0,abstol,&m,EigenValue,
-											EigenVectors?((t_Val*)(*EigenVectors)):NULL,
+											EigenVectors?((t_Val*)(*EigenVectors)):nullptr,
 											EigenVectors?EigenVectors->GetLeadingDim():1,isuppz,
 											Workspc,(MKL_INT)Workspc.GetSize(),iwork,(MKL_INT)iwork.GetSize());
 		if(info)
@@ -755,7 +755,7 @@ public:
 		Matrix<t_Val> MatTemp;
 
 		if(!PartialSolveSymmetricEigen_Robust(	dimen-FeatureDimenMax,dimen-1,
-												EigenValue,NeedEigenVectors?&MatTemp:NULL)
+												EigenValue,NeedEigenVectors?&MatTemp:nullptr)
 		)return false;
 
 		UINT org_terms = EigenValue.GetSize();
@@ -796,7 +796,7 @@ public:
 
 		Matrix<t_Val> MatTemp;
 
-		if(!PartialSolveSymmetricEigen_Robust(EigenValue,EigenvalueMin,NeedEigenVectors?&MatTemp:NULL))
+		if(!PartialSolveSymmetricEigen_Robust(EigenValue,EigenvalueMin,NeedEigenVectors?&MatTemp:nullptr))
 			return false;
 		EigenValue.Flip();
 		//reserves eigenvectors

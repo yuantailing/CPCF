@@ -77,7 +77,7 @@ protected:
 	LPVOID				_CB_Cookie;
 
 public:
-	TLS(TLS_SocketRecv_CB recv_cb, TLS_SocketSend_CB send_cb, LPVOID cookie = NULL);
+	TLS(TLS_SocketRecv_CB recv_cb, TLS_SocketSend_CB send_cb, LPVOID cookie = nullptr);
 	~TLS();
 	bool Recv(LPVOID buf, UINT buf_size, UINT&read);
 	bool Send(LPCVOID buf, UINT buf_size);

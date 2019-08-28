@@ -78,11 +78,11 @@ namespace os
 
 UserInputEventPump::UserInputEventPump()
 {
-	ASSERT(g_pSingletone == NULL);
+	ASSERT(g_pSingletone == nullptr);
 	g_pSingletone = this;
 
 	//_DownCount = 0;
-	_pCurrentEvent = NULL;
+	_pCurrentEvent = nullptr;
 	_Timer.LoadCurrentCount();
 	_LastViewportWidth = -1;
 	_LastViewportHeight = -1;
@@ -249,7 +249,7 @@ void UserInputEvent::Log() const
 	_LOG(names[Type]<<':'<<Timestamp<<'\t'<<str);
 }
 
-UserInputEventPump*	UserInputEventPump::g_pSingletone = NULL;
+UserInputEventPump*	UserInputEventPump::g_pSingletone = nullptr;
 
 } // namespace os
 

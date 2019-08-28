@@ -61,7 +61,7 @@ void GetHostName(rt::String& name_out)
 }
 
 template<typename t_ADDR>
-UINT GetLocalAddressT(t_ADDR* pOut, UINT OutSize, bool no_loopback, t_ADDR* pOut_Broadcast = NULL, DWORD* subnet_mask = NULL)
+UINT GetLocalAddressT(t_ADDR* pOut, UINT OutSize, bool no_loopback, t_ADDR* pOut_Broadcast = nullptr, DWORD* subnet_mask = nullptr)
 {
 	typedef _details::InetAddrT_Op<typename t_ADDR::ADDRESS_TYPE>	OP;
 	ASSERT(OutSize);
@@ -99,14 +99,14 @@ UINT GetLocalAddressT(t_ADDR* pOut, UINT OutSize, bool no_loopback, t_ADDR* pOut
 	}
 	else
 	{	// AF_INET6
-		ASSERT(pOut_Broadcast == NULL);
-		ASSERT(subnet_mask == NULL);
+		ASSERT(pOut_Broadcast == nullptr);
+		ASSERT(subnet_mask == nullptr);
 
 		char szHostname[256];
 		gethostname(szHostname, sizeof(szHostname));
 
 		struct addrinfo aiHints;
-		struct addrinfo *aiList = NULL;
+		struct addrinfo *aiList = nullptr;
 		//memset(&aiHints, 0, sizeof(aiHints));
 		rt::Zero(aiHints);
 		aiHints.ai_family = OP::SIN_FAMILY;
@@ -686,7 +686,7 @@ UINT inet::SocketEvent::GetCount()
 
 inet::SOCKET inet::SocketEvent::my_fd_set::get_next_event()
 {
-	if(_fd_set == NULL)return INVALID_SOCKET;
+	if(_fd_set == nullptr)return INVALID_SOCKET;
 
 #if defined(PLATFORM_WIN)
 	_last_getevent++;

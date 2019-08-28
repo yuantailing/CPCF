@@ -30,7 +30,7 @@ XMLComposer::XMLComposer(rt::_File * out_stream)
 	else
 	{
 		m_StreamOutOrgPos = 0;
-		m_pStreamOut = NULL;
+		m_pStreamOut = nullptr;
 	}
 	ResetContent();
 }
@@ -62,7 +62,7 @@ void XMLComposer::ResetContent(LPCSTR customized_header)
 	m_HeaderLength = (UINT)rt::String_Ref(header).GetLength();
 	
 	m_NestLevelTag.ChangeSize(0);
-	_EnteringNodeTag = NULL;
+	_EnteringNodeTag = nullptr;
 }
 
 void XMLComposer::EnterNode(LPCSTR tag)
@@ -102,7 +102,7 @@ void XMLComposer::EnteringNodeDone(bool compact)
 		Output('>');
 	}
 	
-	_EnteringNodeTag = NULL;
+	_EnteringNodeTag = nullptr;
 }
 
 void XMLComposer::SetAttribute(LPCSTR name, long long value)
@@ -268,7 +268,7 @@ void XMLComposer::AppendTrail(LPCSTR text)
 
 LPCSTR XMLComposer::GetDocumentBuffer(bool withHeader) const
 {
-	ASSERT(m_pStreamOut == NULL);
+	ASSERT(m_pStreamOut == nullptr);
 	ASSERT(m_NestLevelTag.GetSize()==0);
 	LPCSTR buf = m_Output.Begin();
 	LPCSTR buf2 = buf + m_HeaderLength + 2; // +2 for \r\n
@@ -295,10 +295,10 @@ void XMLParser::ClearSyntaxError()
 XMLParser::XMLParser():m_XPathParser(*this)
 {
 	SetUserTagFilter();
-	m_pCurTagFilter = NULL;
-	_attribute_cursor = NULL;
-	_root_node_xml_start = NULL;
-	m_pDocument = NULL;
+	m_pCurTagFilter = nullptr;
+	_attribute_cursor = nullptr;
+	_root_node_xml_start = nullptr;
+	m_pDocument = nullptr;
 	m_bTrySkipError = false;
 	ClearSyntaxError();
 }
@@ -306,7 +306,7 @@ XMLParser::XMLParser():m_XPathParser(*this)
 XMLParser::XMLParser(const XMLParser& xml):m_XPathParser(*this)
 {
 	ClearSyntaxError();
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 
 	*this = xml;
 }
@@ -376,7 +376,7 @@ const XMLParser& XMLParser::operator = (const XMLParser& xml)
 		ptr_shift = _content_copy.Begin() - xml._content_copy.Begin();
 	}
 
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 	_root_node_xml_start = xml._root_node_xml_start + ptr_shift;
 
 #if defined(PLATFORM_32BIT)
@@ -396,7 +396,7 @@ const XMLParser& XMLParser::operator = (const XMLParser& xml)
 	SetUserTagFilter(xml.m_pUserTagFilter);
 	if(xml.m_pCurTagFilter == &xml.m_XPathParser)
 	{
-		m_XPathParser._pXPath = NULL;
+		m_XPathParser._pXPath = nullptr;
 		m_XPathParser.m_bRelativePath = xml.m_XPathParser.m_bRelativePath;
 		m_XPathParser.m_bIncludeDescendants = xml.m_XPathParser.m_bIncludeDescendants;
 		m_XPathParser.m_FinalQualifier = xml.m_XPathParser.m_FinalQualifier;
@@ -457,7 +457,7 @@ LPCSTR XMLParser::_search_control_close(LPCSTR start) const
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 LPCSTR XMLParser::_html_check_node_close(const rt::String_Ref& tagname, LPCSTR p, bool just_next)
@@ -482,7 +482,7 @@ SEARCH_AGAIN:
 					goto SEARCH_AGAIN;
 				}
 				else
-					return NULL;
+					return nullptr;
 			}
 		}
 
@@ -490,7 +490,7 @@ SEARCH_AGAIN:
 			return c-2;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -725,7 +725,7 @@ LPCSTR XMLParser::_search_node_close(LPCSTR start_inner, const rt::String_Ref& t
 			{	if(start[1] == '/')
 				{	if(pend[-1] == '/' && !m_bTrySkipError)
 					{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_XML_SYMBOL_UNEXPECTED,pend-1);
-						return NULL;
+						return nullptr;
 					}
 					// check tag match
 					LPCSTR p = _details::_skip_whitespace(start+2);
@@ -740,7 +740,7 @@ LPCSTR XMLParser::_search_node_close(LPCSTR start_inner, const rt::String_Ref& t
 						}
 						if(!m_bTrySkipError)
 						{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_NODE_CLOSURE_NOT_MATCHED,pend-1);
-							return NULL;
+							return nullptr;
 						}
 					}
 					if(enclosure == 0)	// get it
@@ -756,7 +756,7 @@ LPCSTR XMLParser::_search_node_close(LPCSTR start_inner, const rt::String_Ref& t
 						tagname_stack[enclosure] = rt::String_Ref(p,_seek_symbol_end(p));	}
 					else
 					{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_XML_DEPTH_EXCEEDED,pend-1);
-						return NULL;
+						return nullptr;
 					}
 					enclosure++;					
 				}
@@ -766,19 +766,19 @@ LPCSTR XMLParser::_search_node_close(LPCSTR start_inner, const rt::String_Ref& t
 			}
 			else
 			{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_TAG_CLOSURE_NOT_MATCHED,start);
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{	
 			LPCSTR p = _search_special_node_close(start);
-			if(!p)return NULL;
+			if(!p)return nullptr;
 			start = p + 1;
 		}
 	}
 
 	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_XML_UNEXPECTED_ENDOFFILE,start_inner);
-	return NULL;
+	return nullptr;
 }
 */
 
@@ -851,7 +851,7 @@ LPCSTR XMLParser::_seek_next_attrib(LPCSTR start, rt::String_Ref& attrib_name, r
 			
 			// seek '='
 			LPCSTR p = strchr(start, '=');
-			if(p == NULL)
+			if(p == nullptr)
 			{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_ATTRIBUTE_EQUALSIGN_NOT_FOUND,start);
 				break;
 			}
@@ -863,7 +863,7 @@ LPCSTR XMLParser::_seek_next_attrib(LPCSTR start, rt::String_Ref& attrib_name, r
 				{
 					LPCSTR _String = start+1;
 					p = strchr(start+1, *start);
-					if(p == NULL)
+					if(p == nullptr)
 					{	rt::_CastToNonconst(this)->SetLastSyntaxError(ERR_ATTRIBUTE_QUOTATION_NOT_MATCHED,start);
 						break;
 					}
@@ -879,7 +879,7 @@ LPCSTR XMLParser::_seek_next_attrib(LPCSTR start, rt::String_Ref& attrib_name, r
 
 	attrib_name.Empty();
 	value.Empty();
-	return NULL;
+	return nullptr;
 }
 
 bool XMLParser::_search_attrib(LPCSTR start, LPCSTR attrib_name,  rt::String_Ref& value) const
@@ -916,7 +916,7 @@ bool XMLParser::_EnterNextNode(LPCSTR start, _details::_XML_Tag_Filter* pFilter,
 		if(ptag[1] == '!' || ptag[1] == '?')
 		{
 			ptag = _search_special_node_close(ptag);
-			if(ptag == NULL)return false;
+			if(ptag == nullptr)return false;
 			start = ptag + 1;
 			continue;
 		}
@@ -935,7 +935,7 @@ bool XMLParser::_EnterNextNode(LPCSTR start, _details::_XML_Tag_Filter* pFilter,
 		}
 		
 		pend = _seek_tag_close(patt);
-		if(pend == NULL)
+		if(pend == nullptr)
 		{
 			SetLastSyntaxError(ERR_TAG_CLOSURE_NOT_MATCHED,ptag);
 			return false;
@@ -983,11 +983,11 @@ bool XMLParser::_EnterNextNode(LPCSTR start, _details::_XML_Tag_Filter* pFilter,
 void XMLParser::Clear()
 {
 	_content_copy.Empty();
-	_attribute_cursor = _root_node_xml_start = _root_node_xml_end = NULL;
+	_attribute_cursor = _root_node_xml_start = _root_node_xml_end = nullptr;
 	m_XMLParseError = ERR_XML_OK;
 	m_XMLParseErrorPosition = 0;
 	ClearXPathFilter();
-	m_pDocument = NULL;
+	m_pDocument = nullptr;
 	m_NodePath.ChangeSize(0);
 }
 
@@ -1240,7 +1240,7 @@ START_OF_CLOSURE_PARSE:
 					continue;
 				}
 				else
-				{	SetLastSyntaxError(ERR_HTML_COMMENT_CLOSURE_NOT_MATCHED, NULL);
+				{	SetLastSyntaxError(ERR_HTML_COMMENT_CLOSURE_NOT_MATCHED, nullptr);
 					return false;
 				}
 			}
@@ -1279,7 +1279,7 @@ START_OF_CLOSURE_PARSE:
 
 		LPSTR tagend = _seek_symbol_end(tag);
 		if(!tagend)
-		{	SetLastSyntaxError(ERR_HTML_TAG_CLOSURE_NOT_MATCHED, NULL);
+		{	SetLastSyntaxError(ERR_HTML_TAG_CLOSURE_NOT_MATCHED, nullptr);
 			return false;
 		}
 
@@ -1287,7 +1287,7 @@ START_OF_CLOSURE_PARSE:
 		{
 			if(m_bTrySkipError){ p++; continue; }
 			else
-			{	SetLastSyntaxError(ERR_HTML_TAG_NAME_NOT_FOUND, NULL);
+			{	SetLastSyntaxError(ERR_HTML_TAG_NAME_NOT_FOUND, nullptr);
 				return false;
 			}
 		}
@@ -1310,7 +1310,7 @@ START_OF_CLOSURE_PARSE:
 			if(*cl == '>'){ cl++; }
 			else
 			{	if(!m_bTrySkipError)
-				{	SetLastSyntaxError(ERR_HTML_TAG_CLOSURE_NOT_MATCHED, NULL);
+				{	SetLastSyntaxError(ERR_HTML_TAG_CLOSURE_NOT_MATCHED, nullptr);
 					return false;
 				}
 			}
@@ -1347,12 +1347,12 @@ START_OF_CLOSURE_PARSE:
 							_content_copy += tagname;
 							p = (LPSTR)_details::_skip_whitespace(cl+1+tagname.GetLength()+1);
 							if(*p != '>')
-							{	SetLastSyntaxError(ERR_HTML_NODE_CLOSURE_NOT_MATCHED, NULL);
+							{	SetLastSyntaxError(ERR_HTML_NODE_CLOSURE_NOT_MATCHED, nullptr);
 								return false;
 							}
 						}
 						else
-						{	SetLastSyntaxError(ERR_HTML_NODE_CLOSURE_NOT_MATCHED, NULL);
+						{	SetLastSyntaxError(ERR_HTML_NODE_CLOSURE_NOT_MATCHED, nullptr);
 							return false;
 						}
 					}
@@ -1380,7 +1380,7 @@ START_OF_CLOSURE_PARSE:
 				{
 					if(m_bTrySkipError){ p++; continue; }
 					else
-					{	SetLastSyntaxError(ERR_HTML_ATTRIBUTE_NAME_NOT_FOUND, NULL);
+					{	SetLastSyntaxError(ERR_HTML_ATTRIBUTE_NAME_NOT_FOUND, nullptr);
 						return false;
 					}
 				}
@@ -1409,7 +1409,7 @@ START_OF_CLOSURE_PARSE:
 						p = end+1;
 					}
 					else
-					{	SetLastSyntaxError(ERR_HTML_QUOTATION_NOT_MATCHED, NULL);
+					{	SetLastSyntaxError(ERR_HTML_QUOTATION_NOT_MATCHED, nullptr);
 						return false;
 					}
 				}
@@ -1450,8 +1450,8 @@ bool XMLParser::Load(LPCSTR text, bool Keep_referring, SSIZE_T len)
 		_root_node_xml_end = m_pDocument + len;
 
 	ASSERT(text);
-	_attribute_cursor = NULL;
-	m_pCurTagFilter = NULL;
+	_attribute_cursor = nullptr;
+	m_pCurTagFilter = nullptr;
 	ClearSyntaxError();
 	
 	m_NodePath.SetSize();
@@ -1492,7 +1492,7 @@ bool XMLParser::Load(LPCSTR text, bool Keep_referring, SSIZE_T len)
 
 void XMLParser::EnterRootNode()
 {
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 	ASSERT(m_NodePath.GetSize() > 0);
 	m_NodePath.ChangeSize(1);
 	m_pCurTagFilter = m_pUserTagFilter;
@@ -1500,7 +1500,7 @@ void XMLParser::EnterRootNode()
 
 bool XMLParser::EnterParentNode()
 {
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 	if(GetDescendantLevel()>1)
 	{
 		m_NodePath.ChangeSize(m_NodePath.GetSize()-1);
@@ -1514,7 +1514,7 @@ bool XMLParser::EnterNextSiblingNode()
 {
 	if(m_NodePath.GetSize())
 	{
-		_attribute_cursor = NULL;
+		_attribute_cursor = nullptr;
 		LPCSTR close = _CurNode().IsCompactNode?(_CurNode().InnerXML_Start-1):
 												_search_node_close(_CurNode().InnerXML_Start,_CurNode().TagName);
 
@@ -1527,7 +1527,7 @@ bool XMLParser::EnterFirstChildNode(LPCSTR tag_name)
 {
 	if( m_NodePath.GetSize() && _CurNode().IsCompactNode)return false;
 
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 	_details::_XML_Tag_Filter* pfilter;
 
 	struct _name_filter: public _details::_XML_Tag_Filter
@@ -1603,7 +1603,7 @@ void XMLParser::ConvertExtendedCSSPathToXPath(LPCSTR extended_css_path, rt::Stri
 		LPCSTR tagend = tagbegin + (z < 0 ? rt::String_Ref(tagbegin).GetLength() : z);
 
 		rt::String_Ref tag(tagbegin, tagend);
-		char* currentStopChar = NULL;
+		char* currentStopChar = nullptr;
 		int lastFilterPos = -1;
 		int lastFilterPriority = -1;
 
@@ -1709,9 +1709,9 @@ bool XMLParser::EnterXPathByCSSPath(const rt::String_Ref& css_path)
 
 bool XMLParser::EnterXPath(LPCSTR xpath)
 {
-	if(xpath==NULL)return false;
+	if(xpath==nullptr)return false;
 
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 	ClearXPathFilter();
 	ClearSyntaxError();
 
@@ -1763,7 +1763,7 @@ bool XPathParser::_TagTest(const rt::String_Ref& tag_name, LPCSTR attributes, in
 {
 	bool ret = false;
 	ASSERT(DescendantLevel > m_QualifierShifts);
-	_Qualifier* pQ = NULL;
+	_Qualifier* pQ = nullptr;
 	if(DescendantLevel <= (int)(m_QualifierShifts + m_Qualifiers.GetSize()))
 	{	
 		_ClearLastOrdinalTestPast(DescendantLevel - m_QualifierShifts); // clear _LastOrdinalTestPast
@@ -1809,11 +1809,11 @@ bool XPathParser::_TagTest(const rt::String_Ref& tag_name, LPCSTR attributes, in
 XPathParser::XPathParser(XMLParser& xml_parser)
  :_XmlParser(xml_parser)
 {
-	_pXPath = NULL;
+	_pXPath = nullptr;
 	m_XPathParseError = ERR_XPATH_OK;
 	m_XPathParseErrorPosition = 0;
 	m_UpLevelCount = m_QualifierShifts = 0;
-	m_pUserTagFilter = NULL;
+	m_pUserTagFilter = nullptr;
 	_LastNodeSatificated = true;
 }
 
@@ -1949,7 +1949,7 @@ bool XPathParser::QualifierTest(_Qualifier& q, const rt::String_Ref& tag_name, L
 
 bool XMLParser::EnterSucceedNode()
 {
-	_attribute_cursor = NULL;
+	_attribute_cursor = nullptr;
 
 	if(m_pCurTagFilter!= &m_XPathParser)
 	{
@@ -2031,7 +2031,7 @@ bool XMLParser::GetInnerXML(rt::String& text) const
 		text.Empty();
 	else
 	{   LPCSTR inner_start = _CurNode().InnerXML_Start;
-        LPCSTR inner_end = NULL;
+        LPCSTR inner_end = nullptr;
 		if(!_search_node_close(inner_start, _CurNode().TagName, &inner_end))
 		{	text.Empty();
 			return false;
@@ -2143,12 +2143,12 @@ bool XMLParser::GetInnerRtfHtml(rt::String& out) const
 rt::String_Ref XMLParser::GetInnerXML() const
 {
 	if(_CurNode().IsCompactNode)
-		return NULL;
+		return nullptr;
 	else
 	{   LPCSTR inner_start = _CurNode().InnerXML_Start;
-        LPCSTR inner_end = NULL;
+        LPCSTR inner_end = nullptr;
 		if(!_search_node_close(inner_start, _CurNode().TagName, &inner_end))
-		{	return NULL;
+		{	return nullptr;
 		}
 		return rt::String_Ref(inner_start, inner_end).TrimSpace();
 	}
@@ -2160,7 +2160,7 @@ bool XMLParser::GetInnerText(rt::String& text, bool no_text_from_subnodes) const
 		text.Empty();
 	else
 	{   LPCSTR inner_start = _CurNode().InnerXML_Start;
-        LPCSTR inner_end = NULL;
+        LPCSTR inner_end = nullptr;
 		if(!_search_node_close(inner_start,_CurNode().TagName,&inner_end))
 		{
 			text.Empty();
@@ -2191,13 +2191,13 @@ void XMLParser::ExtractInnerText(const rt::String_Ref& doc, rt::String& out, cha
 rt::String_Ref XMLParser::GetInnerCDATA() const
 {
 	if(_CurNode().IsCompactNode)
-		return NULL;
+		return nullptr;
 	else
 	{   LPCSTR inner_start = _CurNode().InnerXML_Start;
-        LPCSTR inner_end = NULL;
+        LPCSTR inner_end = nullptr;
 		if(!_search_node_close(inner_start,_CurNode().TagName,&inner_end))
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		rt::String_Ref a = rt::String_Ref(inner_start, inner_end).TrimSpace();
@@ -2206,7 +2206,7 @@ rt::String_Ref XMLParser::GetInnerCDATA() const
 			return a.TrimLeft(9).TrimRight(3);
 		}
 		else
-		{   return NULL;
+		{   return nullptr;
 		}
 	}
 }
@@ -2234,7 +2234,7 @@ bool XMLParser::GetOuterXML(rt::String& text) const
 	{	end = _CurNode().InnerXML_Start - 1;	}
 	else
 	{	end = _search_node_close(_CurNode().InnerXML_Start,_CurNode().TagName);
-		if(end == NULL)
+		if(end == nullptr)
 		{	text.Empty();
 			return false;
 		}
@@ -2259,7 +2259,7 @@ rt::String_Ref XMLParser::GetOuterXML() const
 	{	end = _CurNode().InnerXML_Start - 1;	}
 	else
 	{	end = _search_node_close(_CurNode().InnerXML_Start,_CurNode().TagName);
-		if(end == NULL)
+		if(end == nullptr)
 		{	return rt::String_Ref();
 		}
 	}
@@ -2357,7 +2357,7 @@ LPCSTR XMLParser::_search_node_close(LPCSTR start_inner, const rt::String_Ref& t
 	LPCSTR ret = _search_node_close(&err, start_inner, tag_name, pInnerXML_End);
 	if(err!=ERR_XML_OK)
 	{	rt::_CastToNonconst(this)->SetLastSyntaxError(err, ret);
-		return NULL;
+		return nullptr;
 	}
 	return ret;
 }
@@ -2368,7 +2368,7 @@ LPCSTR XMLParser::_search_special_node_close(LPCSTR start_outer) const
 	LPCSTR ret = _search_special_node_close(&err, start_outer);
 	if(err!=ERR_XML_OK)
 	{	rt::_CastToNonconst(this)->SetLastSyntaxError(err, ret);
-		return NULL;
+		return nullptr;
 	}
 	return ret;
 }
@@ -2577,7 +2577,7 @@ bool XPathParser::ParseQualifier(_Qualifier& q)
 	}
 	else
 	{	
-		LPSTR patt = NULL;
+		LPSTR patt = nullptr;
 
 		if(*qualify == '*')
 		{	
@@ -2738,7 +2738,7 @@ bool XPathParser::Load(LPCSTR xpath)
 	m_UpLevelCount = 0;
 
 	LPCSTR pLastSep = strrchr(xpath,'/');
-	if(pLastSep == NULL)
+	if(pLastSep == nullptr)
 	{	m_bRelativePath = true;
 		m_bIncludeDescendants = false;
 		m_FinalQualifier.Load(xpath,(UINT)strlen(xpath));

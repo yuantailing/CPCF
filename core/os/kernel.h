@@ -180,8 +180,8 @@ extern void SetLogConsoleTitle(LPCSTR title);
 
 class CommandLine;
 struct ConsoleInputHandler { virtual bool OnCommand(const os::CommandLine& cmd) = 0; };
-extern void EnableConsoleInput(ConsoleInputHandler* input_handler = NULL, LPCSTR prompt = "=>");
-extern bool SetLogFile(LPCSTR filename, bool append = true); // filename = NULL to disable Log File
+extern void EnableConsoleInput(ConsoleInputHandler* input_handler = nullptr, LPCSTR prompt = "=>");
+extern bool SetLogFile(LPCSTR filename, bool append = true); // filename = nullptr to disable Log File
 extern void SetLogConsolePrompt(LPCSTR prompt);
 extern rt::String_Ref GetLogFilename();
 extern void SetLogPrefix(const LogPrefix& prefix); // use together with _LOGFORMAT and os::_LOG_TIME, etc.
@@ -198,11 +198,11 @@ extern UINT GetNumberOfPhysicalProcessors();
 extern void CPUID(unsigned i, unsigned regs[4]);
 extern void GetOSVersion(rt::String& name, bool friendly_info = true);
 extern int  GetDimensionOfScreens(rt::Vec2i* pDim, UINT dim_size = 1); // return # of screens
-extern bool GetSystemMemoryInfo(ULONGLONG* free, ULONGLONG* total = NULL);	// in bytes
+extern bool GetSystemMemoryInfo(ULONGLONG* free, ULONGLONG* total = nullptr);	// in bytes
 extern bool GetProcessMemoryLoad(SIZE_T* vmem, SIZE_T* phy_mem);
-extern bool GetProcessorTimes(ULONGLONG* busy, ULONGLONG* total = NULL);	// msec, {idle, total}
+extern bool GetProcessorTimes(ULONGLONG* busy, ULONGLONG* total = nullptr);	// msec, {idle, total}
 extern UINT GetPowerState();		// precentage of battery remaining
-extern void Sleep(DWORD msec = INFINITE, const bool* interrupt_flag = NULL);
+extern void Sleep(DWORD msec = INFINITE, const bool* interrupt_flag = nullptr);
 extern void Halt();
 
 extern LPVOID VMAlloc(SIZE_T length);
@@ -219,7 +219,7 @@ extern DWORD  GetRandomSeed();
 
 extern LPCSTR GetBuildSpecificationString();
 extern void	  SetDebugTextBox(const rt::String_Ref& x);
-extern void	  SetupDebugTextBox(LPVOID param = NULL);
+extern void	  SetupDebugTextBox(LPVOID param = nullptr);
 
 extern void	  BruteforceExit();
 
@@ -239,7 +239,7 @@ extern bool	OpenDefaultBrowser(LPCSTR url);
 extern void SetPreferenceLocation(const rt::String_Ref& app_name);
 extern INT	LoadPreference(const rt::String_Ref& keyname, INT   default_value);
 extern bool	SavePreference(const rt::String_Ref& keyname, INT   value);
-extern bool	LoadPreferenceString(const rt::String_Ref& keyname, rt::String& out, const rt::String_Ref& default_value = NULL);
+extern bool	LoadPreferenceString(const rt::String_Ref& keyname, rt::String& out, const rt::String_Ref& default_value = nullptr);
 extern bool	SavePreferenceString(const rt::String_Ref& keyname, const rt::String_Ref& value);
 
 extern bool EncryptData(rt::String& cipertext, const rt::String_Ref& plaintext);
@@ -269,8 +269,8 @@ namespace _details
 	typedef void (*FUNC_CONSOLE_LOG_WRITE)(LPCSTR log, int type, LPVOID cookie);
 	typedef void (*FUNC_LOG_WRITE)(LPCSTR log, LPCSTR file, int line_num, LPCSTR func, int type, LPVOID cookie);
 
-	void SetConsoleLogWriteFunction(FUNC_CONSOLE_LOG_WRITE func = NULL, LPVOID cookie = NULL);
-	void SetLogWriteFunction(FUNC_LOG_WRITE func = NULL, LPVOID cookie = NULL);
+	void SetConsoleLogWriteFunction(FUNC_CONSOLE_LOG_WRITE func = nullptr, LPVOID cookie = nullptr);
+	void SetLogWriteFunction(FUNC_LOG_WRITE func = nullptr, LPVOID cookie = nullptr);
 };
 
 
@@ -478,7 +478,7 @@ class ConsoleProgressIndicator
 	ULONGLONG	_Prog;
 	void		_Display();
 public:
-	ConsoleProgressIndicator(ULONGLONG total, LPCSTR hint = NULL);
+	ConsoleProgressIndicator(ULONGLONG total, LPCSTR hint = nullptr);
 	~ConsoleProgressIndicator();
 	void One(){ _Prog++; _Display(); }
 	void SetProgress(ULONGLONG x){ _Prog = x; _Display(); }

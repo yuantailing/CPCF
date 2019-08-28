@@ -493,10 +493,10 @@ struct _PodAssert {};
 
 struct _GetDataPtr
 {	LPVOID	_p;
-	template<typename T> auto _Begin(T* x) -> decltype(x->Begin()) { _p = (LPVOID)x->Begin(); return NULL; }
-	template<typename T> auto _Begin(const T* x) -> decltype(x->begin()) { _p = (LPVOID)x->begin(); return NULL; }
-	template<typename T> auto _Begin(const T* x) -> decltype(x->__IsVarSizePOD) { _p = (LPVOID)x; return NULL; }
-	template<typename T> auto _Begin(T* x) -> decltype(x->c_str()) { _p = (LPVOID)x->c_str(); return NULL; }
+	template<typename T> auto _Begin(T* x) -> decltype(x->Begin()) { _p = (LPVOID)x->Begin(); return nullptr; }
+	template<typename T> auto _Begin(const T* x) -> decltype(x->begin()) { _p = (LPVOID)x->begin(); return nullptr; }
+	template<typename T> auto _Begin(const T* x) -> decltype(x->__IsVarSizePOD) { _p = (LPVOID)x; return nullptr; }
+	template<typename T> auto _Begin(T* x) -> decltype(x->c_str()) { _p = (LPVOID)x->c_str(); return nullptr; }
 				__PodRequired _Begin(...){ return __PodRequired(); }
 	template<typename T>	  _GetDataPtr(T& x){ _p = (LPVOID)&x; }
 };
@@ -651,7 +651,7 @@ struct _EnumStringify;
 
 #define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
 
-#define STRINGIFY_ENUM_END(type, ns)			}; _str = NULL; }						\
+#define STRINGIFY_ENUM_END(type, ns)			}; _str = nullptr; }					\
 											operator LPCSTR() const { return _str; }	\
 										};}}											\
 										namespace ns {									\

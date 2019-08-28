@@ -93,7 +93,7 @@ public:
 	LaunchProcess();
 	~LaunchProcess();
 	void	SetOutputCallback(FUNC_HOOKEDOUTPUT func, LPVOID cookie);
-	bool	Launch(LPCSTR cmdline, DWORD flag = FLAG_ROUTE_OUTPUT, DWORD window_show = SW_HIDE, LPCSTR pWorkDirectory = NULL, LPCSTR pEnvVariableAddon = NULL);  // pEnvVariableAddon is \0 seperated multiple strings (UTF8), ends with \0\0
+	bool	Launch(LPCSTR cmdline, DWORD flag = FLAG_ROUTE_OUTPUT, DWORD window_show = SW_HIDE, LPCSTR pWorkDirectory = nullptr, LPCSTR pEnvVariableAddon = nullptr);  // pEnvVariableAddon is \0 seperated multiple strings (UTF8), ends with \0\0
 	bool	WaitForEnding(DWORD timeout = INFINITE); // return false when timeout
 	void	Terminate();
 	bool	IsRunning();
@@ -198,7 +198,7 @@ public:
 		else
 		{	// this may happen when the writer is much faster then the sync thread
 			os::AtomicIncrement(&stat_ClaimFailure);
-			return NULL;
+			return nullptr;
 		}
 	}
 

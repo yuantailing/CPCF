@@ -60,7 +60,7 @@ const LPCSTR os::File::Normal_AppendText = "a+";
 // MemoryFile
 os::MemoryFileRef::MemoryFileRef()
 {
-	_pData = NULL;
+	_pData = nullptr;
 	_CurPos = 0;
 	_Len = 0;
 }
@@ -147,7 +147,7 @@ os::MemoryFile::MemoryFile(SIZE_T Len)
 	}
 	else
 	{	
-		_pData = NULL;
+		_pData = nullptr;
 		_Len = 0;
 	}
 }
@@ -209,13 +209,13 @@ bool os::File::Open(LPCSTR fn, LPCSTR mode, bool create_path)
 
 os::File::File()
 {	
-	_hFile = NULL; 
+	_hFile = nullptr; 
 	_bErrorFlag=false;
 }
 
 os::File::File(LPCSTR fn, LPCSTR mode, bool create_path)
 {
-	_hFile = NULL; 
+	_hFile = nullptr; 
 	_bErrorFlag=false; 
 	Open(fn,mode,create_path);
 }
@@ -227,13 +227,13 @@ os::File::~File()
 
 bool os::File::IsEOF()
 {
-	ASSERT(_hFile != NULL); 
+	ASSERT(_hFile != nullptr); 
 	return feof(_hFile);
 }
 
 bool os::File::_GetFileStat(LPCSTR p, struct _stat& st)
 {
-	if(p == NULL || p[0] == '\0')return false;
+	if(p == nullptr || p[0] == '\0')return false;
 
 	rt::Zero(st);
 #ifdef	PLATFORM_WIN
@@ -306,7 +306,7 @@ bool os::File::MoveFile(LPCSTR from, LPCSTR to, bool overwrite)	// will try move
 	else return false;
 
 	__time64_t la, lm;
-	if(src.GetFileTime(NULL, &la, &lm))
+	if(src.GetFileTime(nullptr, &la, &lm))
 	{
 		dst.SetFileTime(la, lm);
 	}
@@ -364,7 +364,7 @@ bool os::File::SetFileTime(__time64_t last_access, __time64_t last_modify) const
 #endif
 }
 
-bool os::File::GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify)	// handles file and directory, feed NULL if not interested
+bool os::File::GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify)	// handles file and directory, feed nullptr if not interested
 {
 	struct _stat s;
 	if(_GetFileStat(pathname, s))
@@ -464,7 +464,7 @@ void os::File::ResolveRelativePath(LPCSTR path, rt::String& fn_out)
 	DWORD len = rt::max<DWORD>(MAX_PATH, (DWORD)in.GetLength())*2;
 	WCHAR* out = (WCHAR*)alloca(sizeof(WCHAR)*len);
 	
-	len = GetFullPathNameW(in, len, out, NULL);
+	len = GetFullPathNameW(in, len, out, nullptr);
 	if(len)
 	{	fn_out = os::__UTF8(out, len);
 		return;
@@ -624,7 +624,7 @@ bool os::File::CreateDirectories(LPCSTR pathin, bool file_mode)
 
 	LPSTR p = path.Begin();
 	LPSTR sep = p;
-	LPSTR last_sep = NULL;
+	LPSTR last_sep = nullptr;
 	for(;;)
 	{
 		while(*sep && *sep!='/')sep++;
@@ -681,7 +681,7 @@ void os::File::Close()
 	if(IsOpen())
 	{
 		fclose(_hFile);
-		_hFile = NULL;
+		_hFile = nullptr;
 	}
 }
 
@@ -801,7 +801,7 @@ bool os::File::RemovePath(const rt::String_Ref& src_)
 	if(os::File::IsDirectory(src))
 	{
 		os::FileList fl;
-		fl.Populate(src, NULL, os::FileList::FLAG_RECURSIVE);
+		fl.Populate(src, nullptr, os::FileList::FLAG_RECURSIVE);
 		for(INT i = fl.GetCount()-1; i>=0; i--)
 			if(fl.IsDirectory(i))
 				os::File::RemoveDirectory(fl.GetFullpath(i));
@@ -820,7 +820,7 @@ bool os::File::CopyPath(const rt::String_Ref& dest_, const rt::String_Ref& src_,
 	__time64_t s_tm, d_tm;
 
 	rt::String src = src_.TrimTrailingPathSeparator();
-	if(!os::File::GetPathTime(src, NULL, NULL, &s_tm))
+	if(!os::File::GetPathTime(src, nullptr, nullptr, &s_tm))
 		return false;
 
 	rt::String dst = dest_.TrimTrailingPathSeparator();
@@ -830,7 +830,7 @@ bool os::File::CopyPath(const rt::String_Ref& dest_, const rt::String_Ref& src_,
 	int err = 0;
 	rt::String dst_fn;
 	os::FileList flist;
-	if(flist.Populate(src, NULL, os::FileList::FLAG_RECURSIVE|((opt&CPOPT_HIDDEN_FILE)?os::FileList::FLAG_SKIPHIDDEN:0)))
+	if(flist.Populate(src, nullptr, os::FileList::FLAG_RECURSIVE|((opt&CPOPT_HIDDEN_FILE)?os::FileList::FLAG_SKIPHIDDEN:0)))
 	{
 		if(opt&CPOPT_MIRROR)
 		{
@@ -839,7 +839,7 @@ bool os::File::CopyPath(const rt::String_Ref& dest_, const rt::String_Ref& src_,
 				source_set.insert(flist.GetFilename(i));
 
 			os::FileList dest_fnlist;
-			if(dest_fnlist.Populate(dst, NULL, os::FileList::FLAG_RECURSIVE|((opt&CPOPT_HIDDEN_FILE)?os::FileList::FLAG_SKIPHIDDEN:0)))
+			if(dest_fnlist.Populate(dst, nullptr, os::FileList::FLAG_RECURSIVE|((opt&CPOPT_HIDDEN_FILE)?os::FileList::FLAG_SKIPHIDDEN:0)))
 			{	for(INT i=dest_fnlist.GetCount()-1;i>=0;i--)
 					if(source_set.find(dest_fnlist.GetFilename(i)) == source_set.end())
 					{	if(dest_fnlist.IsDirectory(i))
@@ -855,10 +855,10 @@ bool os::File::CopyPath(const rt::String_Ref& dest_, const rt::String_Ref& src_,
 			const rt::String& src_fn = flist.GetFullpath(i);
 			dst_fn = dst + flist.GetFilename(i);
 
-			if(!os::File::GetPathTime(src_fn, NULL, NULL, &s_tm))
+			if(!os::File::GetPathTime(src_fn, nullptr, nullptr, &s_tm))
 				return false;
 
-			if(os::File::GetPathTime(dst_fn, NULL, NULL, &d_tm))
+			if(os::File::GetPathTime(dst_fn, nullptr, nullptr, &d_tm))
 			{	// dest exists
 				if(flist.IsDirectory(i))
 				{
@@ -1096,7 +1096,7 @@ APPPATH_UTF8_SET:
 		if(os::File::IsDirectory(sdcard_roots[i]))
 		{
 			os::FileList	list;
-			list.Populate(sdcard_roots[i], NULL, os::FileList::FLAG_DIRECTORYONLY);
+			list.Populate(sdcard_roots[i], nullptr, os::FileList::FLAG_DIRECTORYONLY);
 			for(int f = 0; f<list.GetCount(); f++)
 			{
 				list.GetFullpath(f, path);
@@ -1133,7 +1133,7 @@ ULONGLONG os::GetFreeDiskSpace(LPCSTR path_in, ULONGLONG* pTotal)
 
 #if		defined(PLATFORM_WIN)
 		ULARGE_INTEGER sz, tot;
-		if(GetDiskFreeSpaceExW(__UTF16(path), &sz, &tot, NULL))
+		if(GetDiskFreeSpaceExW(__UTF16(path), &sz, &tot, nullptr))
 		{	if(pTotal)*pTotal = tot.QuadPart;
 			return sz.QuadPart;
 		}
@@ -1305,7 +1305,7 @@ UINT os::FileList::PopulateDropList(HDROP hDropInfo, LPCSTR sf, DWORD flag)
 {
 	_Filenames.SetSize(0);
 
-	UINT FileCount = ::DragQueryFile(hDropInfo,0xffffffff,NULL,0);
+	UINT FileCount = ::DragQueryFile(hDropInfo,0xffffffff,nullptr,0);
 	if(FileCount)
 	{
 		rt::String		suffix_filter(sf);
@@ -1755,7 +1755,7 @@ namespace os
 {
 	namespace _details
 	{
-		os::CommandLine* __FirstCommandLine = NULL;
+		os::CommandLine* __FirstCommandLine = nullptr;
 	}
 }
 
@@ -1766,7 +1766,7 @@ os::CommandLine::CommandLine()
 os::CommandLine::~CommandLine()
 {
 	if(_details::__FirstCommandLine == this)
-		_details::__FirstCommandLine = NULL;
+		_details::__FirstCommandLine = nullptr;
 }
 
 
@@ -1898,7 +1898,7 @@ void os::CommandLine::Parse(LPCSTR pCmdLine)
 	LPSTR pCmd = cmdline.Begin();
 
 	rt::BufferEx<LPSTR>	argv;
-	argv.push_back((LPSTR)NULL);
+	argv.push_back((LPSTR)nullptr);
 
 	bool is_in_quotation = false;
 	bool not_start = true;
@@ -1972,7 +1972,7 @@ LPCSTR os::CommandLine::SearchOptionEx(const rt::String_Ref& option_substring) c
 			return _Options[i].Value;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 rt::String_Ref os::CommandLine::GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val) const
@@ -2011,7 +2011,7 @@ void os::CommandLine::LoadEnvironmentVariablesAsOptions()
 		os::__UTF8 utf8(pCH, size);
 		rt::String_Ref f[2];
 		if(utf8.Split(f,2,'=') == 1)
-		{	SetOptionDefault(f[0], NULL);
+		{	SetOptionDefault(f[0], nullptr);
 		}
 		else
 		{	SetOptionDefault(f[0], rt::String_Ref(f[1].Begin(), utf8.End()));
@@ -2026,7 +2026,7 @@ void os::CommandLine::LoadEnvironmentVariablesAsOptions()
 		rt::String_Ref variable(environ[i]);
 		rt::String_Ref f[2];
 		if(variable.Split(f,2,'=') == 1)
-		{	SetOptionDefault(f[0], NULL);
+		{	SetOptionDefault(f[0], nullptr);
 		}
 		else
 		{	SetOptionDefault(f[0], rt::String_Ref(f[1].Begin(), variable.End()));
@@ -2243,14 +2243,14 @@ os::FileMapping::FileMapping()
 {
 	_hFile = INVALID_HANDLE_VALUE;
 	_hFileMapping = NULL;
-	_Ptr = NULL;
+	_Ptr = nullptr;
 	_Size = 0;
 }
 
 bool os::FileMapping::Open(LPCSTR filename, SIZE_T length, bool readonly, bool create_new)
 {
 	ASSERT(_hFile == INVALID_HANDLE_VALUE);
-	ASSERT(_Ptr == NULL);
+	ASSERT(_Ptr == nullptr);
 
 	_Readonly = readonly;
 
@@ -2306,7 +2306,7 @@ bool os::FileMapping::Open(LPCSTR filename, SIZE_T length, bool readonly, bool c
 void os::FileMapping::Close(bool also_delete_file)
 {
 	_Size = 0;
-	if(_Ptr){ ::UnmapViewOfFile(_Ptr); _Ptr = NULL; }
+	if(_Ptr){ ::UnmapViewOfFile(_Ptr); _Ptr = nullptr; }
 	if(_hFileMapping){ ::CloseHandle(_hFileMapping); _hFileMapping = NULL; }
 	if(_hFile != INVALID_HANDLE_VALUE)
 	{	
@@ -2326,7 +2326,7 @@ const rt::String& os::FileMapping::GetFilename() const
 
 os::FileMapping::FileMapping()
 {
-	_Ptr = NULL;
+	_Ptr = nullptr;
 	_Size = 0;
 }
 
@@ -2379,7 +2379,7 @@ bool os::FileMapping::Open(LPCSTR filename, SIZE_T length, bool readonly, bool c
 
 void os::FileMapping::Close(bool also_delete_file)
 {
-	if(_Ptr){ ::munmap(_Ptr, _Size); _Ptr = NULL; };
+	if(_Ptr){ ::munmap(_Ptr, _Size); _Ptr = nullptr; };
 	_File.Close();
 	_Size = 0;
 	if(also_delete_file)os::File::Remove(_File.GetFilename().Begin());
@@ -2730,7 +2730,7 @@ namespace _details
 {
 	static rt::String g_DumpFilename;
 	static DWORD g_DumpFlag = 0;
-	static FUNC_PostCrashDump g_PostCrashDump = NULL;
+	static FUNC_PostCrashDump g_PostCrashDump = nullptr;
 	bool _WriteCrashDump(LPCSTR fn, PEXCEPTION_POINTERS ExceptionInfo, DWORD dump_flag)
 	{
 		HANDLE hFile;

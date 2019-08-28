@@ -275,7 +275,7 @@ struct _JTag
 		FORCEINL UINT	GetLength() const { ASSERT(_Obj); return (UINT)_Obj->GetLength(); }
 		FORCEINL UINT	CopyTo(LPSTR p) const { ASSERT(_Obj); return (UINT)_Obj->CopyTo(p); }
 		FORCEINL		_O(const t_Obj& x):_Obj(&x){}
-		FORCEINL		_O(){ _Obj = NULL; }
+		FORCEINL		_O(){ _Obj = nullptr; }
 	};
 
 	rt::String_Ref	tagname;

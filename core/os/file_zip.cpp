@@ -26,7 +26,7 @@ void FileZip::_crc_checksum(LPCVOID pSrc, UINT SrcLen, LPDWORD crc32)
 
 FileZip::FileZip()
 {
-	_pZipFile = NULL;
+	_pZipFile = nullptr;
 	m_CentralDirectoryStart = 0;
 	m_CentralDirectoryModified = false;
 	m_CompressionMode = (UINT)ZIP_STORE;
@@ -37,7 +37,7 @@ FileZip::FileZip()
 	stream_write_zlib.pThis = this;
 	stream_read_zlib.pThis = this;
 
-	_AddingNonZeroFileEntry = NULL;
+	_AddingNonZeroFileEntry = nullptr;
 }
 
 bool FileZip::Open(LPCSTR fn, LPCSTR mode, bool load_indexed)
@@ -86,7 +86,7 @@ bool FileZip::Open(::rt::_File* pFile, LPCSTR mode, bool load_indexed)
 
 		rt::Buffer<BYTE>	cdir;
 		VERIFY(cdir.SetSize(len));
-		CentralDirectory*	pCD = NULL;
+		CentralDirectory*	pCD = nullptr;
 		if(	pFile->Read(cdir,len) == len )
 		{
 			//for(UINT i=0;i<len - sizeof(CentralDirectory) + 4; i++)
@@ -163,7 +163,7 @@ void FileZip::_FreeFileEntry(FileEntryPtr& ptr)
 {
 	ptr.Empty();
 	FileEntry* p = ptr;
-	if(p==NULL || (p>=(LPCVOID)_FileEntryPool.Begin() && p<(LPCVOID)_FileEntryPool.End()) ){}
+	if(p==nullptr || (p>=(LPCVOID)_FileEntryPool.Begin() && p<(LPCVOID)_FileEntryPool.End()) ){}
 	else
 	{
 		_SafeFree32AL(ptr.p);
@@ -172,7 +172,7 @@ void FileZip::_FreeFileEntry(FileEntryPtr& ptr)
 
 void FileZip::Close()
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 
 	if(IsOpen())
 	{
@@ -188,7 +188,7 @@ void FileZip::Close()
 	m_ZipComment.Empty();
 	m_CentralDirectoryStart = 0;
 
-	_pZipFile = NULL;
+	_pZipFile = nullptr;
 }
 
 
@@ -213,7 +213,7 @@ int FileZip::FindFile(const rt::String_Ref& pathname)
 
 bool FileZip::AddZeroSizedEntry(const rt::String_Ref& pathname, __time64_t ftime, DWORD attrib)
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 	if(pathname.GetLength() > 0xffff)return false;
 	if(m_FileEntries.GetSize() >= 0xffff)return false;
 	ASSERT(!m_IsReadOnly);
@@ -268,9 +268,9 @@ void FileZip::ReindexAllEntries()
 
 FileZip::FileEntry* FileZip::_AddNonZeroFileEntry_Begin(const rt::String_Ref& pathname, UINT size, __time64_t ftime)
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
-	if(pathname.GetLength() > 0xffff)return NULL;
-	if(m_FileEntries.GetSize() >= 0xffff)return NULL;
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
+	if(pathname.GetLength() > 0xffff)return nullptr;
+	if(m_FileEntries.GetSize() >= 0xffff)return nullptr;
 	ASSERT(size); // add zero-sized file by AddDirectory and set attrib = FILE_ATTRIBUTE_ARCHIVE
 	
 	ASSERT(!m_IsReadOnly);
@@ -295,10 +295,10 @@ FileZip::FileEntry* FileZip::_AddNonZeroFileEntry_Begin(const rt::String_Ref& pa
 				goto SAVE_ENTRY;
 			}
 
-		if(m_CentralDirectoryStart + LFlen > (UINT_MAX - sizeof(CentralDirectory) - 0xffff))return NULL;
+		if(m_CentralDirectoryStart + LFlen > (UINT_MAX - sizeof(CentralDirectory) - 0xffff))return nullptr;
 		offset = m_CentralDirectoryStart;
 		m_CentralDirectoryStart += LFlen;
-		_HoleFromEntry = NULL;
+		_HoleFromEntry = nullptr;
 	}
 
 SAVE_ENTRY:
@@ -338,7 +338,7 @@ SAVE_ENTRY:
 	}
 	else
 	{	_AddNonZeroFileEntry_End(false);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -384,7 +384,7 @@ bool FileZip::_AddNonZeroFileEntry_End(bool commit)
 					m_CentralDirectoryStart -= saved;
 			}
 
-			_AddingNonZeroFileEntry = NULL;
+			_AddingNonZeroFileEntry = nullptr;
 			return true;
 		}
 
@@ -435,7 +435,7 @@ UINT FileZip::compress_store::Write(LPCVOID p, UINT size)
 
 FileZip::compress_zlib::compress_zlib()
 {
-	defstrm = NULL;
+	defstrm = nullptr;
 }
 
 void FileZip::compress_zlib::Clear()
@@ -545,7 +545,7 @@ UINT FileZip::compress_zlib::Write(LPCVOID p, UINT size)
 
 FileZip::decompress_zlib::decompress_zlib()
 {
-	infstrm = NULL;
+	infstrm = nullptr;
 }
 
 void FileZip::decompress_zlib::Clear()
@@ -622,7 +622,7 @@ CHECK_CRC32:
 
 FileZip::stream_writeonly* FileZip::AddFile(const rt::String_Ref& pathname, UINT size, __time64_t ftime)
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 
 	FileEntry* e = _AddNonZeroFileEntry_Begin(pathname,size,ftime);
 	if(e)
@@ -646,7 +646,7 @@ FileZip::stream_writeonly* FileZip::AddFile(const rt::String_Ref& pathname, UINT
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -657,7 +657,7 @@ bool FileZip::AddFile(const rt::String_Ref& pathname, LPCVOID pData, UINT size, 
 		return AddZeroSizedEntry(pathname, ftime, FILE_ATTRIBUTE_ARCHIVE);
 	}
 
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 	UINT size_org = size;
 	DWORD CRC32 = 0;
 	_crc_checksum(pData,size,&CRC32);
@@ -731,7 +731,7 @@ bool FileZip::ExtractFile(UINT idx, LPVOID pData)
 		if(LFH.Compression)
 		{
 			bool succ = false;
-			LPCBYTE  p = NULL;
+			LPCBYTE  p = nullptr;
 			rt::Buffer<BYTE> compressed;
 
 			if(	compressed.SetSize(e->Size) &&
@@ -825,7 +825,7 @@ FileZip::stream_readonly* FileZip::ExtractFile(UINT idx)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 UINT FileZip::decompress_store::Read(LPVOID p, UINT size)
@@ -924,7 +924,7 @@ bool FileZip::Save()
 
 bool FileZip::AddEntryFrom(LPCSTR pathname_sys, LPCSTR pathname_zip)
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 	__time64_t tt;
 
 	if(File::IsDirectory(pathname_sys))
@@ -988,7 +988,7 @@ bool FileZip::ExtractEntryTo(UINT fid, LPCSTR path_sys)
 /*
 bool FileZip::AddAllEntriesFrom(LPCSTR path_sys, LPCSTR path_zip, bool include_subfolders)
 {
-	ASSERT(_AddingNonZeroFileEntry == NULL);
+	ASSERT(_AddingNonZeroFileEntry == nullptr);
 	UINT syslen = (UINT)_tcslen(path_sys);
 
 	w32::CFileList	list;
@@ -1140,7 +1140,7 @@ namespace os
 
 FileGzip::FileGzip()
 {
-	_pZipFile = NULL;
+	_pZipFile = nullptr;
 }
 
 
@@ -1206,7 +1206,7 @@ bool FileGzip::Open(rt::_File* pFile)
 void FileGzip::Close()
 {
 	_BaseFile.Close();
-	_pZipFile = NULL;
+	_pZipFile = nullptr;
 }
 
 UINT FileGzip::GetFileSize() const 

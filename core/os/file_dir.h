@@ -107,7 +107,7 @@ public:
 	File();
 	~File();
 	File(LPCSTR fn_utf8, LPCSTR mode = Normal_Read, bool create_path = false);
-	bool		IsOpen() const { return _hFile != NULL; }
+	bool		IsOpen() const { return _hFile != nullptr; }
 
 	SIZE_T		Write(const rt::String_Ref& x){ return Write(x.Begin(), x.GetLength()); }
 	SIZE_T		Write(const rt::String& x){ return Write(x.Begin(), x.GetLength()); }
@@ -158,7 +158,7 @@ public:
 	static void GetCurrentDirectory(rt::String& out);
 	static bool SetCurrentDirectory(LPCSTR path);
 	static void ResolveRelativePath(LPCSTR path, rt::String& fn_out);
-	static bool	GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify);	// handles file and directory, feed NULL if not interested
+	static bool	GetPathTime(LPCSTR pathname, __time64_t* creation,__time64_t* last_access,__time64_t* last_modify);	// handles file and directory, feed nullptr if not interested
 	static bool	SetPathTime(LPCSTR pathname, __time64_t last_access, __time64_t last_modify);	// zero for not set
 	static bool	MoveFile(LPCSTR from, LPCSTR to, bool overwrite = true);	// will try move if fail, try copy & delete
 
@@ -186,7 +186,7 @@ public:
 	const rt::String&	GetFilename() const { return _Filename; }
 };
 
-extern ULONGLONG GetFreeDiskSpace(LPCSTR path, ULONGLONG* pTotal = NULL); // in MB
+extern ULONGLONG GetFreeDiskSpace(LPCSTR path, ULONGLONG* pTotal = nullptr); // in MB
 extern void		 GetAppSandbox(rt::String& out_path, LPCSTR app_name);	// app_name not necessarily appears in the path
 extern void		 SetAppSandboxAsCurrentDirectory(LPCSTR app_name);
 
@@ -299,7 +299,7 @@ public:
 	bool		Open(LPCSTR filename, SIZE_T length = 0, bool readonly = true, bool create_new = true);
 	void		Close(bool also_delete_file = false);
 
-	bool		IsOpen() const { return _Ptr != NULL; }
+	bool		IsOpen() const { return _Ptr != nullptr; }
 	LPVOID		GetBasePtr(SIZE_T offset = 0){ return (offset + (LPBYTE)_Ptr); }
 	LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
 	SIZE_T		GetSize() const { return _Size; }
@@ -317,7 +317,7 @@ struct FileBuffer: protected FileMapping
 	LPCVOID		GetBasePtr(SIZE_T offset = 0) const { return (offset + (LPBYTE)_Ptr); }
 	bool		Open(LPCSTR filename, SIZE_T count = 0, bool readonly = true){ return FileMapping::Open(filename, count*sizeof(T), readonly); }
 	void		Close(bool also_delete_file = false){ FileMapping::Close(also_delete_file); }
-	bool		IsOpen() const { return _Ptr != NULL; }
+	bool		IsOpen() const { return _Ptr != nullptr; }
 	bool		IsReadonly() const { return _Readonly; }
 	SIZE_T		GetSize() const { return _Size/sizeof(T); }
 
@@ -415,10 +415,10 @@ protected:
 
 public:
 	void	AddFile(const rt::String_Ref& fn, bool IsDir = false);
-	UINT	Populate(LPCSTR directory, LPCSTR suffix_filter = NULL, DWORD flag = FLAG_SKIPHIDDEN|FLAG_NODIRECTORY);	// suffix_filter = ".bmp|.jpg|.png", up to 64 suffixies, each individul filter should short than 16 characters
+	UINT	Populate(LPCSTR directory, LPCSTR suffix_filter = nullptr, DWORD flag = FLAG_SKIPHIDDEN|FLAG_NODIRECTORY);	// suffix_filter = ".bmp|.jpg|.png", up to 64 suffixies, each individul filter should short than 16 characters
 
 #ifdef PLATFORM_WIN
-	UINT	PopulateDropList(HDROP hfile, LPCSTR suffix_filter = NULL, DWORD flag = FLAG_SKIPHIDDEN|FLAG_NODIRECTORY);
+	UINT	PopulateDropList(HDROP hfile, LPCSTR suffix_filter = nullptr, DWORD flag = FLAG_SKIPHIDDEN|FLAG_NODIRECTORY);
 #endif
 
 	UINT	GetCount() const;
@@ -533,11 +533,11 @@ public:
 						return default_val;
 					}
 	LPCSTR			SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
-	rt::String_Ref	GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = NULL) const;
+	rt::String_Ref	GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = nullptr) const;
 	bool			HasOption(const rt::String_Ref& option_name) const;
 
 	UINT			GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
-	LPCSTR			GetText(UINT idx, LPCSTR default_val = NULL)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
+	LPCSTR			GetText(UINT idx, LPCSTR default_val = nullptr)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
 
 	LPCSTR			GetOriginalLine() const { return _CommandLine; }
 
@@ -568,7 +568,7 @@ protected:
 public:
 	Process();
 
-	bool		Launch(LPCSTR cmdline, LPCSTR pWorkDirectory = NULL, LPVOID pEnvVariable = NULL);
+	bool		Launch(LPCSTR cmdline, LPCSTR pWorkDirectory = nullptr, LPVOID pEnvVariable = nullptr);
 	bool		WaitForEnding(DWORD timeout = INFINITE); // return false when timeout
 	void		Terminate();
 	bool		IsRunning();

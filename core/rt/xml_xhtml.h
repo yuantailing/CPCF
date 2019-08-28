@@ -62,13 +62,13 @@ protected:
 
 public:
 	static const char		g_XML_Header[40];
-	XMLComposer(rt::_File * out_stream = NULL);	// if NULL, output in m_Content, obtain by GetDocument/GetDocumentLength
+	XMLComposer(rt::_File * out_stream = nullptr);	// if nullptr, output in m_Content, obtain by GetDocument/GetDocumentLength
 	
-	void ResetContent(LPCSTR customized_header = NULL);
+	void ResetContent(LPCSTR customized_header = nullptr);
 	void EnterNode(LPCSTR tag);
 	void EnteringNode(LPCSTR tag);
 	void EnteringNodeDone(bool compact = false);
-	void SetAttribute(LPCSTR name, LPCSTR value = NULL);  // call EnteringNode first, and call EnteringNodeDone when done
+	void SetAttribute(LPCSTR name, LPCSTR value = nullptr);  // call EnteringNode first, and call EnteringNodeDone when done
 	void SetAttribute(LPCSTR name, int value);  // call EnteringNode first, and call EnteringNodeDone when done
 	void SetAttribute(LPCSTR name, unsigned int value);  // call EnteringNode first, and call EnteringNodeDone when done
 	void SetAttribute(LPCSTR name, long long value);  // call EnteringNode first, and call EnteringNodeDone when done
@@ -250,16 +250,16 @@ class XMLParser		// no error handle of the content
 
 	LPCSTR		_html_check_node_close(const rt::String_Ref& tagname, LPCSTR p, bool just_next);
 	LPCSTR		_search_control_close(LPCSTR start) const ; // search '>' for '<!'
-	LPCSTR		_search_node_close(LPCSTR start_inner, const rt::String_Ref& tag_name, LPCSTR* pInnerXML_End = NULL) const;	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
+	LPCSTR		_search_node_close(LPCSTR start_inner, const rt::String_Ref& tag_name, LPCSTR* pInnerXML_End = nullptr) const;	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
 	LPCSTR		_search_special_node_close(LPCSTR start_outer) const;	// search ending for <!--,<?,<!. return pointer to '>'
-	bool		_search_attrib(LPCSTR start, LPCSTR attrib_name, rt::String_Ref& value) const ; // if found, return pointer where parsing stopped, not found or error return NULL
+	bool		_search_attrib(LPCSTR start, LPCSTR attrib_name, rt::String_Ref& value) const ; // if found, return pointer where parsing stopped, not found or error return nullptr
 
 public:
 	static  void	_convert_xml_to_text(const rt::String_Ref& string, rt::String& text, bool TrimXMLCode = false, bool TrimSubnodes = false, char sep = ' ');
 
-	static	LPCSTR	_seek_tag_open(LPCSTR start) { return strchr(start,'<'); }	// NULL for not found, or a pointer to '<'
-	static	LPCSTR	_seek_tag_close(LPCSTR start) { return strchr(start,'>'); }  // NULL for not found, or a pointer to '>'
-	static	LPCSTR	_search_node_close(XMLParseError* pErrorCode, LPCSTR start_inner, const rt::String_Ref& tag_name, LPCSTR* pInnerXML_End = NULL);	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
+	static	LPCSTR	_seek_tag_open(LPCSTR start) { return strchr(start,'<'); }	// nullptr for not found, or a pointer to '<'
+	static	LPCSTR	_seek_tag_close(LPCSTR start) { return strchr(start,'>'); }  // nullptr for not found, or a pointer to '>'
+	static	LPCSTR	_search_node_close(XMLParseError* pErrorCode, LPCSTR start_inner, const rt::String_Ref& tag_name, LPCSTR* pInnerXML_End = nullptr);	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
 	static	LPCSTR	_search_special_node_close(XMLParseError* pErrorCode, LPCSTR start_outer);	// search ending for <!--,<?,<!. return pointer to '>'
 	template<typename t_Val> static INLFUNC  t_Val*	_seek_symbol_end(t_Val* start)
 	{ for(;(*start>=0x2d || *start=='#' || *start<0) && *start!='/' && *start!='<' && *start!='>' && *start!='=' && *start!='[' && *start!=']' ;start++){};  return start; }
@@ -285,13 +285,13 @@ protected:
 		LPCSTR			InnerXML_Start;			// (InnerXML_Start-1) pointing to a '>', or 0
 		bool			IsCompactNode;			// no child node, if true, InnerXML_Start is actaully OuterXML_End
 	};
-	LPCSTR				_search_node_close(_node& node, LPCSTR* pInnerXML_End = NULL) const ;	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
+	LPCSTR				_search_node_close(_node& node, LPCSTR* pInnerXML_End = nullptr) const ;	// search for matched '</tag_name>', return pointer to '>' OuterXML_End, pInnerXML_End to '<' InnerXML_End
 
 	LPCSTR				m_pDocument;
 	rt::BufferEx<_node>	m_NodePath;
 
 	bool				_ForceWellformed(rt::String& out_in);		// false if error found and fixed
-	bool				_EnterNextNode(LPCSTR start, _details::_XML_Tag_Filter* pFilter = NULL, bool replace_node = false);
+	bool				_EnterNextNode(LPCSTR start, _details::_XML_Tag_Filter* pFilter = nullptr, bool replace_node = false);
 	const _node&		_CurNode() const { ASSERT(m_NodePath.GetSize()); return m_NodePath[m_NodePath.GetSize()-1]; }
 	void				ClearSyntaxError();
 	
@@ -304,7 +304,7 @@ public:
 	bool			Load(LPCSTR text, bool Keep_referring, SSIZE_T text_len = -1);	// if Keep_referring, the text pointer will be kept for document accessing
 	bool			IsLoaded() const { return (bool)m_NodePath.GetSize(); }
 
-	void			SetUserTagFilter(_details::_XML_Tag_Filter* pFilter = NULL){ m_pUserTagFilter = m_XPathParser.m_pUserTagFilter = pFilter; }
+	void			SetUserTagFilter(_details::_XML_Tag_Filter* pFilter = nullptr){ m_pUserTagFilter = m_XPathParser.m_pUserTagFilter = pFilter; }
 	UINT			GetDescendantLevel(){ return (UINT)m_NodePath.GetSize(); }	// starting from 1, 0 indicate error
 
 	static void		ConvertExtendedCSSPathToXPath(LPCSTR extended_css_path, rt::String& xpath);
@@ -315,8 +315,8 @@ public:
 	void			EnterRootNode();	// equivalent to xpath: //* 
 	bool			EnterParentNode();	// equivalent to xpath: ../*
 
-	bool			EnterChildNode(UINT n_th, LPCSTR tag_name = NULL);	// n_th starts from 1
-	bool			EnterFirstChildNode(LPCSTR tag_name = NULL);
+	bool			EnterChildNode(UINT n_th, LPCSTR tag_name = nullptr);	// n_th starts from 1
+	bool			EnterFirstChildNode(LPCSTR tag_name = nullptr);
 	bool			EnterNextSiblingNode();
 	bool			EnterNextSiblingNode(UINT n_th);
 	bool			EnterSucceedNode();	// go succeed node as depth-first traveling order

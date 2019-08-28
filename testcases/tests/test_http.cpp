@@ -51,9 +51,9 @@ bool http_cb(LPVOID param, UINT msg, LPVOID cookie)
 void rt::UnitTests::download()
 {
 	inet::HttpDownloader	dlc;
-	dlc.SetItemEventCallback(http_cb, NULL);
+	dlc.SetItemEventCallback(http_cb, nullptr);
 	//dlc.SetTask("http://gameswalls.com/shin-megami-tensei-digital-devil-saga-2/shin-megami-tensei/1024x768", "test.html", true);
-	dlc.SetTask("http://wallfive.com/wallpaper/games", "test.html", NULL, true);
+	dlc.SetTask("http://wallfive.com/wallpaper/games", "test.html", nullptr, true);
 	dlc.Start();
 	while(dlc.GetState() < inet::HTTP_DLC_STOPPED)
 	{	os::Sleep(500);
@@ -79,7 +79,7 @@ void rt::UnitTests::http_client()
 	// Testing HTTPS
 	{	inet::HttpSession	http;
 		http.SetHangingTimeout(2000);
-		http.SetItemEventCallback(http_cb, NULL);
+		http.SetItemEventCallback(http_cb, nullptr);
 
 		//http.SetProxy(inet::InetAddr("213.181.73.145",8080));
 		//http.SetProxy(inet::InetAddr("122.96.59.103",82));
@@ -106,7 +106,7 @@ void rt::UnitTests::http_client()
 		_LOG("Transmision: "<<rt::tos::TimeSpan<false>(http.m_Timing_Transmission));
 
 		http_data_save.Open("https_streamed.txt", os::File::Normal_Write);
-		http.SetDataCallback(http_data_cb, NULL);
+		http.SetDataCallback(http_data_cb, nullptr);
 
 		if(	http.Request_Get(url) &&
 			http.WaitResponse()
@@ -131,7 +131,7 @@ void rt::UnitTests::http_client()
 	LPCSTR ext = ".jpg";
 
 	{	inet::HttpSession http;
-		http.SetDataCallback(http_data_cb, NULL);
+		http.SetDataCallback(http_data_cb, nullptr);
 		
 		for (int i = 0; i < 4; i++)
 		{
@@ -164,7 +164,7 @@ void rt::UnitTests::http_client()
 
 	{	inet::HttpSession http;
 
-		//http.SetItemEventCallback(http_cb, NULL);
+		//http.SetItemEventCallback(http_cb, nullptr);
 		for (int i = 4; i < 8; i++)
 		{
 			if (http.Request_Get(url) &&
@@ -193,7 +193,7 @@ void rt::UnitTests::http_client()
 void rt::UnitTests::http_nav()
 {
 	inet::HttpNavigator	http;
-	http.SetItemEventCallback(http_cb, NULL);
+	http.SetItemEventCallback(http_cb, nullptr);
 	if(http.NavigateTo("http://google.com/") && http.GetResponseLength()>5*1024)
 	{
 		_LOG("Document Downloaded");

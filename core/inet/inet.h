@@ -185,12 +185,12 @@ public:
 			if(inet_pton(OP::SIN_FAMILY, pHostname, OP::GetAddressPtr(*this)))return true;
 #endif
 			struct addrinfo aiHints;
-			struct addrinfo *aiList = NULL;
+			struct addrinfo *aiList = nullptr;
 			rt::Zero(aiHints);
 			//memset(&aiHints, 0, sizeof(aiHints));
 			aiHints.ai_family = OP::SIN_FAMILY;
 			bool ret = false;
-			if(	0 == getaddrinfo(pHostname, NULL, &aiHints, &aiList) && 
+			if(	0 == getaddrinfo(pHostname, nullptr, &aiHints, &aiList) && 
 				aiList && 
 				aiList->ai_addrlen == sizeof(t_ADDR) &&
 				!OP::IsAddressNone((t_ADDR&)*aiList->ai_addr)
@@ -252,11 +252,11 @@ struct InetAddr: public InetAddrT<sockaddr_in>
 };
     
     
-extern UINT GetLocalAddresses(InetAddrT<sockaddr_in>* pOut, UINT out_size, bool no_loopback, InetAddrT<sockaddr_in>* pOut_Broadcast = NULL, DWORD* subnet_mask = NULL);
+extern UINT GetLocalAddresses(InetAddrT<sockaddr_in>* pOut, UINT out_size, bool no_loopback, InetAddrT<sockaddr_in>* pOut_Broadcast = nullptr, DWORD* subnet_mask = nullptr);
 
 #ifdef PLATFORM_IPV6_SUPPORT
 typedef InetAddrT<sockaddr_in6>	InetAddrV6;
-extern UINT GetLocalAddresses(InetAddrV6* pOut, UINT out_size, bool no_loopback, InetAddrV6* pOut_Broadcast = NULL);
+extern UINT GetLocalAddresses(InetAddrV6* pOut, UINT out_size, bool no_loopback, InetAddrV6* pOut_Broadcast = nullptr);
 #endif
 
 class Socket
@@ -374,9 +374,9 @@ class SocketEvent
 	{	
 	#if !defined(PLATFORM_WIN)
 		rt::BufferEx<SOCKET>& _Sockets;
-		INLFUNC my_fd_set(rt::BufferEx<SOCKET>& x):_Sockets(x){ _fd_set = NULL; }
+		INLFUNC my_fd_set(rt::BufferEx<SOCKET>& x):_Sockets(x){ _fd_set = nullptr; }
 	#else
-		INLFUNC my_fd_set(){ _fd_set = NULL; }
+		INLFUNC my_fd_set(){ _fd_set = nullptr; }
 	#endif
 		int		_last_getevent;
 		fd_set*	_fd_set;
@@ -385,8 +385,8 @@ class SocketEvent
 
 		SOCKET			get_next_event();
 		INLFUNC void	clear_event(){ _last_getevent = -1; }
-		INLFUNC void	alloc(){ ASSERT(_fd_set == NULL); _fd_set = _Malloc32AL(fd_set,1); rt::Zero(*_fd_set); /* memset(_fd_set, 0, sizeof(fd_set)); */ }
-		INLFUNC bool	is_allocated(){ return _fd_set != NULL; }
+		INLFUNC void	alloc(){ ASSERT(_fd_set == nullptr); _fd_set = _Malloc32AL(fd_set,1); rt::Zero(*_fd_set); /* memset(_fd_set, 0, sizeof(fd_set)); */ }
+		INLFUNC bool	is_allocated(){ return _fd_set != nullptr; }
 		void			assign_socket(const rt::BufferEx<SOCKET>& sock);
 		INLFUNC			operator fd_set* (){ return _fd_set; }
 	};

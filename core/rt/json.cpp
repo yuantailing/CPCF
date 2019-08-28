@@ -66,7 +66,7 @@ LPCSTR JsonObject::_seek_json_object_closure(LPCSTR p, LPCSTR end)
 	if(*p == '"' || *p == '\'') // string
 	{	p = _seek_char_escape(p+1, end, *p);
 		if(p != end)return p+1;
-		return NULL;
+		return nullptr;
 	}
 	else if(*p == '<') // binary
 	{	UINT len;
@@ -74,7 +74,7 @@ LPCSTR JsonObject::_seek_json_object_closure(LPCSTR p, LPCSTR end)
 		p += rt::String_Ref(p, end).ToNumber(len);
 		p += 1 + len;
 		if(*p == '>')return p+1;
-		return NULL;
+		return nullptr;
 	}
 	else
 	{	char c = _match_closure(*p);
@@ -93,16 +93,16 @@ LPCSTR JsonObject::_seek_json_object_closure(LPCSTR p, LPCSTR end)
 				}
 				else if(*p == '"' || *p == '\'')
 				{	p = _seek_char_escape(p+1,end,*p);
-					if(p == end)return NULL;
+					if(p == end)return nullptr;
 				}
 				else if(*p == '<')
 				{
 					p = _seek_json_object_closure(p, end);
-					if(!p)return NULL;
+					if(!p)return nullptr;
 				}
 				p++;
 			}
-			return NULL;
+			return nullptr;
 		}
 		else return _scan_text(p, end);
 	}
@@ -138,7 +138,7 @@ rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, bool& p_exist, 
 		}
 	}
 	p_exist = false;
-	return NULL;
+	return nullptr;
 }
 
 bool JsonObject::IsEmptyObject() const 
@@ -249,7 +249,7 @@ bool JsonObject::GetNextKeyValuePair(JsonKeyValuePair& kvp) const
 	if(value == end)return false; // ':' not found
 	value = _skip_whitespace(value+1, end);
 	LPCSTR tail = _seek_json_object_closure(value, end);
-	if(tail == NULL)return false;
+	if(tail == nullptr)return false;
 
 	_cook_raw_value(value, tail);
 
@@ -353,7 +353,7 @@ SKIP_THE_KEY:
 
 LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot /* = false */)
 {
-	if(_Doc.IsEmpty())return NULL;
+	if(_Doc.IsEmpty())return nullptr;
 
 	rt::String_Ref	path_seg[256];
 
@@ -367,7 +367,7 @@ LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot
 	LPCSTR p = _Doc.Begin();
 	LPCSTR end = _Doc.End();
 
-	if(*p != '{')return NULL;
+	if(*p != '{')return nullptr;
 	for(int i=0; i<segco; i++)
 	{
 		rt::String_Ref name = path_seg[i];
@@ -376,43 +376,43 @@ LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot
 		{
 			for(;;)
 			{	p = _skip_whitespace(p+1, end);
-				if(*p == '}')return NULL; // name not found
+				if(*p == '}')return nullptr; // name not found
 				LPCSTR name_end;
 				if(*p=='"' || *p=='\''){ 
 					name_end = _seek_char_escape(p+1, end, *p);
 					p++;
 				}
 				else{ name_end = _scan_text(p, end); }
-				if(end == name_end || p == name_end)return NULL;
+				if(end == name_end || p == name_end)return nullptr;
 
 				LPCSTR value = _seek_char(name_end, end, ':');
-				if(value == end)return NULL; // ':' not found
+				if(value == end)return nullptr; // ':' not found
 				value = _skip_whitespace(value+1, end);
 
 				if(rt::String_Ref(p, name_end) == name)
 				{	// found
 					if(i == segco-1)return value;
 					p = value;
-					if(*p != '{' && *p != '[')return NULL; // an object expected
+					if(*p != '{' && *p != '[')return nullptr; // an object expected
 					break;
 				}
 				else
 				{	p = _seek_json_object_closure(value, end); // p[-1] = '}' or ']' or '"' or last char of the value
-					if(p==NULL)return NULL;
+					if(p==nullptr)return nullptr;
 					p = _skip_whitespace(p, end);
-					if(*p != ',')return NULL; // end of object reached, name not found
+					if(*p != ',')return nullptr; // end of object reached, name not found
 				}
 			}
 		}
 		else
-		{	if(*p != '[')return NULL; // not an array
+		{	if(*p != '[')return nullptr; // not an array
 			UINT co = 0;
 			name.ToNumber(co);
 			rt::JsonObject item;
 			JsonArray  arr(rt::String_Ref(p, _Doc.End()));
 			int s = -1;
 			do
-			{	if(!arr.GetNextObjectRaw(item))return NULL;
+			{	if(!arr.GetNextObjectRaw(item))return nullptr;
 				s++;
 			}while(s<(int)co);
 			p = item._Doc.Begin();
@@ -422,7 +422,7 @@ LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot
 	}
 
 	ASSERT(0);
-	return NULL;
+	return nullptr;
 }
 
 JsonType JsonKeyValuePair::GetValueType(const rt::String_Ref& Value) 

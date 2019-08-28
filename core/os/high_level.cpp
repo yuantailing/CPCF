@@ -4,11 +4,11 @@ namespace os
 {
 
 
-os::Daemon* os::Daemon::_pDaemon = NULL;
+os::Daemon* os::Daemon::_pDaemon = nullptr;
 
 os::Daemon::Daemon()
 {
-	ASSERT(_pDaemon == NULL);
+	ASSERT(_pDaemon == nullptr);
 	_pDaemon = this;
 #if defined(PLATFORM_WIN)
 	_hServiceHandler = NULL;
@@ -19,7 +19,7 @@ os::Daemon::Daemon()
 os::Daemon::~Daemon()
 {
 	ASSERT(_pDaemon);
-	_pDaemon = NULL;
+	_pDaemon = nullptr;
 }
 
 #if defined(PLATFORM_WIN)
@@ -51,7 +51,7 @@ bool os::Daemon::InitializeDaemonController(LPCSTR svc_name)
 		{
 			SERVICE_TABLE_ENTRYA svc_tab[] = 
 			{	{_pDaemon->_DaemonName,_Func::SvcMain},
-				{NULL,NULL}
+				{nullptr, nullptr}
 			};
 			
 			::StartServiceCtrlDispatcherA(svc_tab);
@@ -127,7 +127,7 @@ os::LaunchProcess::LaunchProcess()
 	hChildStdinWrDup = INVALID_HANDLE_VALUE;
 	hChildStdoutWr = INVALID_HANDLE_VALUE;
 
-	_Callback = NULL;
+	_Callback = nullptr;
 
 	_ExitCode = 0;
 	_ExitTime = 0;
@@ -416,7 +416,7 @@ void os::LaunchProcess::_RemoveCarriageReturn(rt::String& output, const rt::Stri
 
 	LPCSTR p = add.Begin();
 	LPCSTR end = add.End();
-	LPCSTR last_linend = NULL;
+	LPCSTR last_linend = nullptr;
 	LPCSTR last_copied = p;
 
 	if(!output.IsEmpty() && output.Last() == '\r')
@@ -545,7 +545,7 @@ ParallelFileWriter::ParallelFileWriter()
 
 	SetWriteDownInterval(1000);
 
-	_pFileWriterCB = NULL;
+	_pFileWriterCB = nullptr;
 
 	//_DesiredFileLength = 0;
 	//SetTruncationBoundaryTag('\n',1);
