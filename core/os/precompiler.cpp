@@ -221,7 +221,7 @@ void Precompiler::_SubsituteFile(const rt::String_Ref& content, rt::String& outp
 				else
 				{
 					if(co == 3){ _DefineMacro(f[1], rt::String_Ref(f[2].Begin(), control_line.End())); }
-					else{ _DefineMacro(f[1], NULL); }
+					else{ _DefineMacro(f[1], nullptr); }
 				}
 
 				continue;
@@ -237,7 +237,7 @@ void Precompiler::_SubsituteFile(const rt::String_Ref& content, rt::String& outp
 				for(;;)
 				{	// iterate all branches
 					bool go_if = false;
-					if(!_EvalueMacroIf(f[0], co>1?rt::String_Ref(f[1].Begin(), control_line.End()):NULL, go_if))
+					if(!_EvalueMacroIf(f[0], co>1?rt::String_Ref(f[1].Begin(), control_line.End()):nullptr, go_if))
 					{
 						PrintError(rt::SS("illegal directive: ") + control_line);
 						//_if_entered.last() = true;

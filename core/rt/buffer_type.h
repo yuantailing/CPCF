@@ -1022,6 +1022,10 @@ public:
 		return ret;
 	}
 	FORCEINL bool		IsSignificant(UINT min_votes) const { return _TopValues[0].Count >= min_votes && _TopValues[0].Count > 2*_TopValues[1].Count; }
+	FORCEINL UINT		GetSignificantRatio(UINT min_votes) const // by precent
+						{	return _TopValues[0].Count >= (int)min_votes?50 + rt::min(50, (_TopValues[0].Count - _TopValues[1].Count)/_TopValues[0].Count)
+														:_TopValues[0].Count/2*min_votes;
+						}
 	FORCEINL bool		IsEmpty() const { return GetFrequency() <= 0; }
 	FORCEINL const int	GetFrequency() const { return _TopValues[0].Count; }
 	FORCEINL const int	GetFrequency(UINT i) const { return _TopValues[i].Count; }
