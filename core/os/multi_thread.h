@@ -231,7 +231,7 @@ public:
 	class _CCS_Holder
 	{	CriticalSection& _CCS;
 	public:
-		FORCEINL _CCS_Holder(CriticalSection& so):_CCS(so){ _CCS.Lock(); }
+		FORCEINL _CCS_Holder(const CriticalSection& so):_CCS((CriticalSection&)so){ _CCS.Lock(); }
 		FORCEINL ~_CCS_Holder(){ _CCS.Unlock(); }
 	};
 #if defined(PLATFORM_WIN)
