@@ -594,6 +594,7 @@ public:
 	template<typename T>
 	__ThisCallMemberFunctionPointer(const T& x){ ASSERT(sizeof(T) == sizeof(Data)); rt::Copy(Data, x); }
 	__ThisCallMemberFunctionPointer(){ Zero(); }
+    __ThisCallMemberFunctionPointer(decltype(nullptr) x){ ASSERT(x == nullptr); Zero(); }
 	__ThisCallMemberFunctionPointer(const __ThisCallMemberFunctionPointer&x) = default;
 	bool	IsNull() const { return rt::IsZero(*this); }
 	void	Zero(){ rt::Zero(*this); }
