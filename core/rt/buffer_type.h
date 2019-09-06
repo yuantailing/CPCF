@@ -985,69 +985,69 @@ public:
 	static const int MATCHED_WITH_TOP = 2;
 protected:
 	_val	_TopValues[TOP_K];
-	FORCEINL int _Match(const T& val)	// 0: not match, 1: matched and no promote, 2: matched
-	{
-		if(_TopValues[0].Val == val)
-		{	_TopValues[0].Count++;
-			if(store_last_val)_TopValues[0].Val = val;
-			return MATCHED_WITH_TOP;
-		}
-		if(_TopValues[0].Count == 0)
-		{	_TopValues[0].Count = 1;
-			_TopValues[0].Val = val;
-			return MATCHED_WITH_TOP;
-		}
-		int ret = ((TopFrequentValues<T,TOP_K-1>*)&_TopValues[1])->_Match(val);
-		if(ret == MATCHED_WITH_TOP)
-		{	if(_TopValues[1].Count > _TopValues[0].Count)
-			{	rt::Swap(_TopValues[1], _TopValues[0]);
-				return MATCHED_WITH_TOP;
-			}else return MATCHED;
-		}
-		return ret;
-	}
-public:
-	static FORCEINL UINT GetSize(){ return TOP_K; }
-	FORCEINL TopFrequentValues(){ Reset(); }
-	FORCEINL void Reset(){ rt::Zero(*this); }
-	FORCEINL int Sample(const T& val)		// UNMATCHED / MATCHED / MATCH_WITH_TOP, 0: no match, 1: matched but not the top one no promote, 2: matched with top one
-	{	int ret = _Match(val);
-		if(ret == UNMATCHED)
-		{	if((--_TopValues[TOP_K-1].Count) < 0)
-			{	_TopValues[TOP_K-1].Val = val;
-				_TopValues[TOP_K-1].Count = 1;
-				return MATCHED;
+	int		_Match(const T& val)	// 0: not match, 1: matched and no promote, 2: matched
+			{
+				if(_TopValues[0].Val == val)
+				{	_TopValues[0].Count++;
+					if(store_last_val)_TopValues[0].Val = val;
+					return MATCHED_WITH_TOP;
+				}
+				if(_TopValues[0].Count == 0)
+				{	_TopValues[0].Count = 1;
+					_TopValues[0].Val = val;
+					return MATCHED_WITH_TOP;
+				}
+				int ret = ((TopFrequentValues<T,TOP_K-1>*)&_TopValues[1])->_Match(val);
+				if(ret == MATCHED_WITH_TOP)
+				{	if(_TopValues[1].Count > _TopValues[0].Count)
+					{	rt::Swap(_TopValues[1], _TopValues[0]);
+						return MATCHED_WITH_TOP;
+					}else return MATCHED;
+				}
+				return ret;
 			}
-		}
-		return ret;
-	}
-	FORCEINL bool		IsSignificant(UINT min_votes) const { return _TopValues[0].Count >= min_votes && _TopValues[0].Count > 2*_TopValues[1].Count; }
-	FORCEINL UINT		GetSignificantRatio(UINT min_votes) const // by precent
-						{	return _TopValues[0].Count >= (int)min_votes?50 + rt::min(50, (_TopValues[0].Count - _TopValues[1].Count)/_TopValues[0].Count)
-														:_TopValues[0].Count/2*min_votes;
-						}
-	FORCEINL bool		IsEmpty() const { return GetFrequency() <= 0; }
-	FORCEINL const int	GetFrequency() const { return _TopValues[0].Count; }
-	FORCEINL const int	GetFrequency(UINT i) const { return _TopValues[i].Count; }
-	FORCEINL const T&	Get() const { return _TopValues[0].Val; }
-	FORCEINL const T&	Get(UINT i) const { return _TopValues[i].Val; }
-	FORCEINL const bool Get(UINT i, T* val, int* count) const
-	{	if(_TopValues[i].Count>0)
-		{	*count = _TopValues[i].Count;
-			*val = _TopValues[i].Val;
-			return true; 
-		}else return false;
-	}
-	FORCEINL const T& operator[](UINT i) const { return Get(i); }
-	FORCEINL void		Remove(UINT i)
-	{	if(((int)TOP_K) - (int)i - 1 > 0)memmove(&_TopValues[i], &_TopValues[i+1], sizeof(_val)*(TOP_K - i - 1));
-		_TopValues[TOP_K-1].Count = 0;
-	}
+public:
+	TopFrequentValues(){ Reset(); }
+	static	UINT GetSize(){ return TOP_K; }
+	void	Reset(){ rt::Zero(*this); }
+	int		Sample(const T& val)		// UNMATCHED / MATCHED / MATCH_WITH_TOP, 0: no match, 1: matched but not the top one no promote, 2: matched with top one
+			{	int ret = _Match(val);
+				if(ret == UNMATCHED)
+				{	if((--_TopValues[TOP_K-1].Count) < 0)
+					{	_TopValues[TOP_K-1].Val = val;
+						_TopValues[TOP_K-1].Count = 1;
+						return MATCHED;
+					}
+				}
+				return ret;
+			}
+	bool	IsSignificant(UINT min_votes) const { return _TopValues[0].Count >= min_votes && _TopValues[0].Count > 2*_TopValues[1].Count; }
+	bool	IsEmpty() const { return GetFrequency() <= 0; }
+	int		GetFrequency() const { return _TopValues[0].Count; }
+	int		GetFrequency(UINT i) const { return _TopValues[i].Count; }
+	auto&	operator[](UINT i) const { return Get(i); }
+	auto&	Get() const { return _TopValues[0].Val; }
+	auto&	Get(UINT i) const { return _TopValues[i].Val; }
+	bool	Get(UINT i, T* val, int* count) const
+			{	if(_TopValues[i].Count>0)
+				{	*count = _TopValues[i].Count;
+					*val = _TopValues[i].Val;
+					return true; 
+				}else return false;
+			}
+	void	Remove(UINT i)
+			{	if(((int)TOP_K) - (int)i - 1 > 0)memmove(&_TopValues[i], &_TopValues[i+1], sizeof(_val)*(TOP_K - i - 1));
+				_TopValues[TOP_K-1].Count = 0;
+			}
+	UINT	GetSignificantRatio(UINT min_votes) const // by precent
+			{	return _TopValues[0].Count >= (int)min_votes?50 + rt::min(50, (_TopValues[0].Count - _TopValues[1].Count)/_TopValues[0].Count)
+											:_TopValues[0].Count/2*min_votes;
+			}
 };
 	template<typename T, bool s>
 	class TopFrequentValues<T,0,s>
 	{	template<typename _T, UINT _TOP_K, bool _s> friend class TopFrequentValues;
-		protected:	FORCEINL int  _Match(const T& val){ return 0; }
+		protected:	int _Match(const T& val){ return 0; }
 	};
 
 template<class t_Ostream, typename t_Ele, int TOP, bool S>
