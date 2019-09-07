@@ -1,0 +1,29 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        config: [Debug, Release]
+      fail-fast: false
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install CodeLite
+      run: sudo apt-get install --no-install-recommends -y codelite
+    - name: Download Libs
+      run: |
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o /tmp/cpcf_linux_ipp.7z
+        7z x /tmp/cpcf_linux_ipp.7z -o../CPCF/libs/linux/
+        rm /tmp/cpcf_linux_ipp.7z
+    - name: make
+      run: |
+        cd testcases/proj.linux
+        codelite-make -w shared_test.workspace -c ${{ matrix.config }} -s <(printf '<BuildSettings/>')
+        make -j4
