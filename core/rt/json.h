@@ -253,9 +253,6 @@ public:
 						p[_buf.GetLength()] = ']';
 						return (UINT)(_buf.GetLength()+1);
 					}
-	
-	template<typename T>
-	FORCEINL rt::_JArray<t_String>& operator , (T&& right){ Append(right); return *this; }
 };
 
 #define J_EXPR_CONNECT_OP(type, type_in, vt)					\
@@ -364,9 +361,25 @@ operator + (const _SE<t_Left,t_Right>& x, const _JVar<LEFT, T>& p)
 
 #define J(x)					rt::_JTag(#x)
 #define J_IF(cond, definition)	((cond) ? (definition) : decltype(definition)())
-#define JA(...)					((rt::_JArray<>(), ##__VA_ARGS__))
 #define JB(x)					(rt::_JObj((x), true))
 
+template<typename T>
+FORCEINL void _JA(rt::_JArray<>& a, T&& t) {
+	a.Append(t);
+}
+template<typename T, typename... Ts>
+FORCEINL void _JA(rt::_JArray<>& a, T&& t, Ts&& ... args) {
+	a.Append(t);
+	_JA(a, args...);
+}
+
+template<typename... Ts>
+FORCEINL rt::_JArray<> JA(Ts&& ... args) {
+	rt::_JArray<> a;
+	_JA(a, args...);
+	return a;
+}
+template<> rt::_JArray<> FORCEINL JA() { return {}; }
 
 
 //////////////////////////////////////////////////////////////////////////////
