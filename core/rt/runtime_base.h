@@ -1042,7 +1042,7 @@ namespace rt
 #pragma message ("Advanced Bits Operations count-pop-bits is not available")
 #endif
 
-	// count leading zeros
+	// swap byte order
 	template<typename T> INLFUNC T ByteOrderSwap(T x);
 #if defined(PLATFORM_WIN)
 	template<> INLFUNC WORD ByteOrderSwap(WORD x) { return _byteswap_ushort(x); }
@@ -1057,6 +1057,20 @@ namespace rt
 #else
 #pragma message ("Advanced Bits Operations byte-order-swap is not available")
 #endif	
+
+	// sub_borrow
+	template<typename T1, typename T2, typename T3, typename T4> INLFUNC BYTE SubBorrow(T1, T2, T3, T4);
+#if defined(PLATFORM_WIN)
+	template<> INLFUNC BYTE SubBorrow(BYTE b_in, UINT a, UINT b, UINT* out) { return _subborrow_u32(b_in, a, b, out); }
+	#if defined(PLATFORM_64BIT)
+	template<> INLFUNC BYTE SubBorrow(BYTE b_in, ULONGLONG a, ULONGLONG b, ULONGLONG* out) { return _subborrow_u64(b_in, a, b, out); }
+	#endif
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	template<> INLFUNC BYTE SubBorrow(BYTE b_in, UINT a, UINT b, UINT* out) { return __builtin_ia32_sbb_u32(b_in, a, b, out); }
+	template<> INLFUNC BYTE SubBorrow(BYTE b_in, ULONGLONG a, ULONGLONG b, ULONGLONG* out) { return __builtin_ia32_sbb_u64(b_in, a, b, out); }
+#else
+#pragma message ("SubBorrow is not available")
+#endif
 }
 
 namespace rt
