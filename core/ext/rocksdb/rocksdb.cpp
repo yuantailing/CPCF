@@ -1,7 +1,6 @@
 #include "../../os/platform.h"
-#include "rocksdb.inc"
-
 #include "rocksdb.h"
+#include "rocksdb.inc"
 
 namespace ext
 {
