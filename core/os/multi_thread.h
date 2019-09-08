@@ -423,20 +423,12 @@ public:
 
 
 #if defined(PLATFORM_DEBUG_BUILD)
-#define _NonrecursiveAssertClass(ln)											\
-	struct MARCO_JOIN(_NonrecursiveAssert,ln)									\
-	{	bool _RecursiveCall(bool enter)											\
-		{	thread_local static volatile int c = 0;								\
-			if(enter)return os::AtomicIncrement(&c) <= 1;						\
-			else return os::AtomicDecrement(&c) < 1;							\
-		}																		\
-		MARCO_JOIN(_NonrecursiveAssert,ln)(){ ASSERT(_RecursiveCall(true)); }	\
-		MARCO_JOIN(~_NonrecursiveAssert,ln)(){ _RecursiveCall(false); }			\
-	};																			\
-	MARCO_JOIN(_NonrecursiveAssert,ln)		MARCO_JOIN(___nrsa,ln);				\
-
-#define ASSERT_NONRECURSIVE		_NonrecursiveAssertClass(__LINE__)
-
+#define ASSERT_NONRECURSIVE									\
+	thread_local int _nrcnt = 0;							\
+	struct _NRDEC {							\
+		INLFUNC ~_NRDEC() { os::AtomicDecrement(&_nrcnt); }	\
+	} _nrdec;												\
+	ASSERT(os::AtomicIncrement(&_nrcnt) <= 1);
 #else
 #define ASSERT_NONRECURSIVE  while(0); 
 #endif
