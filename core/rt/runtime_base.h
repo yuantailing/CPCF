@@ -349,8 +349,8 @@ FORCEINL bool IsNumberOk				(double val){ return ::rt::IsInRange_CC(_fpclass(val
 FORCEINL bool IsNumberOk				(float val){ return __isnormalf(val); }
 FORCEINL bool IsNumberOk				(double val){ return __isnormal(val); }
 #else
-FORCEINL bool IsNumberOk				(float val){ int c = fpclassify(val); return c!=FP_INFINITE && c!=FP_NAN; }
-FORCEINL bool IsNumberOk				(double val){ int c = fpclassify(val); return c!=FP_INFINITE && c!=FP_NAN; }
+FORCEINL bool IsNumberOk				(float val){ int c = std::fpclassify(val); return c!=FP_INFINITE && c!=FP_NAN; }
+FORCEINL bool IsNumberOk				(double val){ int c = std::fpclassify(val); return c!=FP_INFINITE && c!=FP_NAN; }
 #endif
 
 FORCEINL bool IsPositiveInfinity		(float val){ return ((DWORD&)val)==0x7f800000; }
