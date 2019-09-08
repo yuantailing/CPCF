@@ -38,7 +38,7 @@
 #include <float.h>
 #include <sstream>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 
 #include "../os/predefines.h"
 
