@@ -1594,6 +1594,14 @@ struct DataAsString: public ::rt::String_Ref
 	{}
 };
 
+struct StdStringAsString: public ::rt::String_Ref
+{
+	template<typename std_string>
+	INLFUNC StdStringAsString(const std_string& str)
+		: ::rt::String_Ref(str.data(), str.size())
+	{}
+};
+
 template<UINT LEN = 256>
 struct StringOnStack:public ::rt::tos::S_<1,LEN>
 {	typedef ::rt::tos::S_<1,LEN> _SC;
@@ -1835,6 +1843,7 @@ struct GUID:public ::rt::tos::S_<>
 
 typedef tos::StaticString SS;
 typedef tos::DataAsString DS;
+typedef tos::StdStringAsString	StdStr;
 
 } // namespace rt
 
