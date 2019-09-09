@@ -101,7 +101,7 @@ jobs:
     vmImage: $(VMIMAGE)
 
   steps:
-  - script: echo $(Build.SourceVersionMessage)
+  - script: echo '$(Build.SourceVersionMessage)'
 
   - task: Bash@3
     displayName: Install CodeLite
