@@ -5,20 +5,42 @@
 
 jobs:
 - job: Windows
+  timeoutInMinutes: 10
+
   strategy:
     matrix:
-      VS2017 Debug:
-        VMIMAGE: 'vs2017-win2016'
-        CONFIGURATION: 'Debug'
-      VS2017 Release:
-        VMIMAGE: 'vs2017-win2016'
-        CONFIGURATION: 'Release'
-      VS2019 Debug:
-        VMIMAGE: 'windows-2019'
-        CONFIGURATION: 'Debug'
-      VS2019 Release:
-        VMIMAGE: 'windows-2019'
-        CONFIGURATION: 'Release'
+      VS2017 x86 Debug:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Debug
+      VS2017 x86 Release:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Release
+      VS2017 x64 Debug:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x64
+        CONFIGURATION: Debug
+      VS2017 x64 Release:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x64
+        CONFIGURATION: Release
+      VS2019 x86 Debug:
+        VMIMAGE: windows-2019
+        PLATFORM: x86
+        CONFIGURATION: Debug
+      VS2019 x86 Release:
+        VMIMAGE: windows-2019
+        PLATFORM: x86
+        CONFIGURATION: Release
+      VS2019 x64 Debug:
+        VMIMAGE: windows-2019
+        PLATFORM: x64
+        CONFIGURATION: Debug
+      VS2019 x64 Release:
+        VMIMAGE: windows-2019
+        PLATFORM: x64
+        CONFIGURATION: Release
 
   pool:
     vmImage: $(VMIMAGE)
@@ -40,9 +62,9 @@ jobs:
   - task: VSBuild@1
     inputs:
       solution: 'testcases\\proj.win\\tests.sln'
+      platform: '$(PLATFORM)'
       configuration: '$(CONFIGURATION)'
       maximumCpuCount: true
-      msbuildArchitecture: 'x64'
 
   - task: PowerShell@2
     displayName: Run
@@ -50,7 +72,11 @@ jobs:
       targetType: 'inline'
       script: |
         Move-Item ..\testcases.log ..\testcases.std
-        .\x64\$(CONFIGURATION)\tests.exe /verify
+        if ($env:PLATFORM -eq "x86") {
+          .\$(CONFIGURATION)\tests.exe /verify
+        } else {
+          .\x64\$(CONFIGURATION)\tests.exe /verify
+        }
       workingDirectory: 'testcases\\proj.win'
 
   - task: Bash@3
@@ -61,14 +87,16 @@ jobs:
       workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
+  timeoutInMinutes: 10
+
   strategy:
     matrix:
       16.04 Debug:
-        VMIMAGE: 'ubuntu-16.04'
-        CONFIGURATION: 'Debug'
+        VMIMAGE: ubuntu-16.04
+        CONFIGURATION: Debug
       16.04 Release:
-        VMIMAGE: 'ubuntu-16.04'
-        CONFIGURATION: 'Release'
+        VMIMAGE: ubuntu-16.04
+        CONFIGURATION: Release
 
   pool:
     vmImage: $(VMIMAGE)
