@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- azure-pipelines
 
 pool:
   vmImage: 'windows-latest'
@@ -12,6 +13,6 @@ pool:
 steps:
 - task: VSBuild@1
   inputs:
-    solution: '**\*.sln'
+    solution: 'testcases\proj.win\tests.sln'
     vsVersion: '15.0'
     msbuildArchitecture: 'x64'
