@@ -58,6 +58,7 @@ jobs:
     vmImage: $(VMIMAGE)
 
   steps:
+  - script: echo $(ci_all)
   - task: Bash@3
     displayName: Retrieve libs
     inputs:
