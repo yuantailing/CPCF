@@ -28,7 +28,7 @@ jobs:
         VMIMAGE: vs2017-win2016
         PLATFORM: x86
         CONFIGURATION: Release
-      ${{ if eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true') }}:
+      ${{ if eq(${ci_all}, 'true') }}:
         VS2017 x64 Debug:
           VMIMAGE: vs2017-win2016
           PLATFORM: x64
