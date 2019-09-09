@@ -11,7 +11,7 @@ jobs:
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
 - job: Windows_all
-  displayName: Windows [CI All]
+  displayName: Windows
   dependsOn: Prepare
   #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
@@ -28,7 +28,7 @@ jobs:
         VMIMAGE: vs2017-win2016
         PLATFORM: x86
         CONFIGURATION: Release
-      ${{ if eq(variables['ci_all'], 'true') }}:
+      ${{ if eq(ci_all, 'true') }}:
         VS2017 x64 Debug:
           VMIMAGE: vs2017-win2016
           PLATFORM: x64
@@ -102,7 +102,7 @@ jobs:
       workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
-  displayName: Ubuntu [CI All]
+  displayName: Ubuntu
   dependsOn: Prepare
   condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
