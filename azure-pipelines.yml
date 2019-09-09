@@ -3,149 +3,149 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-stages:
-- stage: comment
-  jobs:
-  - job: comment
+jobs:
+- job: Prepare
+  steps:
+  - script: echo "##vso[task.setvariable variable=message;isOutput=true]$(Build.SourceVersionMessage)"
+    name: ProduceVar
 
-- stage: Run
-  jobs:
-  - job: Windows_all
-    timeoutInMinutes: 10
+- job: Windows_all
+  dependsOn: Prepare
+  timeoutInMinutes: 10
 
-    #condition: contains(variables['Build.SourceVersionMessage'], 'ci')
-    strategy:
-      matrix:
-        VS2017 x86 Debug:
-          VMIMAGE: vs2017-win2016
-          PLATFORM: x86
-          CONFIGURATION: Debug
-        VS2017 x86 Release:
-          VMIMAGE: vs2017-win2016
-          PLATFORM: x86
-          CONFIGURATION: Release
-        VS2017 x64 Debug:
-          VMIMAGE: vs2017-win2016
-          PLATFORM: x64
-          CONFIGURATION: Debug
-        VS2017 x64 Release:
-          VMIMAGE: vs2017-win2016
-          PLATFORM: x64
-          CONFIGURATION: Release
-        VS2019 x86 Debug:
-          VMIMAGE: windows-2019
-          PLATFORM: x86
-          CONFIGURATION: Debug
-        VS2019 x86 Release:
-          VMIMAGE: windows-2019
-          PLATFORM: x86
-          CONFIGURATION: Release
-        VS2019 x64 Debug:
-          VMIMAGE: windows-2019
-          PLATFORM: x64
-          CONFIGURATION: Debug
-        VS2019 x64 Release:
-          VMIMAGE: windows-2019
-          PLATFORM: x64
-          CONFIGURATION: Release
+  condition: contains($[ dependencies.Prepare.outputs['ProduceVar.message'] ], 'ci')
+  strategy:
+    matrix:
+      VS2017 x86 Debug:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Debug
+      VS2017 x86 Release:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Release
+      VS2017 x64 Debug:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x64
+        CONFIGURATION: Debug
+      VS2017 x64 Release:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x64
+        CONFIGURATION: Release
+      VS2019 x86 Debug:
+        VMIMAGE: windows-2019
+        PLATFORM: x86
+        CONFIGURATION: Debug
+      VS2019 x86 Release:
+        VMIMAGE: windows-2019
+        PLATFORM: x86
+        CONFIGURATION: Release
+      VS2019 x64 Debug:
+        VMIMAGE: windows-2019
+        PLATFORM: x64
+        CONFIGURATION: Debug
+      VS2019 x64 Release:
+        VMIMAGE: windows-2019
+        PLATFORM: x64
+        CONFIGURATION: Release
 
-    pool:
-      vmImage: $(VMIMAGE)
+  pool:
+    vmImage: $(VMIMAGE)
 
-    steps:
-    - task: Bash@3
-      displayName: Retrieve libs
-      inputs:
-        targetType: 'inline'
-        script: |
-          curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
-          curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
-    - task: ExtractFiles@1
-      inputs:
-        archiveFilePatterns: 'cpcf_win_*.7z'
-        destinationFolder: 'libs\\win'
-        cleanDestinationFolder: false
+  steps:
+  - task: Bash@3
+    displayName: Retrieve libs
+    inputs:
+      targetType: 'inline'
+      script: |
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'cpcf_win_*.7z'
+      destinationFolder: 'libs\\win'
+      cleanDestinationFolder: false
 
-    - task: VSBuild@1
-      inputs:
-        solution: 'testcases\\proj.win\\tests.sln'
-        platform: '$(PLATFORM)'
-        configuration: '$(CONFIGURATION)'
-        maximumCpuCount: true
+  - task: VSBuild@1
+    inputs:
+      solution: 'testcases\\proj.win\\tests.sln'
+      platform: '$(PLATFORM)'
+      configuration: '$(CONFIGURATION)'
+      maximumCpuCount: true
 
-    - task: PowerShell@2
-      displayName: Run
-      inputs:
-        targetType: 'inline'
-        script: |
-          Move-Item ..\testcases.log ..\testcases.std
-          if ($env:PLATFORM -eq "x86") {
-            .\$(CONFIGURATION)\tests.exe /verify
-          } else {
-            .\x64\$(CONFIGURATION)\tests.exe /verify
-          }
-        workingDirectory: 'testcases\\proj.win'
+  - task: PowerShell@2
+    displayName: Run
+    inputs:
+      targetType: 'inline'
+      script: |
+        Move-Item ..\testcases.log ..\testcases.std
+        if ($env:PLATFORM -eq "x86") {
+          .\$(CONFIGURATION)\tests.exe /verify
+        } else {
+          .\x64\$(CONFIGURATION)\tests.exe /verify
+        }
+      workingDirectory: 'testcases\\proj.win'
 
-    - task: Bash@3
-      displayName: diff
-      inputs:
-        targetType: 'inline'
-        script: diff ../testcases.std ../testcases.log
-        workingDirectory: 'testcases\\proj.win'
+  - task: Bash@3
+    displayName: diff
+    inputs:
+      targetType: 'inline'
+      script: diff ../testcases.std ../testcases.log
+      workingDirectory: 'testcases\\proj.win'
 
-  - job: Ubuntu
-    strategy:
-      matrix:
-        16.04 Debug:
-          VMIMAGE: ubuntu-16.04
-          CONFIGURATION: Debug
-        16.04 Release:
-          VMIMAGE: ubuntu-16.04
-          CONFIGURATION: Release
+- job: Ubuntu
+  strategy:
+    matrix:
+      16.04 Debug:
+        VMIMAGE: ubuntu-16.04
+        CONFIGURATION: Debug
+      16.04 Release:
+        VMIMAGE: ubuntu-16.04
+        CONFIGURATION: Release
 
-    pool:
-      vmImage: $(VMIMAGE)
+  pool:
+    vmImage: $(VMIMAGE)
 
-    steps:
-    - script: echo '$(build.sourceVersionMessage)'
+  steps:
+  - script: echo '$(build.sourceVersionMessage)'
 
-    - task: Bash@3
-      displayName: Install CodeLite
-      inputs:
-        targetType: 'inline'
-        script: sudo apt-get install --no-install-recommends -y codelite
-      condition: contains(variables['Build.SourceVersionMessage'], 'ci')
+  - task: Bash@3
+    displayName: Install CodeLite
+    inputs:
+      targetType: 'inline'
+      script: sudo apt-get install --no-install-recommends -y codelite
+    condition: contains(variables['Build.SourceVersionMessage'], 'ci')
 
-    - task: Bash@3
-      displayName: Retrieve libs
-      inputs:
-        targetType: 'inline'
-        script: |
-          curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o/tmp/cpcf_linux_ipp.7z
-          7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
-          rm /tmp/cpcf_linux_ipp.7z
+  - task: Bash@3
+    displayName: Retrieve libs
+    inputs:
+      targetType: 'inline'
+      script: |
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o/tmp/cpcf_linux_ipp.7z
+        7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
+        rm /tmp/cpcf_linux_ipp.7z
 
-    - task: Bash@3
-      displayName: make
-      inputs:
-        targetType: 'inline'
-        script: |
-          codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
-          make -j4
-        workingDirectory: testcases/proj.linux
+  - task: Bash@3
+    displayName: make
+    inputs:
+      targetType: 'inline'
+      script: |
+        codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
+        make -j4
+      workingDirectory: testcases/proj.linux
 
-    - task: Bash@3
-      displayName: Run
-      inputs:
-        targetType: 'inline'
-        script: |
-          mv ../testcases.log ../testcases.std
-          ${CONFIGURATION}/shared_test --verify
-        workingDirectory: testcases/proj.linux
+  - task: Bash@3
+    displayName: Run
+    inputs:
+      targetType: 'inline'
+      script: |
+        mv ../testcases.log ../testcases.std
+        ${CONFIGURATION}/shared_test --verify
+      workingDirectory: testcases/proj.linux
 
-    - task: Bash@3
-      displayName: diff
-      inputs:
-        targetType: 'inline'
-        script: diff ../testcases.std ../testcases.log
-        workingDirectory: 'testcases/proj.linux'
+  - task: Bash@3
+    displayName: diff
+    inputs:
+      targetType: 'inline'
+      script: diff ../testcases.std ../testcases.log
+      workingDirectory: 'testcases/proj.linux'
