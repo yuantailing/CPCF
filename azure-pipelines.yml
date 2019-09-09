@@ -7,8 +7,7 @@ jobs:
 - job: Windows_all
   timeoutInMinutes: 10
 
-  condition: |
-    contains(variables['Build.SourceVersionMessage'], 'ci')
+  condition: contains(variables['Build.SourceVersionMessage'], 'ci')
   strategy:
     matrix:
       VS2017 x86 Debug:
