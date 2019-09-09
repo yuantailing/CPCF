@@ -6,14 +6,15 @@
 jobs:
 - job: Prepare
   steps:
-  - script: echo "##vso[task.setvariable variable=message;isOutput=true]$(Build.SourceVersionMessage)"
+  - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true
     name: ProduceVar
+    condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
 - job: Windows_all
   dependsOn: Prepare
+  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
 
-  condition: contains(dependencies.Prepare.outputs['ProduceVar.message'], '[ci all]')
   strategy:
     matrix:
       VS2017 x86 Debug:
