@@ -1922,10 +1922,11 @@ void rt::UnitTests::sysinfo()
 		_LOGC("INV: "<<(total[1] - total[0]));
 	}
 	_LOGC("CPU USAGE: "<<100*(busy[1]-busy[0])/(total[1]-total[0])<<'%');
-	{	ULONGLONG free,total;
+	{	ULONGLONG free, total;
 		os::GetSystemMemoryInfo(&free, &total);
-		_LOGC("MEMORY: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
-
+		_LOGC("MEMORY: " << rt::tos::FileSize<>(free) << '/' << rt::tos::FileSize<>(total));
+	}
+	{	SIZE_T free, total;
 		os::GetProcessMemoryLoad(&free, &total);
 		_LOGC("MEMORY Load: "<<rt::tos::FileSize<>(free)<<'/'<<rt::tos::FileSize<>(total));
 	}
