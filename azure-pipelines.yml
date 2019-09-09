@@ -6,7 +6,7 @@
 jobs:
 - job: Prepare
   steps:
-  - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true
+  - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
     name: ProduceVar
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
