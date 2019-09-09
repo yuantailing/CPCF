@@ -41,7 +41,7 @@ jobs:
         VMIMAGE: windows-2019
         PLATFORM: x64
         CONFIGURATION: Release
-      condition: contains(variables['Build.SourceVersionMessage'], 'ci')
+    condition: contains(variables['Build.SourceVersionMessage'], 'ci')
 
   pool:
     vmImage: $(VMIMAGE)
