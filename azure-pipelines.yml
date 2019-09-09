@@ -5,6 +5,8 @@
 
 stages:
 - stage: comment
+  jobs:
+  - job: comment
 
 - stage: Run
   jobs:
