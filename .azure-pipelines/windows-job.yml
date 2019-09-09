@@ -2,7 +2,7 @@ parameters:
   ci_all: false
 
 jobs:
-- job: Windows_all
+- job: Windows
   displayName: Windows
   dependsOn: Prepare
   #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
