@@ -13,7 +13,7 @@ jobs:
   dependsOn: Prepare
   timeoutInMinutes: 10
 
-  condition: contains(dependencies.Prepare.outputs['ProduceVar.message'], 'ci')
+  condition: contains(dependencies.Prepare.outputs['ProduceVar.message'], '[ci all]')
   strategy:
     matrix:
       VS2017 x86 Debug:
