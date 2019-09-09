@@ -163,7 +163,7 @@ public:
 	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
-		if(_pDB->Get(opt, k, &temp).ok() && temp.length() >= sizeof(t_Type))
+		if(_pDB->Get(*opt, k, &temp).ok() && temp.length() >= sizeof(t_Type))
 		{	if(len_out)*len_out = temp.length();
 			return (t_Type*)temp.data();
 		}
