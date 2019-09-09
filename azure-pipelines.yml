@@ -1,0 +1,62 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+jobs:
+- job: Windows
+  strategy:
+    matrix:
+      VS2017 Debug:
+        VMIMAGE: 'vs2017-win2016'
+        CONFIGURATION: 'Debug'
+      VS2017 Release:
+        VMIMAGE: 'vs2017-win2016'
+        CONFIGURATION: 'Release'
+      VS2019 Debug:
+        VMIMAGE: 'windows-2019'
+        CONFIGURATION: 'Debug'
+      VS2019 Release:
+        VMIMAGE: 'windows-2019'
+        CONFIGURATION: 'Release'
+
+  pool:
+    vmImage: $(VMIMAGE)
+
+  steps:
+  - task: Bash@3
+    displayName: Retrieve libs
+    inputs:
+      targetType: 'inline'
+      script: |
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'cpcf_win_*.7z'
+      destinationFolder: 'libs\\win'
+      cleanDestinationFolder: false
+
+  - task: VSBuild@1
+    inputs:
+      solution: 'testcases\\proj.win\\tests.sln'
+      configuration: '$(CONFIGURATION)'
+      maximumCpuCount: true
+      msbuildArchitecture: 'x64'
+
+  - task: PowerShell@2
+    displayName: Run
+    inputs:
+      targetType: 'inline'
+      script: |
+        Move-Item ..\testcases.log ..\testcases.std
+        .\x64\$(CONFIGURATION)\tests.exe /verify
+      workingDirectory: 'testcases\\proj.win'
+
+  - task: Bash@3
+    displayName: diff
+    inputs:
+      targetType: 'inline'
+      script: |
+        diff ../testcases.std ../testcases.log
+      workingDirectory: 'testcases\\proj.win'
