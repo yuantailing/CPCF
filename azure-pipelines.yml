@@ -16,7 +16,7 @@ jobs:
   #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
 
-  parameters:
+  variables:
     ci_all: $(dependencies.Prepare.outputs['ProduceVar.ci_all'])
   strategy:
     matrix:
