@@ -10,7 +10,7 @@ jobs:
     name: ProduceVar
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
-- job: Windows_all
+- job: Windows_all 
   displayName: Windows
   dependsOn: Prepare
   #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
