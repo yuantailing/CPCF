@@ -108,6 +108,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: sudo apt-get install --no-install-recommends -y codelite
+    condition: contains(Build.SourceVersionMessage, 'ci')
 
   - task: Bash@3
     displayName: Retrieve libs
