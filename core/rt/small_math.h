@@ -477,18 +477,6 @@ struct Mat3x3
 		rt::Swap(m21,m12);
 	}
 
-	INLFUNC void Random()
-	{	m00 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m01 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m02 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m10 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m11 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m12 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m20 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m21 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-		m22 = rand()*rt::TypeTraits<t_Val>::UnitVal()/(t_Val)RAND_MAX;
-	}
-
     INLFUNC rt::Vec<t_Val,3> Product(const rt::Vec<t_Val,3> &v) const
 	{
         rt::Vec<t_Val,3> res;

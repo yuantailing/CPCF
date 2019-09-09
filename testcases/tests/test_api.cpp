@@ -142,16 +142,16 @@ void rt::UnitTests::json()
 	{
 		rt::JsonObject json(__STRING(
 			{
-				a:1,
+				c:1,
 				b:[2,3,4],
-				c:5
+				a:5
 			}
 		));
 
 		rt::JsonObject json_sub(__STRING(
 			{
-				b: "Yes",
-				d: 8.9
+				d: "Yes",
+				c: 8.9
 			}
 		));
 
@@ -165,7 +165,9 @@ void rt::UnitTests::json()
 		};
 		rt::String out;
 		rt::JsonObject::Override(json, json_sub, out);
-		_LOG(out);
+		rt::JsonObject doc(out);
+		for (const char *s : { "a", "b", "c", "d" })
+			_LOG(s << ": " << doc.GetValue(s));
 	}
 
 	{
@@ -1419,7 +1421,7 @@ void rt::UnitTests::rt()
 			LPCVOID p;
 			os::EnableMemoryExceptionInThread(false);
 			p = _Malloc32AL(BYTE, -1);
-			_LOG("Allocate: "<<p);
+			_LOG("Allocate: " << (ULONGLONG)p);
 
 			os::EnableMemoryExceptionInThread(true);
 			p = _Malloc32AL(BYTE, -1);
@@ -1466,8 +1468,9 @@ void rt::UnitTests::timedate()
 
 	{	os::Timestamp tm;
 		tm.LoadCurrentTime();
-		os::Sleep(5);
-		_LOG("Timelapse: "<<tm.TimeLapse());
+		os::Sleep(50);
+		LONGLONG time_lapse = tm.TimeLapse();
+		_LOG("Timelapse is between [50, 100]: " << (50 <= time_lapse && time_lapse <= 100));
 	}
 
 	{	os::HighPerformanceCounter	hpc;
@@ -1528,9 +1531,7 @@ void rt::UnitTests::timedate()
 		tick.LoadCurrentTick();
 		os::Sleep(2100);
 		t2.LoadCurrentTime();
-		tick.TimeLapse();
-		_LOG("os::TickCount: "<<tick.TimeLapse()/1000);
-		_LOG("os::Timestamp/10: "<<((t2 - t1) + 5)/10);
+		_LOG("os::TickCount in sec: " << tick.TimeLapse() / 1000);
 	}
 }
 
@@ -1572,6 +1573,7 @@ void rt::UnitTests::file()
 			out.Write("\n",1);
 		}
 		out.Write("};\n",3);
+		out.Close();
 	}
 
 
@@ -2000,6 +2002,7 @@ void rt::UnitTests::filelist()
 	rt::String fp;
 	os::FileList	fl;
 	fl.Populate("../tests", ".cpp");
+	fl.Sort();
 	for(UINT i=0;i<fl.GetCount();i++)
 	{
 		_LOG(fl.GetFilename(i));
@@ -2051,19 +2054,17 @@ void rt::UnitTests::smallmath()
 		_LOG(c);
 	}
 
-	rt::Vec3d	a,b;
-	a.Random();
+	rt::Vec3d	a({ 1.2, 3.4, 5.6 }), b({ -6.5, -4.3, 2.1 });
 	rt::String s = rt::SS("STR-EXP: a=(") + a + ')';
 	_LOG(s);
 	a.Normalize();
 	_LOG(a);
-	b.Random();
 	_LOG(a<<" dot "<<b<<" = "<<a.Dot(b));
 
-
-
+	rt::Randomizer r(7749);
 	rt::Mat3x3d	m;
-	m.Random();
+	for (double& x : m._p)
+		x = r.GetNext() * 123. / INT_MAX - 88.;
 	_LOG(m);
 	m.Transpose();
 	_LOG(m);

@@ -1420,6 +1420,10 @@ UINT os::FileList::GetCount() const
 	return (UINT)_Filenames.GetSize();
 }
 
+void os::FileList::Sort() {
+	_Filenames.Sort();
+}
+
 const rt::String& os::FileList::GetFilename(UINT idx) const
 {
 	return _Filenames[idx].Name;

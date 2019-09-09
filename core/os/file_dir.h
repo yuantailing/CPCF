@@ -396,6 +396,7 @@ class FileList
 	{	rt::String		Name;
 		bool			IsDirectory;
 		_File(){ IsDirectory = false; }
+		bool operator <(_File const& other) const { return Name < other.Name || (IsDirectory < other.IsDirectory && Name == other.Name); }
 	};
 	rt::BufferEx<_File>		_Filenames;
 	rt::String				_Root;
@@ -422,6 +423,7 @@ public:
 #endif
 
 	UINT	GetCount() const;
+	void	Sort();
 	bool	IsDirectory(UINT idx) const;
 	void	GetFullpath(UINT idx, rt::String& fn) const;
 
