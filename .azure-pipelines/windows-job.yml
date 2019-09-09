@@ -1,0 +1,94 @@
+parameters:
+  ci_all: false
+
+jobs:
+- job: Windows_all
+  displayName: Windows
+  dependsOn: Prepare
+  #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
+  timeoutInMinutes: 10
+
+  variables:
+    ci_all: $[ dependencies.Prepare.outputs['ProduceVar.ci_all'] ]
+  strategy:
+    matrix:
+      VS2017 x86 Debug:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Debug
+      VS2017 x86 Release:
+        VMIMAGE: vs2017-win2016
+        PLATFORM: x86
+        CONFIGURATION: Release
+      ${{ if eq(parameters.ci_all, 'true') }}:
+        VS2017 x64 Debug:
+          VMIMAGE: vs2017-win2016
+          PLATFORM: x64
+          CONFIGURATION: Debug
+        VS2017 x64 Release:
+          VMIMAGE: vs2017-win2016
+          PLATFORM: x64
+          CONFIGURATION: Release
+        VS2019 x86 Debug:
+          VMIMAGE: windows-2019
+          PLATFORM: x86
+          CONFIGURATION: Debug
+        VS2019 x86 Release:
+          VMIMAGE: windows-2019
+          PLATFORM: x86
+          CONFIGURATION: Release
+        VS2019 x64 Debug:
+          VMIMAGE: windows-2019
+          PLATFORM: x64
+          CONFIGURATION: Debug
+        VS2019 x64 Release:
+          VMIMAGE: windows-2019
+          PLATFORM: x64
+          CONFIGURATION: Release
+
+  pool:
+    vmImage: $(VMIMAGE)
+
+  steps:
+  - script: echo $(ci_all)
+  - script: echo lalala
+    condition: eq(variables['ci_all'], 'true')
+  - task: Bash@3
+    displayName: Retrieve libs
+    inputs:
+      targetType: 'inline'
+      script: |
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
+        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'cpcf_win_*.7z'
+      destinationFolder: 'libs\\win'
+      cleanDestinationFolder: false
+
+  - task: VSBuild@1
+    inputs:
+      solution: 'testcases\\proj.win\\tests.sln'
+      platform: '$(PLATFORM)'
+      configuration: '$(CONFIGURATION)'
+      maximumCpuCount: true
+
+  - task: PowerShell@2
+    displayName: Run
+    inputs:
+      targetType: 'inline'
+      script: |
+        Move-Item ..\testcases.log ..\testcases.std
+        if ($env:PLATFORM -eq "x86") {
+          .\$(CONFIGURATION)\tests.exe /verify
+        } else {
+          .\x64\$(CONFIGURATION)\tests.exe /verify
+        }
+      workingDirectory: 'testcases\\proj.win'
+
+  - task: Bash@3
+    displayName: diff
+    inputs:
+      targetType: 'inline'
+      script: diff ../testcases.std ../testcases.log
+      workingDirectory: 'testcases\\proj.win'
