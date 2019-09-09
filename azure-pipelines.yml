@@ -54,7 +54,7 @@ jobs:
   pool:
     vmImage: $(VMIMAGE)
 
-  steps:
+  steps: &win_steps
   - task: Bash@3
     displayName: Retrieve libs
     inputs:
