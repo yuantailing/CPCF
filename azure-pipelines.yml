@@ -11,6 +11,7 @@ jobs:
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
 - job: Windows_all
+  displayName: Windows [CI All]
   dependsOn: Prepare
   condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
@@ -95,6 +96,11 @@ jobs:
       workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
+  displayName: Ubuntu [CI All]
+  dependsOn: Prepare
+  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
+  timeoutInMinutes: 10
+
   strategy:
     matrix:
       16.04 Debug:
