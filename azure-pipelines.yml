@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 jobs:
-- job: Windows
+- job: Windows [ci all]
   timeoutInMinutes: 10
 
   condition: in(variables['Build.SourceVersionMessage'], '[ci all]', '[all ci]')
