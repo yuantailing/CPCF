@@ -4,7 +4,6 @@
 # https://aka.ms/yaml
 stages:
 - stage: Stage
-  condition: contains(variables['Build.SourceVersionMessage'], 'ci')
   jobs:
   - job: Windows_all
     timeoutInMinutes: 10
