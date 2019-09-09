@@ -99,8 +99,8 @@ public:
 	INLFUNC SIZE_T				ValueLength() const { return iter->value().size(); }
 	INLFUNC						RocksCursor(){ iter = nullptr; }
 	INLFUNC						RocksCursor(Iterator* i):iter(i){}
-	INLFUNC						~RocksCursor(){ _SafeDel(iter); }
-	INLFUNC Iterator*			operator = (Iterator* it){ _SafeDel(iter); return iter = it; }
+	INLFUNC						~RocksCursor(){ _SafeDel_Untracked(iter); }
+	INLFUNC Iterator*			operator = (Iterator* it){ _SafeDel_Untracked(iter); return iter = it; }
 	INLFUNC bool				IsValid() const { return iter && iter->Valid(); }
 	INLFUNC void				Next(){ iter->Next(); }
 	INLFUNC void				Prev(){ iter->Prev(); }
@@ -142,7 +142,7 @@ public:
 	INLFUNC bool Has(const SliceValue& k, const ReadOptions* opt = ReadOptionsDefault) const { thread_local std::string t; return Get(k, t, opt); }
 	template<typename t_POD>
 	INLFUNC bool Get(const SliceValue& k, t_POD* valout, const ReadOptions* opt = ReadOptionsDefault) const
-	{	ASSERT_NONRECURSIVE
+	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
 		if(_pDB->Get(*opt, k, &temp).ok() && temp.length() == sizeof(t_POD))
@@ -152,7 +152,7 @@ public:
 	}
 	template<typename t_NUM>
 	INLFUNC t_NUM GetAs(const SliceValue& k, t_NUM default_val = 0, const ReadOptions* opt = ReadOptionsDefault) const
-	{	ASSERT_NONRECURSIVE
+	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
 		return (_pDB->Get(*opt, k, &temp).ok() && temp.length() == sizeof(t_NUM))?
@@ -160,10 +160,10 @@ public:
 	}
 	template<typename t_Type>
 	INLFUNC const t_Type* Fetch(const SliceValue& k, SIZE_T* len_out = nullptr, const ReadOptions* opt = ReadOptionsDefault) const // Get a inplace referred buffer, will be invalid after next Fetch
-	{	ASSERT_NONRECURSIVE
+	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
-		if(_pDB->Get(*opt, k, &temp).ok() && temp.length() >= sizeof(t_Type))
+		if(_pDB->Get(opt, k, &temp).ok() && temp.length() >= sizeof(t_Type))
 		{	if(len_out)*len_out = temp.length();
 			return (t_Type*)temp.data();
 		}
@@ -173,7 +173,7 @@ public:
 		}
 	}
 	INLFUNC rt::String_Ref Fetch(const SliceValue& k, const ReadOptions* opt = ReadOptionsDefault) const
-	{	ASSERT_NONRECURSIVE
+	{	ASSERT_NONRECURSIVE;
 		thread_local std::string temp;
 		ASSERT(_pDB);
 		return (_pDB->Get(*opt, k, &temp).ok())?

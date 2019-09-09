@@ -776,6 +776,7 @@ extern bool IsMemoryExceptionEnabledInThread();
 #define _SafeFree8AL(ptr)			{ _SafeFree8AL_ConstPtr(ptr); ptr = nullptr; }
 #define _SafeFree32AL(ptr)			{ _SafeFree32AL_ConstPtr(ptr); ptr = nullptr; }
 #define _SafeDel(ptr)				{ _SafeDel_ConstPtr(ptr); ptr = nullptr; }
+#define _SafeDel_Untracked(ptr)		{ if(ptr){ delete ptr; ptr = nullptr; }}
 #define _SafeDelArray(ptr)			{ _SafeDelArray_ConstPtr(ptr); ptr = nullptr; }
 
 #define _EnlargeTo32AL(num)			((((num) + 0x7)&(~((SIZE_T)0x7))))
