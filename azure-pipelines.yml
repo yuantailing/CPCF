@@ -15,10 +15,9 @@ jobs:
   dependsOn: Prepare
   #condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   timeoutInMinutes: 10
-  parameters:
-    aa: bb
+
   variables:
-    ci_all: $(dependencies.Prepare.outputs['ProduceVar.ci_all'])
+    ci_all: $[ dependencies.Prepare.outputs['ProduceVar.ci_all'] ]
   strategy:
     matrix:
       VS2017 x86 Debug:
