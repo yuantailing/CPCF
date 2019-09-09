@@ -59,6 +59,8 @@ jobs:
 
   steps:
   - script: echo $(ci_all)
+  - script: echo lalala
+    condition: eq(variables['ci_all'], 'true')
   - task: Bash@3
     displayName: Retrieve libs
     inputs:
