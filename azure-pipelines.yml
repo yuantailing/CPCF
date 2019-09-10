@@ -17,17 +17,11 @@ jobs:
 
   steps:
   - bash: |
+      set -ex
       curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o./cpcf_mac_ipp.7z
+      7z x cpcf_mac_ipp.7z -olibs/mac/
+      rm cpcf_mac_ipp.7z
     displayName: Retrieve libs
-
-  - bash: find .
-    displayName: find .
-
-  - task: ExtractFiles@1
-    inputs:
-      archiveFilePatterns: 'cpcf_mac_*.7z'
-      destinationFolder: 'libs/mac'
-      cleanDestinationFolder: false
 
   - bash: find .
     displayName: find .
