@@ -18,6 +18,6 @@ jobs:
         ci_all: 'false'
       Release:
         ci_all: 'true'
-  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], ci_all)
+  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], variables['ci_all'])
   steps:
   - script: echo Hello World!
