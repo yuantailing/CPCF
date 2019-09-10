@@ -27,6 +27,22 @@ jobs:
 
     - name: make
       run: |
-        cd testcases/proj.linux
         codelite-make -w shared_test.workspace -c ${{ matrix.config }} -s <(printf '<BuildSettings/>')
         make -j4
+      working-directory: testcases/proj.linux
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.os }}_${{ matrix.config }}_shared_test
+        path: testcases/proj.linux/${{ matrix.config }}/shared_test
+
+    - name: Run
+      run: |
+        mv ../testcases.log ../testcases.std
+        ${{ matrix.config }}/shared_test --verify
+      working-directory: testcases/proj.linux
+
+    - name: diff
+      run:
+        diff ../testcases.std ../testcases.log
+      working-directory: testcases/proj.linux
