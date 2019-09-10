@@ -5,15 +5,29 @@
 
 jobs:
 - job: MacOS
+
+  strategy:
+    matrix:
+      Debug:
+        Configuration: Debug
+      Release:
+        Configuration: Release
   pool:
     vmImage: 'macos-latest'
 
   steps:
   - bash: |
-      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -ocpcf_mac_ipp.7z
-      7z x cpcf_mac_ipp.7z -olibs/mac/
-      rm cpcf_mac_ipp.7z
+      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o./cpcf_mac_ipp.7z
     displayName: Retrieve libs
+
+  - bash: find .
+    displayName: find .
+
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'cpcf_mac_*.7z'
+      destinationFolder: 'libs/mac'
+      cleanDestinationFolder: false
 
   - bash: find .
     displayName: find .
