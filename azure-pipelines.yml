@@ -12,6 +12,6 @@ jobs:
 
 - job: Test
   dependsOn: Prepare
-  condition: contains(dependencies.Prepare.outputs['ProduceVar.ci_all'], '[ci all]')
+  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
   steps:
   - script: echo Hello World!
