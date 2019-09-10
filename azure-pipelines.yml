@@ -3,75 +3,19 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-jobs:
-- job: Prepare
-  steps:
-  - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
-    name: ProduceVar
-    condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
+stages:
+- stage: Stage_A
+  jobs:
+  - job: Prepare
+    steps:
+    - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
+      name: ProduceVar
+      condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
-- template: .azure-pipelines/windows-job.yml
-  parameters:
-    ci_all: $[ dependencies.Prepare.outputs['ProduceVar.ci_all'] ]
-
-- job: Ubuntu
-  displayName: Ubuntu
-  dependsOn: Prepare
-  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
-  timeoutInMinutes: 10
-
-  strategy:
-    matrix:
-      16.04 Debug:
-        VMIMAGE: ubuntu-16.04
-        CONFIGURATION: Debug
-      16.04 Release:
-        VMIMAGE: ubuntu-16.04
-        CONFIGURATION: Release
-
-  pool:
-    vmImage: $(VMIMAGE)
-
-  steps:
-  - script: echo '$(build.sourceVersionMessage)'
-
-  - task: Bash@3
-    displayName: Install CodeLite
-    inputs:
-      targetType: 'inline'
-      script: sudo apt-get install --no-install-recommends -y codelite
-    condition: contains(variables['Build.SourceVersionMessage'], 'ci')
-
-  - task: Bash@3
-    displayName: Retrieve libs
-    inputs:
-      targetType: 'inline'
-      script: |
-        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o/tmp/cpcf_linux_ipp.7z
-        7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
-        rm /tmp/cpcf_linux_ipp.7z
-
-  - task: Bash@3
-    displayName: make
-    inputs:
-      targetType: 'inline'
-      script: |
-        codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
-        make -j4
-      workingDirectory: testcases/proj.linux
-
-  - task: Bash@3
-    displayName: Run
-    inputs:
-      targetType: 'inline'
-      script: |
-        mv ../testcases.log ../testcases.std
-        ${CONFIGURATION}/shared_test --verify
-      workingDirectory: testcases/proj.linux
-
-  - task: Bash@3
-    displayName: diff
-    inputs:
-      targetType: 'inline'
-      script: diff ../testcases.std ../testcases.log
-      workingDirectory: 'testcases/proj.linux'
+- stage: Stage_B
+  dependsOn: Stage_A
+  condition: contains(dependencies.Stage_A.Prepare.outputs['ProduceVar.ci_all'], '[ci all]')
+  jobs:
+  - job: Test
+    steps:
+    - script: echo Hello World!
