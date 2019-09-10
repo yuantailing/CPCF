@@ -1,5 +1,8 @@
 # CPCF
 
+[![Windows Status](https://github.com/yuantailing/CPCF/workflows/Windows/badge.svg)](https://github.com/jiapw/CPCF/actions)
+[![Ubuntu Status](https://github.com/yuantailing/CPCF/workflows/Ubuntu/badge.svg)](https://github.com/jiapw/CPCF/actions)
+
 It is a C++ library provides primitives for building cross-platform native systems and applications. It is refactored from a collection of codes accumulated when I was doing research on Computer Graphics/Vision and Distributed Systems in ICT/CAS, MSRA and MSR since 2002. 
 
 The library favors performance (more speed, less resource) over simplicity and maintainability, use with caution. It is designed for all major platforms: Windows, Linux, MacOSX and mobile platforms iOS and Andriod. Only three desktop platforms are intensively tested. iOS should be fine, Andriod is not tested for a long time. 
