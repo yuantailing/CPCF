@@ -15,6 +15,9 @@ jobs:
       rm /tmp/cpcf_mac_ipp.7z
     displayName: Retrieve libs
 
+  - bash: find .
+    displayName: find .
+
   - task: Xcode@5
     inputs:
       actions: 'build'
