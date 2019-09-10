@@ -1,113 +1,20 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Xcode
+# Build, test, and archive an Xcode workspace on macOS.
+# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
-jobs:
-- job: Windows
-  timeoutInMinutes: 10
-  condition: false
+trigger:
+- master
 
-  strategy:
-    matrix:
-      VS2017 x64 Debug:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x64
-        CONFIGURATION: Debug
-      VS2017 x64 Release:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x64
-        CONFIGURATION: Release
-      VS2019 x86 Debug:
-        VMIMAGE: windows-2019
-        PLATFORM: x86
-        CONFIGURATION: Debug
-      VS2019 x86 Release:
-        VMIMAGE: windows-2019
-        PLATFORM: x86
-        CONFIGURATION: Release
-      VS2019 x64 Debug:
-        VMIMAGE: windows-2019
-        PLATFORM: x64
-        CONFIGURATION: Debug
-      VS2019 x64 Release:
-        VMIMAGE: windows-2019
-        PLATFORM: x64
-        CONFIGURATION: Release
+pool:
+  vmImage: 'macos-latest'
 
-  pool:
-    vmImage: $(VMIMAGE)
-
-  steps:
-  - bash: |
-      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
-      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
-    displayName: Retrieve Libs
-
-  - task: ExtractFiles@1
-    inputs:
-      archiveFilePatterns: 'cpcf_win_*.7z'
-      destinationFolder: 'libs\\win'
-      cleanDestinationFolder: false
-
-  - task: VSBuild@1
-    inputs:
-      solution: 'testcases\\proj.win\\tests.sln'
-      platform: '$(PLATFORM)'
-      configuration: '$(CONFIGURATION)'
-      maximumCpuCount: true
-
-  - powershell: |
-      Move-Item ..\testcases.log ..\testcases.std
-      if ($env:PLATFORM -eq "x86") {
-        .\$(CONFIGURATION)\tests.exe /verify
-      } else {
-        .\x64\$(CONFIGURATION)\tests.exe /verify
-      }
-    displayName: Run
-    workingDirectory: 'testcases\\proj.win'
-
-  - bash: diff ../testcases.std ../testcases.log
-    displayName: diff
-    workingDirectory: 'testcases\\proj.win'
-
-- job: Ubuntu
-  timeoutInMinutes: 10
-
-  strategy:
-    matrix:
-      16.04 Debug:
-        VMIMAGE: ubuntu-16.04
-        CONFIGURATION: Debug
-      16.04 Release:
-        VMIMAGE: ubuntu-16.04
-        CONFIGURATION: Release
-
-  pool:
-    vmImage: $(VMIMAGE)
-
-  steps:
-  - bash: sudo apt-get install --no-install-recommends -y codelite
-    displayName: Install CodeLite
-
-  - bash: |
-      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o/tmp/cpcf_linux_ipp.7z
-      7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
-      rm /tmp/cpcf_linux_ipp.7z
-    displayName: Retrieve libs
-
-  - bash: |
-      codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
-      make -j4
-    displayName: make
-    workingDirectory: testcases/proj.linux
-
-  - bash: |
-      mv ../testcases.log ../testcases.std
-      ${CONFIGURATION}/shared_test --verify
-    displayName: Run
-    workingDirectory: testcases/proj.linux
-
-  - bash: diff ../testcases.std ../testcases.log
-    displayName: diff
-    workingDirectory: 'testcases/proj.linux'
+steps:
+- task: Xcode@5
+  inputs:
+    actions: 'build'
+    scheme: ''
+    sdk: 'iphoneos'
+    configuration: 'Release'
+    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
+    xcodeVersion: 'default' # Options: 8, 9, 10, default, specifyPath
