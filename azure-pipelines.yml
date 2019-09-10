@@ -4,73 +4,44 @@
 # https://aka.ms/yaml
 
 jobs:
-- job: Windows
+- job: Ubuntu
   timeoutInMinutes: 10
 
   strategy:
     matrix:
-      VS2017 x86 Debug:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x86
+      16.04 Debug:
+        VMIMAGE: ubuntu-16.04
         CONFIGURATION: Debug
-      VS2017 x86 Release:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x86
-        CONFIGURATION: Release
-      VS2017 x64 Debug:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x64
-        CONFIGURATION: Debug
-      VS2017 x64 Release:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x64
-        CONFIGURATION: Release
-      VS2019 x86 Debug:
-        VMIMAGE: windows-2019
-        PLATFORM: x86
-        CONFIGURATION: Debug
-      VS2019 x86 Release:
-        VMIMAGE: windows-2019
-        PLATFORM: x86
-        CONFIGURATION: Release
-      VS2019 x64 Debug:
-        VMIMAGE: windows-2019
-        PLATFORM: x64
-        CONFIGURATION: Debug
-      VS2019 x64 Release:
-        VMIMAGE: windows-2019
-        PLATFORM: x64
+      16.04 Release:
+        VMIMAGE: ubuntu-16.04
         CONFIGURATION: Release
 
   pool:
     vmImage: $(VMIMAGE)
+  image: ubuntu:18.04
 
   steps:
+  - bash: sudo apt-get install --no-install-recommends -y codelite
+    displayName: Install CodeLite
+
   - bash: |
       set -ex
-      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -Locpcf_win_ipp.7z
-      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -Locpcf_win_mkl.7z
-      7z x cpcf_win_ipp.7z -olibs/win/
-      7z x cpcf_win_mkl.7z -olibs/win/
+      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -Lo/tmp/cpcf_linux_ipp.7z
+      7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
+      rm /tmp/cpcf_linux_ipp.7z
     displayName: Retrieve libs
-
-  - task: VSBuild@1
-    inputs:
-      solution: 'testcases\\proj.win\\tests.sln'
-      platform: '$(PLATFORM)'
-      configuration: '$(CONFIGURATION)'
-      maximumCpuCount: true
-
-  - powershell: |
-      Move-Item ..\testcases.log ..\testcases.std
-      if ($env:PLATFORM -eq "x86") {
-        .\$(CONFIGURATION)\tests.exe /verify
-      } else {
-        .\x64\$(CONFIGURATION)\tests.exe /verify
-      }
+  - bash: |
+      set -ex
+      codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
+      make -j4
+    displayName: make
+    workingDirectory: testcases/proj.linux
+  - bash: |
+      set -ex
+      mv ../testcases.log ../testcases.std
+      ${CONFIGURATION}/shared_test --verify
     displayName: Run
-    workingDirectory: 'testcases\\proj.win'
-
+    workingDirectory: testcases/proj.linux
   - bash: diff ../testcases.std ../testcases.log
     displayName: diff
-    workingDirectory: 'testcases\\proj.win'
+    workingDirectory: 'testcases/proj.linux'
