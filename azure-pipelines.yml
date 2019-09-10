@@ -10,9 +10,9 @@ jobs:
 
   steps:
   - bash: |
-      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o/tmp/cpcf_mac_ipp.7z
-      7z x /tmp/cpcf_mac_ipp.7z -olibs/mac/
-      rm /tmp/cpcf_mac_ipp.7z
+      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -ocpcf_mac_ipp.7z
+      7z x cpcf_mac_ipp.7z -olibs/mac/
+      rm cpcf_mac_ipp.7z
     displayName: Retrieve libs
 
   - bash: find .
