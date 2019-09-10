@@ -18,7 +18,7 @@ jobs:
 
   pool:
     vmImage: ubuntu-latest
-  container: $(CONTAINER)
+  container: yuantailing/codelite:18.04
 
   steps:
   - bash: |
