@@ -3,19 +3,14 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-stages:
-- stage: Stage_A
-  jobs:
-  - job: Prepare
-    steps:
-    - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
-      name: ProduceVar
-      condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
+jobs:
+- job: Prepare
+  steps:
+  - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
+    name: ProduceVar
+    condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
-- stage: Stage_B
-  dependsOn: Stage_A
+- job: Test
   condition: contains(dependencies.Stage_A.Prepare.outputs['ProduceVar.ci_all'], '[ci all]')
-  jobs:
-  - job: Test
-    steps:
-    - script: echo Hello World!
+  steps:
+  - script: echo Hello World!
