@@ -46,13 +46,11 @@ jobs:
     vmImage: $(VMIMAGE)
 
   steps:
-  - task: Bash@3
-    displayName: Retrieve libs
-    inputs:
-      targetType: 'inline'
-      script: |
-        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
-        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
+  - bash: |
+      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -ocpcf_win_ipp.7z
+      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -ocpcf_win_mkl.7z
+    displayName: Retrieve Libs
+
   - task: ExtractFiles@1
     inputs:
       archiveFilePatterns: 'cpcf_win_*.7z'
@@ -66,25 +64,19 @@ jobs:
       configuration: '$(CONFIGURATION)'
       maximumCpuCount: true
 
-  - task: PowerShell@2
+  - powershell: |
+      Move-Item ..\testcases.log ..\testcases.std
+      if ($env:PLATFORM -eq "x86") {
+        .\$(CONFIGURATION)\tests.exe /verify
+      } else {
+        .\x64\$(CONFIGURATION)\tests.exe /verify
+      }
     displayName: Run
-    inputs:
-      targetType: 'inline'
-      script: |
-        Move-Item ..\testcases.log ..\testcases.std
-        if ($env:PLATFORM -eq "x86") {
-          .\$(CONFIGURATION)\tests.exe /verify
-        } else {
-          .\x64\$(CONFIGURATION)\tests.exe /verify
-        }
-      workingDirectory: 'testcases\\proj.win'
+    workingDirectory: 'testcases\\proj.win'
 
-  - task: Bash@3
+  - bash: diff ../testcases.std ../testcases.log
     displayName: diff
-    inputs:
-      targetType: 'inline'
-      script: diff ../testcases.std ../testcases.log
-      workingDirectory: 'testcases\\proj.win'
+    workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
   timeoutInMinutes: 10
