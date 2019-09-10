@@ -11,8 +11,13 @@ jobs:
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
 - job: Test
-  displayName: $[ dependencies.Prepare.outputs['ProduceVar.ci_all'] ]
   dependsOn: Prepare
-  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], 'true')
+  strategy:
+    matrix:
+      Debug:
+        ci_all: 'false'
+      Release:
+        ci_all: 'true'
+  condition: eq(dependencies.Prepare.outputs['ProduceVar.ci_all'], $(ci_all))
   steps:
   - script: echo Hello World!
