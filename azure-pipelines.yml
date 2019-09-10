@@ -3,13 +3,24 @@
 # Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
-pool:
-  vmImage: 'macos-latest'
+jobs:
+- job: MacOS
+  pool:
+    vmImage: 'macos-latest'
 
-steps:
-- task: Xcode@5
-  inputs:
-    actions: 'build'
-    sdk: 'macosx10.14'
-    xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
-    packageApp: false
+  steps:
+  - bash: |
+      curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o/tmp/cpcf_mac_ipp.7z
+      7z x /tmp/cpcf_mac_ipp.7z -olibs/mac/
+      rm /tmp/cpcf_mac_ipp.7z
+    displayName: Retrieve libs
+
+  - task: Xcode@5
+    inputs:
+      actions: 'build'
+      sdk: 'macosx10.14'
+      xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
+      packageApp: false
+
+  - bash: find .
+    displayName: find .
