@@ -10,15 +10,15 @@ jobs:
   strategy:
     matrix:
       18.04 Debug:
-        CONTAINER: yuantailing/codelite
+        CONTAINER: yuantailing/codelite:18.04
         CONFIGURATION: Debug
       18.04 Release:
-        CONTAINER: yuantailing/codelite
+        CONTAINER: yuantailing/codelite:18.04
         CONFIGURATION: Release
 
   pool:
     vmImage: ubuntu-latest
-  container: yuantailing/codelite:latest
+  container: $(CONTAINER)
 
   steps:
   - bash: |
