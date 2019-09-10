@@ -6,6 +6,7 @@
 jobs:
 - job: Windows
   timeoutInMinutes: 10
+  condition: false
 
   strategy:
     matrix:
@@ -67,6 +68,7 @@ jobs:
     workingDirectory: 'testcases\\proj.win'
 
   - bash: diff ../testcases.std ../testcases.log
+    displayName: diff
     workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
@@ -107,4 +109,5 @@ jobs:
     workingDirectory: testcases/proj.linux
 
   - bash: diff ../testcases.std ../testcases.log
+    displayName: diff
     workingDirectory: 'testcases/proj.linux'
