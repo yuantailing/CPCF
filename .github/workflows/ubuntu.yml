@@ -35,13 +35,12 @@ jobs:
         name: ${{ matrix.os }}_${{ matrix.config }}
         path: testcases/proj.linux/${{ matrix.config }}/shared_test
 
-    - name: Run
+    - name: Run tests
       run: |
         mv ../testcases.log ../testcases.std
         ${{ matrix.config }}/shared_test --verify
       working-directory: testcases/proj.linux
 
     - name: diff
-      run:
-        diff ../testcases.std ../testcases.log
+      run: diff ../testcases.std ../testcases.log
       working-directory: testcases/proj.linux

@@ -1,7 +1,7 @@
 # CPCF
 
-[![Windows Status](https://github.com/yuantailing/CPCF/workflows/Windows/badge.svg)](https://github.com/jiapw/CPCF/actions)
-[![Ubuntu Status](https://github.com/yuantailing/CPCF/workflows/Ubuntu/badge.svg)](https://github.com/jiapw/CPCF/actions)
+[![Windows Status](../../workflows/Windows/badge.svg)](../..//actions)
+[![Ubuntu Status](../../workflows/Ubuntu/badge.svg)](../../actions)
 
 It is a C++ library provides primitives for building cross-platform native systems and applications. It is refactored from a collection of codes accumulated when I was doing research on Computer Graphics/Vision and Distributed Systems in ICT/CAS, MSRA and MSR since 2002. 
 

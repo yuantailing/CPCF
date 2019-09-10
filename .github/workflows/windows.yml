@@ -42,13 +42,12 @@ jobs:
         name: ${{ matrix.os }}_${{ matrix.config }}_${{ matrix.platform }}
         path: testcases\proj.win\${{ matrix.midpath }}${{ matrix.config }}\tests.exe
 
-    - name: Run
+    - name: Run tests
       run: |
         move ..\testcases.log ..\testcases.std && ^
         .\${{ matrix.midpath }}${{ matrix.config }}\tests.exe /verify
       working-directory: testcases\proj.win
 
     - name: diff
-      run:
-        diff ..\testcases.std ..\testcases.log
+      run: diff ..\testcases.std ..\testcases.log
       working-directory: testcases\proj.win
