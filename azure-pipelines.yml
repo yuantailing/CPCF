@@ -9,19 +9,19 @@ jobs:
 
   strategy:
     matrix:
-      16.04 Debug:
-        VMIMAGE: ubuntu-16.04
+      18.04 Debug:
+        CONTAINER: ubuntu:18.04
         CONFIGURATION: Debug
-      16.04 Release:
-        VMIMAGE: ubuntu-16.04
+      18.04 Release:
+        CONTAINER: ubuntu:18.04
         CONFIGURATION: Release
 
   pool:
-    vmImage: $(VMIMAGE)
+    vmImage: ubuntu-16.04
   container: ubuntu:18.04
 
   steps:
-  - bash: sudo apt-get install --no-install-recommends -y codelite
+  - bash: apt-get install --no-install-recommends -y codelite curl g++ make p7zip
     displayName: Install CodeLite
 
   - bash: |
@@ -30,18 +30,21 @@ jobs:
       7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
       rm /tmp/cpcf_linux_ipp.7z
     displayName: Retrieve libs
+
   - bash: |
       set -ex
       codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
       make -j4
     displayName: make
     workingDirectory: testcases/proj.linux
+
   - bash: |
       set -ex
       mv ../testcases.log ../testcases.std
       ${CONFIGURATION}/shared_test --verify
     displayName: Run
     workingDirectory: testcases/proj.linux
+
   - bash: diff ../testcases.std ../testcases.log
     displayName: diff
     workingDirectory: 'testcases/proj.linux'
