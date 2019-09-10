@@ -10,23 +10,17 @@ jobs:
   strategy:
     matrix:
       18.04 Debug:
-        CONTAINER: ubuntu:18.04
+        CONTAINER: yuantailing/codelite
         CONFIGURATION: Debug
       18.04 Release:
-        CONTAINER: ubuntu:18.04
+        CONTAINER: yuantailing/codelite
         CONFIGURATION: Release
 
   pool:
     vmImage: ubuntu-16.04
-  container: ubuntu:18.04
+  container: yuantailing/codelite
 
   steps:
-  - bash: |
-      set -ex
-      id
-      sudo apt-get install --no-install-recommends -y codelite curl g++ make p7zip
-    displayName: Install CodeLite
-
   - bash: |
       set -ex
       curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -Lo/tmp/cpcf_linux_ipp.7z
