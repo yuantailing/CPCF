@@ -17,8 +17,8 @@ jobs:
         CONFIGURATION: Release
 
   pool:
-    vmImage: ubuntu-16.04
-  container: yuantailing/codelite
+    vmImage: ubuntu-latest
+  container: yuantailing/codelite:latest
 
   steps:
   - bash: |
