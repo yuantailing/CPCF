@@ -11,6 +11,7 @@ jobs:
     condition: contains(variables['Build.SourceVersionMessage'], '[ci all]')
 
 - job: Test
+  dependsOn: Prepare
   condition: contains(dependencies.Stage_A.Prepare.outputs['ProduceVar.ci_all'], '[ci all]')
   steps:
   - script: echo Hello World!
