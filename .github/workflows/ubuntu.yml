@@ -1,10 +1,9 @@
-name: C/C++ CI
+name: Ubuntu
 
 on: [push]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -33,7 +32,7 @@ jobs:
 
     - uses: actions/upload-artifact@master
       with:
-        name: ${{ matrix.os }}_${{ matrix.config }}_shared_test
+        name: ${{ matrix.os }}_${{ matrix.config }}
         path: testcases/proj.linux/${{ matrix.config }}/shared_test
 
     - name: Run
