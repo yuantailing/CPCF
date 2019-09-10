@@ -10,5 +10,6 @@ steps:
 - task: Xcode@5
   inputs:
     actions: 'build'
-    packageApp: false
+    sdk: 'macosx10.14'
     xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
+    packageApp: false
