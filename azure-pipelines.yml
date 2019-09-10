@@ -4,7 +4,8 @@
 # https://aka.ms/yaml
 
 jobs:
-- job:
+- job: Prepare
+  displayName:
   steps:
   - script: echo "##vso[task.setvariable variable=ci_all;isOutput=true]true"
     name: ProduceVar
