@@ -9,14 +9,6 @@ jobs:
 
   strategy:
     matrix:
-      VS2017 x86 Debug:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x86
-        CONFIGURATION: Debug
-      VS2017 x86 Release:
-        VMIMAGE: vs2017-win2016
-        PLATFORM: x86
-        CONFIGURATION: Release
       VS2017 x64 Debug:
         VMIMAGE: vs2017-win2016
         PLATFORM: x64
@@ -75,7 +67,6 @@ jobs:
     workingDirectory: 'testcases\\proj.win'
 
   - bash: diff ../testcases.std ../testcases.log
-    displayName: diff
     workingDirectory: 'testcases\\proj.win'
 
 - job: Ubuntu
@@ -116,5 +107,4 @@ jobs:
     workingDirectory: testcases/proj.linux
 
   - bash: diff ../testcases.std ../testcases.log
-    displayName: diff
     workingDirectory: 'testcases/proj.linux'
