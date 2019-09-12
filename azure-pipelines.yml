@@ -38,3 +38,10 @@ jobs:
 
   - bash: find ${HOME}/Library/Developer
     displayName: find Developer
+
+  - bash: |
+      set -ex
+      mv ../testcases.log ../testcases.std
+      ${HOME}/Library/Developer/Xcode/DerivedData/tester-*/Build/Products/${CONFIGURATION}/tester --verify
+      diff ../testcases.std ../testcases.log
+    workingDirectory: testcases/proj.mac
