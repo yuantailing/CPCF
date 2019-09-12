@@ -1060,8 +1060,8 @@ namespace rt
 #endif	
 
 	// sub_borrow
-	template<typename T1, typename T2, typename T3, typename T4> INLFUNC BYTE SubBorrow(T1, T2, T3, T4);
-#if defined(PLATFORM_WIN)
+	template<typename T> INLFUNC BYTE SubBorrow(BYTE, T, T, T*);
+#if defined(PLATFORM_WIN) || defined(PLATFORM_MAC)
 	template<> INLFUNC BYTE SubBorrow(BYTE b_in, UINT a, UINT b, UINT* out) { return _subborrow_u32(b_in, a, b, out); }
 	#if defined(PLATFORM_64BIT)
 	template<> INLFUNC BYTE SubBorrow(BYTE b_in, ULONGLONG a, ULONGLONG b, ULONGLONG* out) { return _subborrow_u64(b_in, a, b, out); }
@@ -1069,9 +1069,6 @@ namespace rt
 #elif defined(PLATFORM_LINUX)
 	template<> INLFUNC BYTE SubBorrow(BYTE b_in, UINT a, UINT b, UINT* out) { return __builtin_ia32_sbb_u32(b_in, a, b, out); }
 	template<> INLFUNC BYTE SubBorrow(BYTE b_in, ULONGLONG a, ULONGLONG b, ULONGLONG* out) { return __builtin_ia32_sbb_u64(b_in, a, b, out); }
-#elif defined(PLATFORM_MAC)
-	template<> INLFUNC BYTE SubBorrow(BYTE b_in, UINT a, UINT b, UINT* out) { return __builtin_ia32_subborrow_u32(b_in, a, b, out); }
-	template<> INLFUNC BYTE SubBorrow(BYTE b_in, ULONGLONG a, ULONGLONG b, ULONGLONG* out) { return __builtin_ia32_subborrow_u64(b_in, a, b, out); }
 #else
 #pragma message ("SubBorrow is not available")
 #endif
