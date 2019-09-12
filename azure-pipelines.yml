@@ -11,7 +11,7 @@ jobs:
       10.14 Debug:
         vmImage: 'macos-10.14'
         Configuration: Debug
-      Release:
+      10.14 Release:
         vmImage: 'macos-10.14'
         Configuration: Release
   pool:
