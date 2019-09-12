@@ -35,3 +35,6 @@ jobs:
 
   - bash: find .
     displayName: find .
+
+  - bash: find ${HOEM}
+    displayName: find HOME
