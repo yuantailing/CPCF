@@ -1,7 +1,8 @@
 # CPCF
 
-[![Windows Status](../../workflows/Windows/badge.svg)](../../actions)
-[![Ubuntu Status](../../workflows/Ubuntu/badge.svg)](../../actions)
+[![Windows Action Status](../../workflows/Windows/badge.svg)](../../actions)
+[![Ubuntu Action Status](../../workflows/Ubuntu/badge.svg)](../../actions)
+[![macOS Action Status](../../workflows/macOS/badge.svg)](../../actions)
 
 It is a C++ library provides primitives for building cross-platform native systems and applications. It is refactored from a collection of codes accumulated when I was doing research on Computer Graphics/Vision and Distributed Systems in ICT/CAS, MSRA and MSR since 2002. 
 

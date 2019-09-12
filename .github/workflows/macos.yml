@@ -1,0 +1,49 @@
+name: macOS
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-10.14]
+        config: [Debug, Release]
+      fail-fast: false
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Download Libs
+      run: |
+        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -Locpcf_mac_ipp.7z
+        brew install p7zip
+        7z x cpcf_mac_ipp.7z -olibs/mac/
+        rm cpcf_mac_ipp.7z
+
+    - name: Xcode build
+      run: /usr/bin/xcodebuild -sdk macosx10.14 -configuration ${{ matrix.config }} -workspace tester.xcodeproj/project.xcworkspace -scheme tester build CODE_SIGNING_ALLOWED=NO
+      working-directory: testcases/proj.mac
+
+    - name: Prepare artifacts
+      run: cp ${HOME}/Library/Developer/Xcode/DerivedData/tester-*/Build/Products/${{ matrix.config }}/tester tester
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.os }}_${{ matrix.config }}
+        path: tester
+
+    - name: Run tests
+      run: |
+        mv ../testcases.log ../testcases.std
+        ${HOME}/Library/Developer/Xcode/DerivedData/tester-*/Build/Products/${{ matrix.config }}/tester --verify
+      working-directory: testcases/proj.mac
+
+    - name: Remove a warning
+      run: sed -i '' '/LoadEnvironmentVariablesAsOptions on Mac\/iOS is not implemented/d' ../testcases.log
+      working-directory: testcases/proj.mac
+
+    - name: diff
+      run: diff ../testcases.std ../testcases.log
+      working-directory: testcases/proj.mac

@@ -163,7 +163,8 @@ jobs:
     workingDirectory: 'testcases/proj.linux'
 
 
-- job: MacOS
+- job: macOS
+  condition: in(variables['Build.Reason'], 'Manual', 'Schedule')
   timeoutInMinutes: 10
 
   strategy:
