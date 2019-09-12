@@ -1,5 +1,5 @@
-#include "../../essentials.h"
-#include "../tests/test.h"
+#include "../../../essentials.h"
+#include "../../tests/test.h"
 
 extern void TestMain();
 
