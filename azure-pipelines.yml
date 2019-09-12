@@ -209,6 +209,6 @@ jobs:
   #  displayName: Remove a warning
   #  workingDirectory: 'testcases/proj.mac'
 
-  - bash: diff ../testcases.std ../testcases.log.2
+  - bash: diff ../testcases.std ../testcases.log
     displayName: diff
     workingDirectory: 'testcases/proj.mac'
