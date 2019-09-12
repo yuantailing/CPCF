@@ -47,7 +47,7 @@
 #endif
 
 #if defined(PLATFORM_IOS) || defined(PLATFORM_MAC)
-#include <cmath>
+#include <x86intrin.h>
 #endif
 
 #if defined(PLATFORM_LINUX)
