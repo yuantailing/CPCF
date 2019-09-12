@@ -187,7 +187,7 @@ jobs:
     displayName: Retrieve libs
 
   - bash: |
-      sed -i '' '/_LOG_WARNING("LoadEnvironmentVariablesAsOptions on Mac/iOS is not implemented");/d' core/os/file_dir.cpp
+      sed -i '' '/_LOG_WARNING("LoadEnvironmentVariablesAsOptions on Mac\/iOS is not implemented");/d' core/os/file_dir.cpp
     displayName: Remove a warning
 
   - task: Xcode@5
