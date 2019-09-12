@@ -201,7 +201,7 @@ jobs:
     workingDirectory: 'testcases/proj.mac'
 
   - bash: |
-      python3 -c 'with open("../testcases.log", "rb") as f, open("../testcases.log.2", "wb") as f2: f2.write(f.read().replace(b"LoadEnvironmentVariablesAsOptions on Mac/iOS is not implemented\\r\\n", b""))'
+      python3 -c 'with open("../testcases.log", "rb") as f, open("../testcases.log.2", "wb") as f2: f2.write(f.read().replace(b"LoadEnvironmentVariablesAsOptions on Mac/iOS is not implemented\r\n", b""))'
     displayName: Remove a warning
     workingDirectory: 'testcases/proj.mac'
 
