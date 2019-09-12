@@ -1470,6 +1470,7 @@ void rt::UnitTests::timedate()
 		tm.LoadCurrentTime();
 		os::Sleep(50);
 		LONGLONG time_lapse = tm.TimeLapse();
+		_LOG("time_lapse = " << time_lapse);
 		_LOG("Timelapse is between [50, 100]: " << (50 <= time_lapse && time_lapse <= 100));
 	}
 
