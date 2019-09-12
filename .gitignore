@@ -16,10 +16,10 @@
 testcases/gl_testcases/proj.win/.vs/
 testcases/gl_testcases/proj.win/x64/
 testcases/proj.win/.vs/
-testcases/proj.win/x64/Debug/
-testcases/proj.win/x64/Release/
 testcases/proj.win/Debug/
 testcases/proj.win/Release/
+testcases/proj.win/x64/Debug/
+testcases/proj.win/x64/Release/
 /testcases/proj.win/*.txt
 /testcases/proj.win/*.jpg
 

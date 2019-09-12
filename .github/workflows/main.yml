@@ -21,7 +21,7 @@ jobs:
 
     - name: Download Libs
       run: |
-        curl -sSL https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -o /tmp/cpcf_linux_ipp.7z
+        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -Lo/tmp/cpcf_linux_ipp.7z
         7z x /tmp/cpcf_linux_ipp.7z -o../CPCF/libs/linux/
         rm /tmp/cpcf_linux_ipp.7z
 
