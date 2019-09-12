@@ -37,7 +37,7 @@ jobs:
       set -ex
       mv ../testcases.log ../testcases.std
       ${HOME}/Library/Developer/Xcode/DerivedData/tester-*/Build/Products/${CONFIGURATION}/tester --verify
-      sed -i '/LoadEnvironmentVariablesAsOptions on Mac\/iOS is not implemented/d' ../testcases.log
+      sed '/LoadEnvironmentVariablesAsOptions on Mac\/iOS is not implemented/d' -i ../testcases.log
     displayName: Run
     workingDirectory: 'testcases/proj.mac'
 
