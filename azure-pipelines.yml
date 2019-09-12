@@ -8,23 +8,23 @@ jobs:
 
   strategy:
     matrix:
-      Debug:
+      10.14 Debug:
+        vmImage: 'macos-10.14'
         Configuration: Debug
       Release:
+        vmImage: 'macos-10.14'
         Configuration: Release
   pool:
-    vmImage: 'macos-latest'
+    vmImage: $(vmImage)
 
   steps:
   - bash: |
       set -ex
-      curl -L https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o./cpcf_mac_ipp.7z
+      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -Locpcf_mac_ipp.7z
       brew install p7zip
       7z x cpcf_mac_ipp.7z -olibs/mac/
       rm cpcf_mac_ipp.7z
     displayName: Retrieve libs
-  - bash: find .
-    displayName: find .
 
   - task: Xcode@5
     inputs:
@@ -32,12 +32,6 @@ jobs:
       sdk: 'macosx10.14'
       xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
       packageApp: false
-
-  - bash: find .
-    displayName: find .
-
-  - bash: find ${HOME}/Library/Developer
-    displayName: find Developer
 
   - bash: |
       set -ex
