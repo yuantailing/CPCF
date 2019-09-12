@@ -1,18 +1,14 @@
-//
-//  main.cpp
-//  tester
-//
-//  Created by Xin Huang on 1/10/13.
-//  Copyright (c) 2013 __MyCompanyName__. All rights reserved.
-//
+#include "../../../essentials.h"
+#include "../../tests/test.h"
 
-#include <iostream>
+extern void TestMain();
 
-void TestMain();
-
-int main(int argc, const char * argv[])
+int main(int argc, char **argv)
 {
-	TestMain();
-    return 0;
-}
+	os::CommandLine cmd;
+	cmd.Parse(argc, argv);
 
+	TestMain();
+
+	return 0;
+}

@@ -161,3 +161,49 @@ jobs:
   - bash: diff ../testcases.std ../testcases.log
     displayName: diff
     workingDirectory: 'testcases/proj.linux'
+
+
+- job: MacOS
+  timeoutInMinutes: 10
+
+  strategy:
+    matrix:
+      10.14 Debug:
+        vmImage: 'macos-10.14'
+        Configuration: Debug
+      10.14 Release:
+        vmImage: 'macos-10.14'
+        Configuration: Release
+  pool:
+    vmImage: $(vmImage)
+
+  steps:
+  - bash: |
+      set -ex
+      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -Locpcf_mac_ipp.7z
+      brew install p7zip
+      7z x cpcf_mac_ipp.7z -olibs/mac/
+      rm cpcf_mac_ipp.7z
+    displayName: Retrieve libs
+
+  - task: Xcode@5
+    inputs:
+      actions: 'build'
+      sdk: 'macosx10.14'
+      xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
+      packageApp: false
+
+  - bash: |
+      set -ex
+      mv ../testcases.log ../testcases.std
+      ${HOME}/Library/Developer/Xcode/DerivedData/tester-*/Build/Products/${CONFIGURATION}/tester --verify
+    displayName: Run
+    workingDirectory: 'testcases/proj.mac'
+
+  - bash: sed -i '' '/LoadEnvironmentVariablesAsOptions on Mac\/iOS is not implemented/d' ../testcases.log
+    displayName: Remove a warning
+    workingDirectory: 'testcases/proj.mac'
+
+  - bash: diff ../testcases.std ../testcases.log
+    displayName: diff
+    workingDirectory: 'testcases/proj.mac'

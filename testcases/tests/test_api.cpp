@@ -1470,7 +1470,7 @@ void rt::UnitTests::timedate()
 		tm.LoadCurrentTime();
 		os::Sleep(50);
 		LONGLONG time_lapse = tm.TimeLapse();
-		_LOG("Timelapse is between [50, 100]: " << (50 <= time_lapse && time_lapse <= 100));
+		_LOG("Timelapse is between [50, 400]: " << (50 <= time_lapse && time_lapse <= 400));
 	}
 
 	{	os::HighPerformanceCounter	hpc;
