@@ -1,47 +1,37 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Xcode
+# Build, test, and archive an Xcode workspace on macOS.
+# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
 jobs:
-- job: Ubuntu
-  timeoutInMinutes: 10
+- job: MacOS
 
   strategy:
     matrix:
-      18.04 Debug:
-        CONTAINER: yuantailing/codelite:18.04
-        CONFIGURATION: Debug
-      18.04 Release:
-        CONTAINER: yuantailing/codelite:18.04
-        CONFIGURATION: Release
-
+      Debug:
+        Configuration: Debug
+      Release:
+        Configuration: Release
   pool:
-    vmImage: ubuntu-latest
-  container: yuantailing/codelite:18.04
+    vmImage: 'macos-latest'
 
   steps:
   - bash: |
       set -ex
-      curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_linux_ipp.7z -Lo/tmp/cpcf_linux_ipp.7z
-      7z x /tmp/cpcf_linux_ipp.7z -olibs/linux/
-      rm /tmp/cpcf_linux_ipp.7z
+      curl -L https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_mac_ipp.7z -o./cpcf_mac_ipp.7z
+      brew install p7zip
+      7z x cpcf_mac_ipp.7z -olibs/mac/
+      rm cpcf_mac_ipp.7z
     displayName: Retrieve libs
+  - bash: find .
+    displayName: find .
 
-  - bash: |
-      set -ex
-      codelite-make -w shared_test.workspace -c ${CONFIGURATION} -s <(printf '<BuildSettings/>')
-      make -j4
-    displayName: make
-    workingDirectory: testcases/proj.linux
+  - task: Xcode@5
+    inputs:
+      actions: 'build'
+      sdk: 'macosx10.14'
+      xcWorkspacePath: 'testcases/proj.mac/*.xcodeproj/project.xcworkspace'
+      packageApp: false
 
-  - bash: |
-      set -ex
-      mv ../testcases.log ../testcases.std
-      ${CONFIGURATION}/shared_test --verify
-    displayName: Run
-    workingDirectory: testcases/proj.linux
-
-  - bash: diff ../testcases.std ../testcases.log
-    displayName: diff
-    workingDirectory: 'testcases/proj.linux'
+  - bash: find .
+    displayName: find .
