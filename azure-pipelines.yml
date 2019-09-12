@@ -209,6 +209,6 @@ jobs:
   #  displayName: Remove a warning
   #  workingDirectory: 'testcases/proj.mac'
 
-  - bash: diff -Z ../testcases.std ../testcases.log
+  - bash: diff --strip-trailing-cr ../testcases.std ../testcases.log
     displayName: diff
     workingDirectory: 'testcases/proj.mac'
