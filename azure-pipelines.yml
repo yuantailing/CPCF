@@ -36,5 +36,5 @@ jobs:
   - bash: find .
     displayName: find .
 
-  - bash: find ${HOME}
-    displayName: find HOME
+  - bash: find ${HOME}/Library/Developer
+    displayName: find Developer
