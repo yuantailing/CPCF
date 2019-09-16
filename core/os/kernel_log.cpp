@@ -310,9 +310,29 @@ namespace _details
 		int color[] = { 8, 8, 7, 10, 14, 12 };
 		SetConsoleTextAttribute(GetStdHandle( STD_OUTPUT_HANDLE ), color[type&rt::LOGTYPE_LEVEL_MASK]);
 		int len = (int)strlen(log);
-		os::LPU16CHAR utf16 = (os::LPU16CHAR)alloca(2*len);
+		
+		os::LPU16CHAR utf16;
+		rt::Buffer<os::U16CHAR> temp;
+		if(len < 4*1024)
+			utf16 = (os::LPU16CHAR)alloca(2*len);
+		else
+		{
+			temp.ChangeSize(len);
+			utf16 = temp.Begin();
+		}
+
 		int len_utf16 = (int)os::UTF8Decode(log, len, utf16);
-		char* mb = (char*)alloca(3*len_utf16 + 1);
+
+		char* mb;
+		rt::String	temp_str;
+		if(3*len_utf16 < 4*1024)
+			mb = (char*)alloca(3*len_utf16 + 1);
+		else
+		{
+			temp_str.SetLength(3*len_utf16);
+			mb = temp_str;
+		}
+
 		int mb_len = WideCharToMultiByte(CP_THREAD_ACP, 0, utf16, len_utf16, mb, 3*len_utf16, NULL, NULL);
 		mb[mb_len] = 0;
 
