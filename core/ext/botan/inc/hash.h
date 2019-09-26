@@ -109,23 +109,23 @@ template<UINT _METHOD = HASH_MD5> class HmacHash;
 #define HASH_IPP(tag)	template<> class Hash<HASH_##tag> \
 						{	public: \
 							static const int HASHSIZE = _details::_HashSize<HASH_##tag>::size; \
-							protected:	BYTE	m_Context[_details::_get_hash_context_size<HASH_##tag>::Result]; \
-							public:		Hash(){ int sz; IPPCALL(ipps##tag##GetSize)(&sz); ASSERT(sz <= sizeof(m_Context)); Reset(); } \
-										void Reset(){ IPPCALL(ipps##tag##Init)((Ipps##tag##State*)m_Context); } \
+							protected:	BYTE	_Context[_details::_get_hash_context_size<HASH_##tag>::Result]; \
+							public:		Hash(){ int sz; IPPCALL(ipps##tag##GetSize)(&sz); ASSERT(sz <= sizeof(_Context)); Reset(); } \
+										void Reset(){ IPPCALL(ipps##tag##Init)((Ipps##tag##State*)_Context); } \
 										template<typename T> void Update(const T& x){ Update(&x, sizeof(x)); } \
-										void Update(LPCVOID data, UINT size){ IPPCALL(ipps##tag##Update)((LPCBYTE)data,size,(Ipps##tag##State*)m_Context); } \
-										void Finalize(LPVOID HashValue){ IPPCALL(ipps##tag##Final)((LPBYTE)HashValue,(Ipps##tag##State*)m_Context); } \
+										void Update(LPCVOID data, UINT size){ IPPCALL(ipps##tag##Update)((LPCBYTE)data,size,(Ipps##tag##State*)_Context); } \
+										void Finalize(LPVOID HashValue){ IPPCALL(ipps##tag##Final)((LPBYTE)HashValue,(Ipps##tag##State*)_Context); } \
 										void Calculate(LPCVOID data, UINT size, LPVOID HashValue){ Reset(); Update(data, size); Finalize(HashValue); } \
 						}; \
 						template<> class HmacHash<HASH_##tag> \
 						{	public: \
 							static const int HASHSIZE = _details::_HashSize<HASH_##tag>::size; \
-							protected:	BYTE	m_Context[_details::_get_hmachash_context_size<HASH_##tag>::Result]; \
-							public:		HmacHash(LPCVOID key, UINT key_len){ int sz; IPPCALL(ippsHMAC##tag##GetSize)(&sz); ASSERT(sz <= sizeof(m_Context)); Reset(key, key_len); } \
-										void Reset(LPCVOID key, UINT key_len){ IPPCALL(ippsHMAC##tag##Init)((LPCBYTE)key, key_len, (IppsHMAC##tag##State*)m_Context); } \
+							protected:	BYTE	_Context[_details::_get_hmachash_context_size<HASH_##tag>::Result]; \
+							public:		HmacHash(LPCVOID key, UINT key_len){ int sz; IPPCALL(ippsHMAC##tag##GetSize)(&sz); ASSERT(sz <= sizeof(_Context)); Reset(key, key_len); } \
+										void Reset(LPCVOID key, UINT key_len){ IPPCALL(ippsHMAC##tag##Init)((LPCBYTE)key, key_len, (IppsHMAC##tag##State*)_Context); } \
 										void Update(const rt::String_Ref& x){ Update(x.Begin(), (UINT)x.GetLength()); } \
-										void Update(LPCVOID data, UINT size){ IPPCALL(ippsHMAC##tag##Update)((LPCBYTE)data,size,(IppsHMAC##tag##State*)m_Context); } \
-										void Finalize(LPVOID HashValue){ IPPCALL(ippsHMAC##tag##Final)((LPBYTE)HashValue,_details::_HashSize<HASH_##tag>::size,(IppsHMAC##tag##State*)m_Context); } \
+										void Update(LPCVOID data, UINT size){ IPPCALL(ippsHMAC##tag##Update)((LPCBYTE)data,size,(IppsHMAC##tag##State*)_Context); } \
+										void Finalize(LPVOID HashValue){ IPPCALL(ippsHMAC##tag##Final)((LPBYTE)HashValue,_details::_HashSize<HASH_##tag>::size,(IppsHMAC##tag##State*)_Context); } \
 										void Calculate(LPCVOID message, UINT message_len, LPVOID HashValue){ Update(message, message_len); Finalize(HashValue); } \
 						}; \
 
@@ -141,13 +141,13 @@ template<UINT _METHOD = HASH_MD5> class HmacHash;
 template<> class Hash<HASH_CRC32>
 {	
 protected:
-	Ipp32u	m_Context;
+	Ipp32u	_Context;
 public:
 	Hash(){ Reset(); }
-	void Reset(){ m_Context = 0; }//~((DWORD)0); }
+	void Reset(){ _Context = 0; }//~((DWORD)0); }
 	template<typename T> void Update(const T& x){ Update(&x, sizeof(x)); }
-	void Update(LPCVOID data, UINT size){ IPPCALL(ippsCRC32_8u)((LPCBYTE)data, size, &m_Context); }
-	void Finalize(LPVOID HashValue){ *((Ipp32u*)HashValue) = m_Context; IPPCALL(ippsSwapBytes_32u_I)((Ipp32u*)HashValue, 1); }
+	void Update(LPCVOID data, UINT size){ IPPCALL(ippsCRC32_8u)((LPCBYTE)data, size, &_Context); }
+	void Finalize(LPVOID HashValue){ *((Ipp32u*)HashValue) = _Context; IPPCALL(ippsSwapBytes_32u_I)((Ipp32u*)HashValue, 1); }
 	void Calculate(LPCVOID data, UINT size, LPVOID HashValue){ Reset(); Update(data, size); Finalize(HashValue); }
 	DWORD Calculate(LPCVOID data, UINT size){ DWORD a; Calculate(data,size,&a); return a; }
 };

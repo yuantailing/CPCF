@@ -240,7 +240,7 @@ namespace rt
 namespace _details
 {
 template<typename RET>
-INLFUNC RET _VERIFY_RET(RET&& exp, LPCSTR exp_str, LPCSTR func, int line, LPCSTR file)
+INLFUNC auto _VERIFY_RET(RET&& exp, LPCSTR exp_str, LPCSTR func, int line, LPCSTR file)
 {
 #ifdef PLATFORM_DEBUG_BUILD
 	if(!exp)

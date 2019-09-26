@@ -72,11 +72,12 @@ struct dword_op
 template<UINT _LEN>
 class DataBlockRef
 {   
+protected:
 	struct byte_data
 	{	BYTE Bytes[_LEN];
 		byte_data(DWORD v){ dword_op<_LEN/4>::set((LPDWORD)Bytes, v); }
 	};
-	INLFUNC static LPBYTE _Zero(){ return NULL; }
+	INLFUNC static LPBYTE _Zero(){ return nullptr; }
 	INLFUNC static LPBYTE _Void(){ return (LPBYTE)-1; }
 	INLFUNC static LPCBYTE _GetZero(){ static const byte_data x(0); return x.Bytes; }
 	INLFUNC static LPCBYTE _GetVoid(){ static const byte_data x(0xffffffff); return x.Bytes; }
@@ -98,8 +99,8 @@ public:
 	typedef dword_op<_LEN/4> dwop;
 	static const UINT LEN = _LEN;
 
-    INLFUNC DataBlockRef(){ Bytes = NULL; }
-	INLFUNC DataBlockRef(decltype(NULL) x){ if(x==0){ Bytes = NULL; }else if(x==-1){ Bytes = (LPBYTE)-1; }else{ ASSERT(0); } }
+    INLFUNC DataBlockRef(){ Bytes = nullptr; }
+	INLFUNC DataBlockRef(decltype(NULL) x){ if(x==0){ Bytes = nullptr; }else if(x==-1){ Bytes = (LPBYTE)-1; }else{ ASSERT(0); } }
 	INLFUNC DataBlockRef(const DataBlockRef& x){ Bytes = (LPBYTE)x.Bytes; }
 	INLFUNC ~DataBlockRef(){}
 
