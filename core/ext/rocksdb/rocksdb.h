@@ -199,7 +199,7 @@ public:
 	}
 	INLFUNC bool Delete(const SliceValue& k, const WriteOptions* opt = WriteOptionsDefault){ ASSERT(_pDB); return _pDB->Delete(*opt, k).ok(); }
 	template<typename func_visit>
-	INLFUNC SIZE_T ScanBackward(const func_visit& v, const SliceValue& begin, ReadOptions* opt = ReadOptionsDefault) const
+	INLFUNC SIZE_T ScanBackward(const func_visit& v, const SliceValue& begin, const ReadOptions* opt = ReadOptionsDefault) const
 	{	ASSERT(_pDB);
 		RocksCursor it = _pDB->NewIterator(*opt);
 		ASSERT(!it.IsEmpty());
