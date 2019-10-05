@@ -1536,7 +1536,6 @@ String_Ref __alloca_string_ref(LPSTR p, const T& x)
 }
 }} // namespace rt::_details
 
-#define ALLOCA_STRING_REF(x)	(rt::_details::__alloca_string_ref((LPSTR)alloca((x).GetLength()), (x)))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
 
 namespace rt
 {
@@ -1845,7 +1844,17 @@ typedef tos::StaticString SS;
 typedef tos::DataAsString DS;
 typedef tos::StdStringAsString	StdStr;
 
+namespace _details
+{
+template<typename T>
+LPSTR __alloca_string(LPSTR p, const T& x)
+{	p[x.CopyTo(p)] = 0;
+	return p;
+}
+} // namespace rt::_details
 } // namespace rt
 
-#define __SS(...)							(rt::SS(#__VA_ARGS__))
-#define ALLOCA_STRING_BUFFER(size)			(rt::String_Ref((LPSTR)alloca(size), size))
+#define __SS(...)						(rt::SS(#__VA_ARGS__))
+#define ALLOCA_STRING_BUFFER(size)		(rt::String_Ref((LPSTR)alloca(size), size))
+#define ALLOCA_STRING_REF(x)			(rt::_details::__alloca_string_ref((LPSTR)alloca((x).GetLength()), (x)))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression
+#define ALLOCA_C_STRING(x)				(rt::_details::__alloca_string((LPSTR)alloca((x).GetLength() + 1), (x)))	// x should be a varible, instead of a expression. use auto x = ..... if it need to be an expression

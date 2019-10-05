@@ -270,7 +270,7 @@ public:
 					ASSERT(0); //unsupported content format
 				}
 #else
-				_SC::_p = rt::mem32AL::Malloc32AL(co*sizeof(_SC::t_Val));
+				_SC::_p = _Malloc32AL(BYTE, co*sizeof(_SC::t_Val));
 #endif
 				if(_SC::_p == nullptr){ _SC::_len = 0; return false; }
 			}
@@ -2245,7 +2245,7 @@ public:
 				}
 #else	// PLATFORM_INTEL_IPP_SUPPORT
 				step_size = (int)_EnlargeTo32AL(sizeof(t_Value)*Channel*w);
-				Ref::lpData = (typename Ref::t_Val*)rt::mem32AL::Malloc32AL(step_size*h, true);
+				Ref::lpData = (typename Ref::t_Val*)_Malloc32AL(BYTE, step_size*h,);
 #endif  // PLATFORM_INTEL_IPP_SUPPORT
 				if(Ref::lpData == nullptr)
 				{	Ref::Width=Ref::Height=0;
