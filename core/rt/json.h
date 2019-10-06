@@ -362,6 +362,7 @@ operator + (const _SE<t_Left,t_Right>& x, const _JVar<LEFT, T>& p)
 #define J(x)					rt::_JTag(#x)
 #define J_IF(cond, definition)	((cond) ? (definition) : decltype(definition)())
 #define JB(x)					(rt::_JObj((x), true))
+#define JKSTR(x)				(rt::SS("\"" #x "\":"))
 
 template<typename T>
 FORCEINL void _JA(rt::_JArray<>& a, T&& t) {
@@ -572,6 +573,31 @@ class JsonBeautified: public rt::String
 public:
 	JsonBeautified(const rt::String_Ref& json_string, int indent = 3, int line_lmt = 79);
 };
+
+template<typename TJSON>
+INLFUNC rt::String& JSON_OBJECT_APPEND(rt::String& x, const rt::String_Ref& key, TJSON&& value)
+{	static const rt::SS  _sep("\":");
+	if(x.IsEmpty()){ x = rt::SS("{\"") + key + _sep + value + '}'; }
+	else
+	{	ASSERT(x.Last() == '}');
+		x.Last() = ',';
+		x += rt::SS() + '"' + key + _sep + value + '}';
+	}
+}
+
+template<typename TJSON>
+INLFUNC rt::String& JSON_OBJECT_MERGE(rt::String& x, TJSON&& json)
+{	static const rt::SS  _sep("\":");
+	if(x.IsEmpty()){ x = json; }
+	else
+	{	ASSERT(x.Last() == '}');
+		UINT len = (UINT)x.GetLength();
+		x.Shorten(1);
+		x += json;
+		x[len] = ',';
+	}
+}
+
 
 } // namespace rt
 
