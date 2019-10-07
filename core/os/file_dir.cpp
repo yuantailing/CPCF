@@ -451,7 +451,7 @@ bool os::File::RemoveDirectory(LPCSTR path)
 bool os::File::Rename(LPCSTR fn,LPCSTR new_fn)
 {
 #ifdef	PLATFORM_WIN
-	return 0 == _wrename(__UTF16(fn), __UTF16(new_fn));
+	return ::MoveFileW(__UTF16(fn), __UTF16(new_fn));
 #else
 	return 0 == rename(fn, new_fn);
 #endif

@@ -761,6 +761,12 @@ public:
 				}
 				return hit;
 			}
+	BooleanArray(){}
+	BooleanArray(std::initializer_list<bool> a_args)
+			{	rt::Zero(_Bits);
+				UINT i = 0;
+				for(auto b: a_args)Set(i++, b);
+			}
 };
 
 

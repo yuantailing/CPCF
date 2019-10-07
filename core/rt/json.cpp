@@ -585,12 +585,12 @@ void JsonBeautified::_Beautify(const rt::String_Ref& json_string, bool newline, 
 	*this += doc.Last();
 }
 
-JsonBeautified::JsonBeautified(const rt::String_Ref& json_string, int indent, int line_lmt)
+void JsonBeautified::Beautify(const rt::String_Ref& json_string, int indent, int line_remain)
 {
 	_Indent = indent;
 	_Line_max = 80;
 
-	_Beautify(json_string, true, 0, _Line_max);
+	_Beautify(json_string, true, 0, line_remain);
 }
 
 } // namespace rt

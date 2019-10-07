@@ -64,9 +64,10 @@ public:
 	{	auto it = _SC::find(k);
 		return it != _SC::end()?it->second:v;
 	}
-	INLFUNC VALUE get(KEY k, VALUE v = NULL) const
+	INLFUNC VALUE& get(KEY k)
 	{	auto it = _SC::find(k);
-		return it != _SC::end()?it->second:v;
+		ASSERT(it != _SC::end());
+		return it->second;
 	}
 };
 

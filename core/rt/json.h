@@ -571,7 +571,9 @@ class JsonBeautified: public rt::String
 	void _Beautify(const rt::String_Ref& json_string, bool newline, int depth, int line_remain);
 
 public:
-	JsonBeautified(const rt::String_Ref& json_string, int indent = 3, int line_lmt = 79);
+	JsonBeautified(){}
+	JsonBeautified(const rt::String_Ref& json_string, int indent = 3, int line_remain = 80){ Beautify(json_string, indent, line_remain); }
+	void Beautify(const rt::String_Ref& json_string, int indent = 3, int line_remain = 80);
 };
 
 template<typename TJSON>
