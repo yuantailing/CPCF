@@ -126,9 +126,9 @@ public:
 				ASSERT(_hThread == NULL);
 				struct _call { 
 					static DWORD _func(LPVOID p)
-					{   (*(T*)p)();
+					{   DWORD ret = rt::CallLambda<DWORD>(0, *(T*)p);
 						_SafeDel_ConstPtr((T*)p);
-						return 0;
+						return ret;
 					}};
 				__CB_Func = _call::_func;
 				__CB_Param = _New(T(threadroute));
@@ -137,10 +137,20 @@ public:
 				_SafeDel_ConstPtr((T*)__CB_Param);
 				return false;
 			}
-
     static UINT GetCurrentId();
 	static void SetLabel(UINT thread_label);
 	static UINT GetLabel();
+	template<typename T>
+	static void YieldRun(T threadroute, ULONGLONG CPU_affinity = 0xffffffffffffffffULL, UINT stack_size = 0)
+			{	auto* t = _New(Thread);
+				t->Create([threadroute,t](){
+					threadroute();
+					__release_handle(t->_hThread);
+					t->_hThread = NULL;
+					_SafeDel_ConstPtr(t);
+					return THREAD_OBJECT_DELETED_ON_RETURN; 
+				}, CPU_affinity, stack_size);
+			}
 };
 
 // All Atomic operation return the value after operation, EXCEPT AtomicOr
