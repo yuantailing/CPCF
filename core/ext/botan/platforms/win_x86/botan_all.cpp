@@ -31896,7 +31896,8 @@ DataSource_Stream::~DataSource_Stream()
 
 
 #if defined(BOTAN_TARGET_OS_HAS_STL_FILESYSTEM_MSVC) && defined(BOTAN_BUILD_COMPILER_IS_MSVC)
-  #include <filesystem>
+  #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+  #include <experimental/filesystem>
 #elif defined(BOTAN_HAS_BOOST_FILESYSTEM)
   #include <boost/filesystem.hpp>
 #elif defined(BOTAN_TARGET_OS_HAS_READDIR)
@@ -31910,7 +31911,7 @@ namespace {
 #if defined(BOTAN_TARGET_OS_HAS_STL_FILESYSTEM_MSVC) && defined(BOTAN_BUILD_COMPILER_IS_MSVC)
 std::vector<std::string> impl_stl_filesystem(const std::string& dir)
    {
-   using namespace std::tr2::sys;
+   using namespace std::experimental::filesystem;
 
    std::vector<std::string> out;
 
