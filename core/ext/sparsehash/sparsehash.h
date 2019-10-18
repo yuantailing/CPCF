@@ -46,9 +46,14 @@ struct key_traits;
 		static const T& deleted_key(){ static const _details::void_bits<sizeof(T)> x; return (const T&)x; }
 	};
 	template<>
+	struct key_traits<rt::String_Ref>
+	{	static const rt::String_Ref& empty_key(){ static const rt::String_Ref x; return x; }
+		static const rt::String_Ref& deleted_key(){ static const rt::String_Ref x("\x0\x0\x0\x0"); return x; }
+	};
+	template<>
 	struct key_traits<rt::String>
-	{	static const rt::String& empty_key(){ static const rt::String_Ref x; return (const rt::String&)x; }
-		static const rt::String& deleted_key(){ static const rt::String_Ref x("\xff\xff\xff\xff"); return (const rt::String&)x; }
+	{	static const rt::String& empty_key(){ return (const rt::String&)key_traits<rt::String_Ref>::empty_key(); }
+		static const rt::String& deleted_key(){ return (const rt::String&)key_traits<rt::String_Ref>::deleted_key(); }
 	};
 
     

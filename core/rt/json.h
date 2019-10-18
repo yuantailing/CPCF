@@ -470,7 +470,7 @@ protected:
 								}
 	static int					_count_seps(const rt::String_Ref& doc);
 	static LPCSTR				_seek_json_object_closure(LPCSTR p, LPCSTR end);
-	LPCSTR						_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot = false);
+	LPCSTR						_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot = false) const;
 
 public:
 	JsonObject(){};
@@ -482,25 +482,25 @@ public:
 
 	void			Attach(LPCSTR str, UINT length){ Attach(rt::String_Ref(str, length)); }
 	void			Attach(const rt::String_Ref& doc){	SSIZE_T s = doc.FindCharacter('{');	if(s>=0)_Doc = doc.SubStr(s); }
-	rt::String_Ref	GetValue(const rt::String_Ref& xpath, const rt::String_Ref& default_val = rt::String_Ref(), bool bDoNotSplitDot = false);	// xxx.yyy.zzz
-	rt::String_Ref	GetValue(const rt::String_Ref& xpath, bool& p_exist, bool bDoNotSplitDot = false);	// xxx.yyy.zzz
+	rt::String_Ref	GetValue(const rt::String_Ref& xpath, const rt::String_Ref& default_val = rt::String_Ref(), bool bDoNotSplitDot = false) const;	// xxx.yyy.zzz
+	rt::String_Ref	GetValue(const rt::String_Ref& xpath, bool& p_exist, bool bDoNotSplitDot = false) const;	// xxx.yyy.zzz
 	bool			IsEmpty() const { return _Doc.IsEmpty(); }
 	bool			IsEmptyObject() const;
 	bool			GetNextKeyValuePair(JsonKeyValuePair& kvp) const;
 
 	template<typename T>
-	T				GetValueAs(const rt::String_Ref& xpath, T default_val)
+	T				GetValueAs(const rt::String_Ref& xpath, T default_val) const
 					{	rt::String_Ref s = GetValue(xpath);
 						if(!s.IsEmpty())s.ToNumber(default_val);
 						return default_val;
 					}
 	template<typename T>
-	T				GetValueAs(const rt::String_Ref& xpath){ return GetValueAs<T>(xpath, 0); }
+	T				GetValueAs(const rt::String_Ref& xpath) const { return GetValueAs<T>(xpath, 0); }
 
 	template<typename T1,typename T2>
 	void			Derive(const rt::_JVar<T1,T2>& sub, rt::String& derived, bool append = false) const { Override(_Doc, sub, derived, append); }
 	void			Derive(const rt::String_Ref& sub, rt::String& derived, bool append = false) const { Override(_Doc, sub, derived, append); }
-	void			Derive(const rt::String_Ref& key, const rt::String_Ref& val_raw, rt::String& derived, bool append = false) { Override(_Doc, key, val_raw, derived, append); }
+	void			Derive(const rt::String_Ref& key, const rt::String_Ref& val_raw, rt::String& derived, bool append = false) const { Override(_Doc, key, val_raw, derived, append); }
 
 	template<typename T1,typename T2>
 	static void		Override(const rt::String_Ref& base, const rt::_JVar<T1,T2>& sub, rt::String& derived, bool append = false){ Override(base, rt::String(sub), derived, append); }
@@ -509,13 +509,13 @@ public:
 	static void		RemoveKeys(const rt::String_Ref& source, const rt::String_Ref& keys_to_exclude, rt::String& removed);
 
 	static void		UnescapeStringValue(const rt::String_Ref& in, rt::String& val_out);
-	void			GetValueUnescaped(rt::String& val_out, const rt::String_Ref& xpath, const rt::String_Ref& default_val = rt::String_Ref(), bool bDoNotSplitDot = false)	// xxx.yyy.zzz
+	void			GetValueUnescaped(rt::String& val_out, const rt::String_Ref& xpath, const rt::String_Ref& default_val = rt::String_Ref(), bool bDoNotSplitDot = false) const	// xxx.yyy.zzz
 					{	rt::String_Ref in = GetValue(xpath, default_val, bDoNotSplitDot);
 						UnescapeStringValue(in, val_out);
 					}
 };
 template<>
-INLFUNC bool JsonObject::GetValueAs<bool>(const rt::String_Ref& xpath, bool default_val)
+INLFUNC bool JsonObject::GetValueAs<bool>(const rt::String_Ref& xpath, bool default_val) const
 {	rt::String_Ref s = GetValue(xpath);
 	if(!s.IsEmpty()){ return s[0] != 'F' && s[0] != 'f' && s[0] != '0'; }
 	return default_val;

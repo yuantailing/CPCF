@@ -108,7 +108,7 @@ LPCSTR JsonObject::_seek_json_object_closure(LPCSTR p, LPCSTR end)
 	}
 }
 
-rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, const rt::String_Ref& default_val, bool bDoNotSplitDot)	// xxx.yyy.zzz
+rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, const rt::String_Ref& default_val, bool bDoNotSplitDot) const	// xxx.yyy.zzz
 {
 	if(xpath.IsEmpty())return _Doc;
 	LPCSTR p, tail;
@@ -124,7 +124,7 @@ rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, const rt::Strin
 	return default_val;
 }
 
-rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, bool& p_exist, bool bDoNotSplitDot)	// xxx.yyy.zzz
+rt::String_Ref JsonObject::GetValue(const rt::String_Ref& xpath, bool& p_exist, bool bDoNotSplitDot) const	// xxx.yyy.zzz
 {	
 	if(xpath.IsEmpty())return _Doc;
 	LPCSTR p, tail;
@@ -351,7 +351,7 @@ SKIP_THE_KEY:
 		removed += rt::SS("\n}");
 }
 
-LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot /* = false */)
+LPCSTR JsonObject::_LocateValue(const rt::String_Ref& xpath, bool bDoNotSplitDot /* = false */) const
 {
 	if(_Doc.IsEmpty())return nullptr;
 
