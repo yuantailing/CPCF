@@ -48,7 +48,7 @@ struct key_traits;
 	template<>
 	struct key_traits<rt::String_Ref>
 	{	static const rt::String_Ref& empty_key(){ static const rt::String_Ref x; return x; }
-		static const rt::String_Ref& deleted_key(){ static const rt::String_Ref x("\x0\x0\x0\x0"); return x; }
+		static const rt::String_Ref& deleted_key(){ static const rt::String_Ref x("\x0\x0\x0\x0", 4); return x; }
 	};
 	template<>
 	struct key_traits<rt::String>
