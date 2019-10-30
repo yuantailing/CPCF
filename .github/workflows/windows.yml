@@ -12,9 +12,9 @@ jobs:
         platform: [x86, x64]
         include:
         - os: windows-2016
-          msbuild: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe"'
+          msbuild: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe'
         - os: windows-2019
-          msbuild: '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"'
+          msbuild: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe'
         - platform: x86
           midpath: ''
         - platform: x64
@@ -27,14 +27,15 @@ jobs:
 
     - name: Download Libs
       run: |
-        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -Locpcf_win_ipp.7z && ^
-        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -Locpcf_win_mkl.7z && ^
-        7z x cpcf_win_ipp.7z -olibs\win\ && ^
-        7z x cpcf_win_mkl.7z -olibs\win\
+        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_ipp.7z -Locpcf_win_ipp.7z
+        curl https://github.com/jiapw/CPCF/releases/download/CPCF-Libs/cpcf_win_mkl.7z -Locpcf_win_mkl.7z
+        7z x cpcf_win_ipp.7z -olibs/win/
+        7z x cpcf_win_mkl.7z -olibs/win/
+      shell: bash
 
     - name: MSBuild
       run: |
-        ${{ matrix.msbuild }} tests.sln /nr:false /p:platform=${{ matrix.platform }} /p:configuration=${{ matrix.config }} /m
+        & "${{ matrix.msbuild }}" tests.sln /nr:false /p:platform=${{ matrix.platform }} /p:configuration=${{ matrix.config }} /m
       working-directory: testcases\proj.win
 
     - uses: actions/upload-artifact@master
@@ -44,8 +45,8 @@ jobs:
 
     - name: Run tests
       run: |
-        move ..\testcases.log ..\testcases.std && ^
-        .\${{ matrix.midpath }}${{ matrix.config }}\tests.exe /verify
+        move ..\testcases.log ..\testcases.std
+        & ".\${{ matrix.midpath }}${{ matrix.config }}\tests.exe" /verify
       working-directory: testcases\proj.win
 
     - name: diff
