@@ -542,6 +542,7 @@ tt exists
 it is defined
 tt is fit
 it is correct
+(tx.Contract<<16 |  tx.Op)
 End of File
 
 

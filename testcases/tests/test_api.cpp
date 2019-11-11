@@ -1008,6 +1008,8 @@ void rt::UnitTests::precompiler()
 		"#if IT != \"this is the value of it\"\n"
 		"it is not correct\n"
 		"#endif\n"
+		"#define TXID(a, b)		(a<<16 | b)\n"
+		"TXID(tx.Contract, tx.Op)\n"
 		"End of File\n\n"
 	);
 	

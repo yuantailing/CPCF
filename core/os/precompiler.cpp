@@ -593,7 +593,8 @@ bool Precompiler::_DefineMacroFunction(const rt::String_Ref& macro, const rt::St
 		int arg_len_min, arg_len_max;
 		arg_len_min = arg_len_max = (int)f[0].GetLength();
 		for(UINT i=1;i<co;i++)
-		{	arg_len_min = rt::min(arg_len_min, (int)f[i].GetLength());
+		{	f[i] = f[i].TrimSpace();
+			arg_len_min = rt::min(arg_len_min, (int)f[i].GetLength());
 			arg_len_max = rt::max(arg_len_max, (int)f[i].GetLength());
 		}
 
