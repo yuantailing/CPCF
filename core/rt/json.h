@@ -585,6 +585,8 @@ INLFUNC rt::String& JSON_OBJECT_APPEND(rt::String& x, const rt::String_Ref& key,
 		x.Last() = ',';
 		x += rt::SS() + '"' + key + _sep + value + '}';
 	}
+
+	return x;
 }
 
 template<typename TJSON>
@@ -593,11 +595,13 @@ INLFUNC rt::String& JSON_OBJECT_MERGE(rt::String& x, TJSON&& json)
 	if(x.IsEmpty()){ x = json; }
 	else
 	{	ASSERT(x.Last() == '}');
-		UINT len = (UINT)x.GetLength();
 		x.Shorten(1);
+		UINT len = (UINT)x.GetLength();
 		x += json;
 		x[len] = ',';
 	}
+
+	return x;
 }
 
 
