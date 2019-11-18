@@ -652,15 +652,15 @@ struct _EnumStringify;
 
 #define STRINGIFY_ENUM_ITEM(enum_val)			case enum_val: _str = #enum_val; return;
 
-#define STRINGIFY_ENUM_END(type, ns)			}; _str = nullptr; }					\
+#define STRINGIFY_ENUM_END(type, ns)			}; _str = #type "(#unk)"; }				\
 											operator LPCSTR() const { return _str; }	\
 										};}}											\
 										namespace ns {									\
 										template<class t_Ostream>						\
 										INLFUNC t_Ostream& operator<<(t_Ostream& Ostream, type x)	\
 										{	LPCSTR str = rt::_details::_EnumStringify<type>(x);		\
-											if(str)return Ostream<<str;								\
-											else return Ostream<< #type "("<<(int)x<<')';			\
+											if(str){ return Ostream<<str; }							\
+											else{ return Ostream<< #type "(#"<<(int)x<<')'; }		\
 										}}
 
 template<typename T>
