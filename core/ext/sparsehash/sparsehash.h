@@ -95,7 +95,19 @@ public:
 	{
 		auto it = _SC::find(k);
         if(it != _SC::end())return it->second;
-		return NULL;
+		return nullptr;
+	}
+	INLFUNC bool has(const KEY& k) const
+	{
+		return _SC::find(k) != _SC::end();
+	}
+	INLFUNC VALUE* take(const KEY& k)
+	{
+		auto it = _SC::find(k);
+		if(it == _SC::end())return nullptr;
+		VALUE* ret = it->second;
+		erase(it);
+		return ret;
 	}
 	INLFUNC void safe_delete_pointers() // handle the case when partial memory in VALUE involved in KEY
 	{
