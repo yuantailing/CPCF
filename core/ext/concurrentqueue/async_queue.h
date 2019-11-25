@@ -83,13 +83,17 @@ template<typename T, UINT BLOCK_SIZE, bool BLOCKING = true, bool SINGLE_READER_W
 // the reserved size in the ctor will be round to multiple of BLOCK_SIZE
 class AsyncDataQueueInfinite
 {
+	typedef _details::_ConcurrentQueue<T, BLOCKING, SINGLE_READER_WRITER, BLOCK_SIZE> QueueType;
 protected:
-	_details::_ConcurrentQueue<T, BLOCKING, SINGLE_READER_WRITER, BLOCK_SIZE>	_Q;
+	QueueType	_Q;
+	INT			_InitReservedSize;
 
 public:
-	AsyncDataQueueInfinite(INT ReservedSize = 32):_Q(ReservedSize){}
-	INLFUNC void Push(const T& t){ VERIFY(_Q.enqueue(t)); }
-	INLFUNC bool Pop(T& t, UINT timeout = 0){ return _Q.Pop(t,timeout); }
+	AsyncDataQueueInfinite(INT ReservedSize = 32):_Q(_InitReservedSize = ReservedSize){}
+
+	void Push(const T& t){ VERIFY(_Q.enqueue(t)); }
+	bool Pop(T& t, UINT timeout = 0){ return _Q.Pop(t,timeout); }
+	void Empty(){ _Q.~QueueType(); new (&_Q) QueueType(_InitReservedSize); }
 };
 
 template<typename T, UINT BLOCK_SIZE, bool BLOCKING = true, bool SINGLE_READER_WRITER = false>
