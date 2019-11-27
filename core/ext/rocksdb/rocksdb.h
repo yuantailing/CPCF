@@ -129,6 +129,7 @@ public:
 			opt = my = _StackNew(Options)();
 			my->create_if_missing = !open_existed_only;
 		}
+		if(!open_existed_only)os::File::CreateDirectories(db_path, false);
 		::rocksdb::DB* p;
 		if(::rocksdb::DB::Open(*opt, db_path, &p).ok())
 		{	_pDB = p;	return true; }

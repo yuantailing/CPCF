@@ -100,9 +100,9 @@ public:
 		for(t_Val* p = _p; p < end; p++)*p = x;
 	}
 	template<typename T>
-	t_Val& operator [](T i){ ASSERT(i>=0 && i<=(T)_len); return _p[i]; }
+	t_Val& operator [](T i){ ASSERT(((SIZE_T)i)<=_len); return _p[i]; }
 	template<typename T>
-	const t_Val& operator [](T i) const { ASSERT(i>=0 && i<=(T)_len); return _p[i]; }
+	const t_Val& operator [](T i) const { ASSERT(((SIZE_T)i)<=_len); return _p[i]; }
 	template<typename T> INLFUNC bool operator ==(const Buffer_Ref<T>& x) const
 	{	if(x.GetSize() != GetSize())return false;
 		for(t_Index i=0;i<GetSize();i++)
