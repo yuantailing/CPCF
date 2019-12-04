@@ -15,7 +15,7 @@ void TestMain()
 
 	if(!os::CommandLine::Get().HasOption("verify"))
 	{
-		TYPETRAITS_UNITTEST(precompiler);
+		TYPETRAITS_UNITTEST(socket_socket_event);
 		//TYPETRAITS_UNITTEST(callback_to_member_function);
 		return;
 	}

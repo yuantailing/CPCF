@@ -1991,14 +1991,70 @@ void test_socket_io(bool recv)
 
 void rt::UnitTests::socket_io()
 {
+	os::Thread recv;
+	recv.Create(
+		[](){
+			test_socket_io(true);
+		}
+	);
+
 	test_socket_io(false);
 }
 
-void rt::UnitTests::socket_io_recv()
+void rt::UnitTests::socket_socket_event()
 {
-	test_socket_io(true);
-}
+	inet::Socket recv[2];
+	recv[0].Create(inet::InetAddr("11.1.1.22", 20001), SOCK_DGRAM);
+	recv[1].Create(inet::InetAddr("11.1.1.22", 20002), SOCK_DGRAM);
 
+	inet::SocketEvent se;
+	se.Add(recv[0]);
+	se.Add(recv[1]);
+
+	os::Thread sender;
+	sender.Create([](){
+
+		inet::InetAddr target[2] = {
+			{"11.1.1.22", 20001},
+			{"11.1.1.22", 20002}
+		};
+
+		inet::Socket send;
+		send.Create(inet::InetAddr("11.1.1.22", 20000), SOCK_DGRAM);
+
+		for(UINT i=0;;i++)
+		{
+			char buf[1024];
+			os::Sleep(1000);
+
+			UINT len = (UINT)(rt::SS("Msg ") + i).CopyTo(buf);
+			UINT idx = i%sizeofArray(target);
+			send.SendTo(buf, len, target[idx]);
+			_LOG("To "<<idx<<": "<<rt::String_Ref(buf, len));
+		}
+	});
+
+	for(;;)
+	{
+		INT count = se.WaitForEvents();
+		if(count>0)
+		{
+			char buf[1024];
+			UINT read = 0;
+			inet::InetAddr from;
+
+			for(UINT i=0; i<count; i++)
+			{
+				inet::Socket sock;
+				sock.Attach(se.GetNextSocketEvent_Read());
+				sock.RecvFrom(buf, sizeof(buf), read, from);
+				sock.Detach();
+
+				_LOG(rt::String_Ref(buf, read));
+			}		
+		}
+	}
+}
 
 void rt::UnitTests::filelist()
 {

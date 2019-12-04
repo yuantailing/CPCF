@@ -27,7 +27,7 @@ struct UnitTests
 	static void delayed_deletion();
 	static void sysinfo();
 	static void socket_io();
-	static void socket_io_recv();
+	static void socket_socket_event();
 	static void filelist();
 	static void smallmath();
 	static void vm();

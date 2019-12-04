@@ -605,7 +605,7 @@ void inet::SocketEvent::my_fd_set::assign_socket(const rt::BufferEx<SOCKET>& _So
 
 int inet::SocketEvent::WaitForEvents(UINT timeout)
 {
-	if(GetCount() == 0)return INFINITE;
+	if(GetCount() == 0)return 0;
 
 	if(fd_set_read.is_allocated()){ fd_set_read.assign_socket(_Sockets); fd_set_read.clear_event(); }
 	if(fd_set_write.is_allocated()){ fd_set_write.assign_socket(_Sockets); fd_set_write.clear_event(); }

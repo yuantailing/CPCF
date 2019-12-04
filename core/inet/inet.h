@@ -146,8 +146,7 @@ public:
 	}
 	INLFUNC InetAddrT(LPCSTR pHostname, WORD ushPort = 0) // dotted IP addr string or domain
 	{	OP::Init(*this);
-		if(ushPort)SetPort(ushPort);
-		SetAddress(pHostname);
+		SetAddress(pHostname, ushPort);
 	}
 	INLFUNC bool IsLoopback() const { return _details::InetAddrT_Op<t_ADDR>::IsAddressLoopback(*this); }
 	INLFUNC bool SetAsLocal(bool no_loopback = false){ return GetLocalAddresses(this,1,no_loopback); }
