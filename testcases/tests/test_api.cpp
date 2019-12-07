@@ -1153,27 +1153,29 @@ void rt::UnitTests::buffer()
 	boolvec.Set(80);
 	boolvec.Set(88);
 
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	rt::SS szpc(" PopCount:");
+
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 
 	boolvec.Shift(1);
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 
 	boolvec.Shift(2);
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 
 	boolvec.Shift(-9);
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 
 	boolvec.Shift(16);
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 
 	boolvec.Shift(-65);
-	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToString<>(out); out += szpc + boolvec.PopCount();	_LOG(out);	out.Empty();
 	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 }
 

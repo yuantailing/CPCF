@@ -746,6 +746,8 @@ public:
 	void	Reset(const Index& idx){ Set(idx, false); }
 	void	False(){ memset(_Bits, 0, sizeof(_Bits)); }
 	void	True(){ memset(_Bits, 0xff, sizeof(_Bits)); _ClearTrailingBits(); }
+	bool	IsFalse() const { for(UINT i=0; i<BLOCK_COUNT; i++)if(_Bits[i])return false; return true; }
+	UINT	PopCount() const { UINT pc = 0; for(UINT i=0; i<BLOCK_COUNT; i++)pc += rt::PopCount(_Bits[i]); return pc; }
 	void	operator ^= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] ^= x._Bits[i]; }
 	void	operator |= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] |= x._Bits[i]; }
 	template<typename CB>
