@@ -1138,6 +1138,43 @@ void rt::UnitTests::buffer()
 	_LOG("Top-3: "<<a.FindTopKth(3));
 	_LOG("Top-6: "<<a.FindTopKth(6));
 	_LOG("Top-10: "<<a.FindTopKth(10));
+
+	rt::BooleanArray<89>	boolvec;
+
+	boolvec.True();
+
+	rt::String out;
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.False();
+	boolvec.Set(1);
+	boolvec.Set(5);
+	boolvec.Set(63);
+	boolvec.Set(80);
+	boolvec.Set(88);
+
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.Shift(1);
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.Shift(2);
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.Shift(-9);
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.Shift(16);
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
+
+	boolvec.Shift(-65);
+	boolvec.ToString<>(out);	_LOG(out);	out.Empty();
+	boolvec.ToStringWithIndex<>(out);	_LOG(out);	out.Empty();
 }
 
 void rt::UnitTests::encoding()
@@ -2036,7 +2073,7 @@ void rt::UnitTests::socket_socket_event()
 
 	for(;;)
 	{
-		INT count = se.WaitForEvents();
+		UINT count = se.WaitForEvents();
 		if(count>0)
 		{
 			char buf[1024];
@@ -2048,7 +2085,7 @@ void rt::UnitTests::socket_socket_event()
 				inet::Socket sock;
 				sock.Attach(se.GetNextSocketEvent_Read());
 				sock.RecvFrom(buf, sizeof(buf), read, from);
-				sock.Detach();
+				sock.Detach();  // don't miss that
 
 				_LOG(rt::String_Ref(buf, read));
 			}		

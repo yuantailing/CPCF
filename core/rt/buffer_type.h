@@ -720,8 +720,10 @@ template<UINT BIT_SIZE>
 class BooleanArray
 {
 	static const UINT	BLOCK_SIZE = sizeof(SIZE_T)*8;
-	SIZE_T				_Bits[(BIT_SIZE + BLOCK_SIZE - 1)/BLOCK_SIZE];
+	static const UINT	BLOCK_COUNT = (BIT_SIZE + BLOCK_SIZE - 1)/BLOCK_SIZE;
+	SIZE_T				_Bits[BLOCK_COUNT];
 	static SIZE_T		_BlockBitmask(SIZE_T idx){ return ((SIZE_T)1)<<(idx%BLOCK_SIZE); }
+	void				_ClearTrailingBits(){ _Bits[BLOCK_COUNT - 1] &= (~(SIZE_T)0)>>(BLOCK_SIZE - (BIT_SIZE%BLOCK_SIZE)); }
 public:
 	class Index
 	{	friend class BooleanArray;
@@ -735,23 +737,24 @@ public:
 	};
 
 	bool	Get(const Index& idx) const { return _Bits[idx.BlockOffset]&idx.Bitmask; }
-	void	Set(const Index& idx, bool v)
+	void	Set(const Index& idx, bool v = true)
 			{	if(v)
 					_Bits[idx.BlockOffset] |= idx.Bitmask;
 				else
 					_Bits[idx.BlockOffset] &= ~idx.Bitmask;
 			}
+	void	Reset(const Index& idx){ Set(idx, false); }
 	void	False(){ memset(_Bits, 0, sizeof(_Bits)); }
-	void	True(){ memset(_Bits, 0xff, sizeof(_Bits)); }
+	void	True(){ memset(_Bits, 0xff, sizeof(_Bits)); _ClearTrailingBits(); }
 	void	operator ^= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] ^= x._Bits[i]; }
 	void	operator |= (const BooleanArray& x){ for(UINT i=0;i<sizeofArray(_Bits); i++)_Bits[i] |= x._Bits[i]; }
 	template<typename CB>
-	UINT	Visit(CB&& cb)	// visit all ones
-			{	UINT hit = 0;
-				for(UINT i=0; i<sizeofArray(_Bits); i++)
+	UINT	VisitOnes(CB&& cb)	// visit all ones
+			{	UINT hit = 0;	UINT i=0;
+				for(; i<sizeofArray(_Bits)-1; i++)
 				{	SIZE_T bits = _Bits[i];
 					if(bits)
-					{	for(UINT b=0; b<sizeof(SIZE_T)*8; b++)
+					{	for(UINT b=0; b<BLOCK_SIZE; b++)
 						{	if(bits&(1ULL<<b))
 							{	cb(i*BLOCK_SIZE + b);
 								hit++;
@@ -759,13 +762,67 @@ public:
 						}
 					}
 				}
+				SIZE_T bits = _Bits[i];
+				if(bits)
+				{	for(UINT b=0; b<(BIT_SIZE%BLOCK_SIZE); b++)
+					{	if(bits&(1ULL<<b))
+						{	cb(i*BLOCK_SIZE + b);
+							hit++;
+						}
+					}
+				}
 				return hit;
+			}
+	template<typename CB>
+	void	ForEach(CB&& cb)	// visit all ones
+			{	UINT i=0;
+				for(; i<sizeofArray(_Bits)-1; i++)
+				{	SIZE_T bits = _Bits[i];
+					for(UINT b=0; b<BLOCK_SIZE; b++)cb(bits&(1ULL<<b));
+				}
+				SIZE_T bits = _Bits[i];
+				for(UINT b=0; b<(BIT_SIZE%BLOCK_SIZE); b++)cb(bits&(1ULL<<b));
+			}
+	template<char one = '1', char zero = '.'>
+	auto	ToString(rt::String& append)
+			{	ForEach([&append](bool v){
+					append += v?one:zero;
+				});
+				return append;
+			}
+	template<char sep = ','>
+	auto	ToStringWithIndex(rt::String& append)
+			{	if(VisitOnes([&append](UINT v){
+					append += rt::tos::Number(v);
+					append += sep;
+				}))append.Shorten(1);
+				return append;
 			}
 	BooleanArray(){}
 	BooleanArray(std::initializer_list<bool> a_args)
 			{	rt::Zero(_Bits);
 				UINT i = 0;
 				for(auto b: a_args)Set(i++, b);
+			}
+	void	Shift(int s){ if(s>0){LeftShift((UINT)s);}else{{RightShift((UINT)-s);}} }
+	void	LeftShift(UINT s)
+			{	if(s == 0)return;				if(s > BIT_SIZE){ False(); return; }
+				UINT offset = s/BLOCK_SIZE;		s = s%BLOCK_SIZE;
+				UINT i = BLOCK_COUNT - 1;
+				for (; 0 < i - offset; i--)
+					_Bits[i] = (_Bits[i - offset] << s) | (_Bits[i - offset - 1] >> (BLOCK_SIZE - s));
+				_Bits[i] = _Bits[i - offset] << s;
+				if(i)rt::Zero(_Bits, (i-1)*BLOCK_SIZE/8);
+				_ClearTrailingBits();
+			}
+	void	RightShift(UINT s)
+			{	if(s == 0)return;				if(s > BIT_SIZE){ False(); return; }
+				UINT offset = s/BLOCK_SIZE;		s = s%BLOCK_SIZE;
+				UINT i = 0;
+				for (; i + offset < BLOCK_COUNT - 1; i++)
+					_Bits[i] = (_Bits[i + offset] >> s) | (_Bits[i + offset + 1] << (BLOCK_SIZE - s));
+				_Bits[i] = _Bits[i + offset] >> s;
+				if(i + 1 < BLOCK_COUNT)rt::Zero(&_Bits[i+1], (BLOCK_COUNT - i - 1)*BLOCK_SIZE/8);
 			}
 };
 
