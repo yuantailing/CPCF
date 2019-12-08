@@ -5,6 +5,74 @@
 
 namespace ext
 {
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Lock-free queue based on moodycamel::ConcurrentQueue
+// http://moodycamel.com/blog/2014/a-fast-general-purpose-lock-free-queue-for-c++
+// 
+// *** WARNING ***
+// Unless `singleReaderWriter` is true, the Pop order of elements
+// will not be the exact Push order of elements, which can be a little jittered 
+// when there are multiple producing threads.
+//
+// Another alternative is https://github.com/max0x7ba/atomic_queue which support
+// consistent total order across multiple producing threads but lacking blocking
+// Push/Pop
+/////////////////////////////////////////////////////////////////////////////////////
+
+template<typename SEQNO>
+class SeqNoDeJitter
+{
+#if defined(PLATFORM_DEBUG_BUILD)
+	rt::hash_set<SEQNO>		_Dedup;
+#endif
+	SEQNO		_Min;	// consolidate on min
+	SEQNO		_Max;	
+	SIZE_T		_GapFilled;
+
+public:
+	SeqNoDeJitter(SEQNO init = 0){ Reset(init); }
+	void Reset(SEQNO init)
+	{	_GapFilled = 0;
+		_Min = _Max = init;
+#if defined(PLATFORM_DEBUG_BUILD)
+		_Dedup.clear();
+#endif
+	}
+	bool Insert(SEQNO s) // return true if consolidation updated
+	{	ASSERT(s > _Min && s != _Max);
+		ASSERT(_Dedup.find(s) == _Dedup.end());
+		if(s > _Max)
+		{	_GapFilled += s - _Max - 1;
+			if(_GapFilled == 0)
+			{	_Min = _Max = s;
+				ASSERT(_Dedup.size() == 0);
+				return true; 
+			}
+#if defined(PLATFORM_DEBUG_BUILD)
+			_Dedup.insert(_Max);
+#endif
+			_Max = s;
+		}
+		else
+		{	ASSERT(_GapFilled);
+			_GapFilled--;
+			if(_GapFilled == 0)
+			{	_Min = _Max;
+#if defined(PLATFORM_DEBUG_BUILD)
+				_Dedup.clear();
+#endif
+				return true; 
+			}
+#if defined(PLATFORM_DEBUG_BUILD)
+			_Dedup.insert(s);
+#endif
+		}
+		return false;
+	}
+	SEQNO DeJittered() const { return _Min; }
+	bool  IsJittering() const { return _Min != _Max; }
+};
 	
 namespace _details
 {
