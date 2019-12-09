@@ -348,13 +348,7 @@ public:
 	}
 	INLFUNC bool ChangeSize(SIZE_T new_size) //Original data at front is preserved
 	{	
-		if( new_size == _SC::_len )return true;
-		if( new_size<_SC::_len )
-		{	
-			for(SIZE_T i=new_size;i<_SC::_len;i++)_SC::_xt::dtor(_SC::_p[i]);	//call dtor for unwanted instances at back
-			_SC::_len = new_size;
-			return true;
-		}
+		if( new_size<=_SC::_len ){ ShrinkSize(new_size); return true; }
 		else	//expand buffer
 		{	t_Val* new_p = _Malloc32AL(t_Val,new_size);
 			if(new_p)
@@ -367,8 +361,16 @@ public:
 				return true;
 			}
 		}
-		
 		return false;
+	}
+	INLFUNC void ShrinkSize(SIZE_T new_size) // avoid calling ctor
+	{	ASSERT(new_size<=_SC::_len);
+		if( new_size == _SC::_len )return;
+		if( new_size<_SC::_len )
+		{	
+			for(SIZE_T i=new_size;i<_SC::_len;i++)_SC::_xt::dtor(_SC::_p[i]);	//call dtor for unwanted instances at back
+			_SC::_len = new_size;
+		}
 	}
 	INLFUNC t_Val* Detach(){ auto* p = _SC::_p; _SC::_p = nullptr; _SC::_len = 0; return p; }
 };
@@ -401,7 +403,7 @@ protected:
 public:
 	INLFUNC BufferEx(const BufferEx &x){ _len_reserved = 0; *this = x; }
 	INLFUNC const BufferEx& operator = (const BufferEx &x)
-	{	ChangeSize(0);
+	{	ShrinkSize(0);
 		_SC::_len = x.GetSize();
 		if(_SC::_len <= _len_reserved){}
 		else
@@ -423,7 +425,7 @@ public:
 	INLFUNC bool Clear(){ return SetSize(0); }
 	INLFUNC bool ChangeSize(SIZE_T new_size, bool keep_old_data = true) // Original data at front is preserved
 	{	if( new_size == _SC::_len )return true;
-		if( new_size < _SC::_len ){ return _SC::ChangeSize(new_size); }
+		if( new_size < _SC::_len ){ _SC::ShrinkSize(new_size); return true; }
 		else 
 		{	if(new_size <= _len_reserved){} // expand elements only
 			else // expand buffer

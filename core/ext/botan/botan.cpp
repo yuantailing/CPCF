@@ -133,7 +133,7 @@ bool TLS::Recv(LPVOID buf, UINT buf_size, UINT&read)
 		memcpy(buf, &__RecvBuf[__RecvAteSize], read);
 		__RecvAteSize += read;
 		if(__RecvAteSize == __RecvBuf.GetSize())
-		{	__RecvBuf.ChangeSize(0);
+		{	__RecvBuf.ShrinkSize(0);
 			__RecvAteSize = 0;
 		}
 		return true;
@@ -235,7 +235,7 @@ void TLS::Destroy()
 		}
 		catch(...){}
 		_Init = false;
-		__RecvBuf.ChangeSize(0);
+		__RecvBuf.ShrinkSize(0);
 		__RecvAteSize = 0;
 	}
 }

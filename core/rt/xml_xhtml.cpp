@@ -61,7 +61,7 @@ void XMLComposer::ResetContent(LPCSTR customized_header)
 	Output(header);
 	m_HeaderLength = (UINT)rt::String_Ref(header).GetLength();
 	
-	m_NestLevelTag.ChangeSize(0);
+	m_NestLevelTag.ShrinkSize(0);
 	_EnteringNodeTag = nullptr;
 }
 
@@ -988,7 +988,7 @@ void XMLParser::Clear()
 	m_XMLParseErrorPosition = 0;
 	ClearXPathFilter();
 	m_pDocument = nullptr;
-	m_NodePath.ChangeSize(0);
+	m_NodePath.ShrinkSize(0);
 }
 
 ULONGLONG XMLParser::GetNodeFileOffset() const
@@ -1503,7 +1503,7 @@ bool XMLParser::EnterParentNode()
 	_attribute_cursor = nullptr;
 	if(GetDescendantLevel()>1)
 	{
-		m_NodePath.ChangeSize(m_NodePath.GetSize()-1);
+		m_NodePath.ShrinkSize(m_NodePath.GetSize()-1);
 		return true;
 	}
 	else
@@ -2728,7 +2728,7 @@ void XPathParser::Clear()
 
 bool XPathParser::Load(LPCSTR xpath)
 {
-	m_Qualifiers.ChangeSize(0);
+	m_Qualifiers.ShrinkSize(0);
 	m_UpLevelCount = 0;
 	_LastNodeSatificated = true;
 	
@@ -2777,7 +2777,7 @@ bool XPathParser::Load(LPCSTR xpath)
 				else if(xpath[0] == '.' && xpath[1] == '.' && xpath+2 == next)
 				{	
 					if(m_Qualifiers.GetSize())
-					{	m_Qualifiers.ChangeSize(m_Qualifiers.GetSize()-1);
+					{	m_Qualifiers.ShrinkSize(m_Qualifiers.GetSize()-1);
 					}
 					else m_UpLevelCount++;
 				}

@@ -70,7 +70,7 @@ DWORD os::GarbageCollection::_DeletionThread(LPVOID)
 				}
 			}
 
-			_details::g_GCB._PendingGarbag.ChangeSize(open);
+			_details::g_GCB._PendingGarbag.ShrinkSize(open);
 		}
 	}
 

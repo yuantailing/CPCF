@@ -129,7 +129,7 @@ bool HttpVirtualPath::OnRequest(HttpResponse& resp)
 
 	ASSERT_NONRECURSIVE;
 	thread_local rt::BufferEx<BYTE>	conv_data;
-	conv_data.ChangeSize(0);
+	conv_data.ShrinkSize(0);
 
 	rt::String a;
 	if(!uri.IsEmpty() && uri.Last() == '/' && os::File::IsDirectory((a = _MappedPath + uri.TrimRight(1))))
