@@ -19,6 +19,7 @@ struct __InitRocksDBOptions
 	{	WriteOptionsMore(int mode)
 		{	switch(mode)
 			{
+			case 0: sync = false;	disableWAL = false; break;
 			case 1:	sync = false;	disableWAL = true; break;
 			case 2:	sync = true;	disableWAL = false; break;
 			}

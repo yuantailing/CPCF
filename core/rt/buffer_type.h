@@ -154,8 +154,8 @@ public:
 	INLFUNC t_SignedIndex SearchLowerbound(const t_Val& x) const // binary search
 	{	return std::lower_bound(Begin(), End(), x) - Begin();
 	}
-	INLFUNC void Zero(){ memset((LPVOID)_p, 0, _len*sizeof(t_Val)); }
-	INLFUNC void Void(){ memset((LPVOID)_p, 0xff, _len*sizeof(t_Val)); }
+	INLFUNC void Zero(){ ASSERT_STATIC(rt::TypeTraits<t_Val>::IsPOD); memset((LPVOID)_p, 0, _len*sizeof(t_Val)); }
+	INLFUNC void Void(){ ASSERT_STATIC(rt::TypeTraits<t_Val>::IsPOD); memset((LPVOID)_p, 0xff, _len*sizeof(t_Val)); }
 	template<typename T>
 	INLFUNC void CopyFrom(const Buffer_Ref<T>& x)
 	{	ASSERT(GetSize() == x.GetSize());
@@ -246,7 +246,8 @@ public:
 		return _Find::kth(_p, 0, GetSize()-1, k);
 	}
 	INLFUNC void RandomBits(DWORD seed = rand())
-	{	Randomizer rng(seed);
+	{	ASSERT_STATIC(rt::TypeTraits<t_Val>::IsPOD);
+		Randomizer rng(seed);
 		t_Index int_size = GetSize()*sizeof(t_Val)/4;
 		t_Index i=0;
 		for(; i<int_size; i++)
@@ -721,8 +722,10 @@ namespace rt
 template<UINT BIT_SIZE>
 class BooleanArray
 {
+protected:
 	static const UINT	BLOCK_SIZE = sizeof(SIZE_T)*8;
 	static const UINT	BLOCK_COUNT = (BIT_SIZE + BLOCK_SIZE - 1)/BLOCK_SIZE;
+
 	SIZE_T				_Bits[BLOCK_COUNT];
 	static SIZE_T		_BlockBitmask(SIZE_T idx){ return ((SIZE_T)1)<<(idx%BLOCK_SIZE); }
 	void				_ClearTrailingBits(){ _Bits[BLOCK_COUNT - 1] &= (~(SIZE_T)0)>>(BLOCK_SIZE - (BIT_SIZE%BLOCK_SIZE)); }
