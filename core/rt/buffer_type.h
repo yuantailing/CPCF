@@ -374,6 +374,21 @@ public:
 		}
 	}
 	INLFUNC t_Val* Detach(){ auto* p = _SC::_p; _SC::_p = nullptr; _SC::_len = 0; return p; }
+	INLFUNC auto Remove(const t_Val&& v)
+	{	UINT open = 0;
+		for(UINT i=0; i<_SC::_len; i++)
+			if(!(_p[i] == v))
+			{	if(i != open)
+				{	_SC::_xt::dtor(_SC::_p[open]);
+					rt::Copy(_SC::_p[open], _SC::_p[i]);
+				}
+				open++;
+			}
+		auto ret = _SC::_len - open;
+		_SC::_len = open;
+		return ret;
+	}
+
 };
 
 template<typename t_Val>
