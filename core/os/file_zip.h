@@ -138,6 +138,8 @@ protected:
 
 	struct FileEntryPtr: public rt::String_Ref
 	{
+		TYPETRAITS_DECLARE_POD;
+
 		FileEntry*	p;
 		FileEntryPtr(){}
 		FileEntryPtr(FileEntry* x):rt::String_Ref(x->FileName,x->FileNameLength){ p = x; }
