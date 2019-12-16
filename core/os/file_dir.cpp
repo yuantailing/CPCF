@@ -1967,6 +1967,15 @@ bool os::CommandLine::HasOption(const rt::String_Ref& option_name) const
 	return false;
 }
 
+void os::CommandLine::RemoveOption(const rt::String_Ref& option_name)
+{
+	for(UINT i=0;i<_Options.GetSize();i++)
+	{	
+		if(option_name == _Options[i].Name)
+			_Options.erase(i);
+	}
+}
+
 LPCSTR os::CommandLine::SearchOptionEx(const rt::String_Ref& option_substring) const
 {	
 	for(UINT i=0;i<_Options.GetSize();i++)

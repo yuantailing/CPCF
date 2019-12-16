@@ -537,6 +537,7 @@ public:
 	LPCSTR			SearchOptionEx(const rt::String_Ref& option_substring) const;	//search an option contains this name (in lower-case)	, if found return the remaining text of the option
 	rt::String_Ref	GetOption(const rt::String_Ref& option_name, const rt::String_Ref& def_val = nullptr) const;
 	bool			HasOption(const rt::String_Ref& option_name) const;
+	void			RemoveOption(const rt::String_Ref& option_name);
 
 	UINT			GetTextCount()const{ return (UINT)_Arguments.GetSize(); }
 	LPCSTR			GetText(UINT idx, LPCSTR default_val = nullptr)const{ return _Arguments.GetSize()>idx?(LPCSTR)_Arguments[idx]:default_val; }
