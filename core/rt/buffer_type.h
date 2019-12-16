@@ -377,7 +377,7 @@ public:
 	INLFUNC auto Remove(const t_Val&& v)
 	{	UINT open = 0;
 		for(UINT i=0; i<_SC::_len; i++)
-			if(!(_p[i] == v))
+			if(!(_SC::_p[i] == v))
 			{	if(i != open)
 				{	_SC::_xt::dtor(_SC::_p[open]);
 					rt::Copy(_SC::_p[open], _SC::_p[i]);
@@ -419,7 +419,7 @@ protected:
 public:
 	INLFUNC BufferEx(const BufferEx &x){ _len_reserved = 0; *this = x; }
 	INLFUNC const BufferEx& operator = (const BufferEx &x)
-	{	ShrinkSize(0);
+	{	_SC::ShrinkSize(0);
 		_SC::_len = x.GetSize();
 		if(_SC::_len <= _len_reserved){}
 		else
