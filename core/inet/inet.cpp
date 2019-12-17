@@ -529,7 +529,7 @@ bool SocketTimed::Send(LPCVOID pData, UINT len, bool drop_if_busy)
 	LPCSTR d = (LPCSTR)pData;
 	while(len>0)
 	{	
-		ret = (int)send(m_hSocket,d,len,0);
+		ret = (int)send(m_hSocket,d,rt::min(32*1024U, len),0);
 		if(ret>0)
 		{	len -= ret;
 			d += ret;
@@ -539,14 +539,14 @@ bool SocketTimed::Send(LPCVOID pData, UINT len, bool drop_if_busy)
 		ASSERT(ret == -1);
 		timeval timeout = _timeout_send;
 		
-		if(	!drop_if_busy &&
-			IsLastOpPending() &&
-			(_LastSelectRet = select(1 + (int)m_hSocket, NULL, _FD(m_hSocket), NULL, &timeout)) == 1
-		)
-		{	continue;
-		}
+		if(drop_if_busy || !IsLastOpPending())return false;
 
-		return false;
+		// wait to death
+		while((_LastSelectRet = select(1 + (int)m_hSocket, NULL, _FD(m_hSocket), NULL, &timeout)) == 0);
+		if(_LastSelectRet == 1)
+			continue;
+		else
+			return false;
 	}
 	
 	return true;
